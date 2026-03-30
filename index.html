@@ -12,19 +12,31 @@
       overflow-x: hidden;
     }
 
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-    }
-
-    #scroll-container {
+    /* Outer scroll container — repeat this block to make it infinite */
+    #hero-scroll {
       height: 600vh;
-      width: 100%;
+      position: relative;
     }
 
+    /* Sticky inner — stays fixed while you scroll through the outer div */
+    #hero-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* The image that swaps frames */
+    #hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* Loading bar */
     #loader {
       position: fixed;
       inset: 0;
@@ -38,8 +50,14 @@
       pointer-events: none;
     }
 
-    #loader.hidden {
-      opacity: 0;
+    #loader.hidden { opacity: 0; }
+
+    #loader-text {
+      color: rgba(255,255,255,0.5);
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
     }
 
     #loader-bar-wrap {
@@ -58,14 +76,6 @@
       border-radius: 2px;
       transition: width 0.1s linear;
     }
-
-    #loader-text {
-      color: rgba(255,255,255,0.5);
-      font-family: 'Courier New', monospace;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
   </style>
 </head>
 <body>
@@ -77,93 +87,84 @@
     </div>
   </div>
 
-  <canvas id="canvas"></canvas>
-  <div id="scroll-container"></div>
+  <!-- Scroll section 1 — plays frames 0 to end -->
+  <div id="hero-scroll">
+    <div id="hero-sticky">
+      <img id="hero-img" src="frame_0001.jpg" alt="">
+    </div>
+  </div>
+
+  <!-- Scroll section 2 — repeats for infinite loop -->
+  <div id="hero-scroll-2" style="height:600vh; position:relative;">
+    <div style="position:sticky; top:0; height:100vh; overflow:hidden;">
+      <img id="hero-img-2" src="frame_0001.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;">
+    </div>
+  </div>
 
   <script>
     // ── CONFIG ──────────────────────────────────
-    const TOTAL_FRAMES  = 369;
-    const FRAME_DIR     = '';          // '' = root, 'frames/' = subfolder
-    const FRAME_PREFIX  = 'frame_';
-    const FRAME_EXT     = '.jpg';
-    const SCROLL_SPEED  = 20;          // px of scroll per frame step
+    const TOTAL_FRAMES = 369;
+    const FRAME_PREFIX = 'frame_';
+    const FRAME_EXT    = '.jpg';
     // ────────────────────────────────────────────
 
-    const canvas    = document.getElementById('canvas');
-    const ctx       = canvas.getContext('2d');
-    const loader    = document.getElementById('loader');
-    const loaderBar = document.getElementById('loader-bar');
+    const heroImg     = document.getElementById('hero-img');
+    const heroImg2    = document.getElementById('hero-img-2');
+    const heroSection = document.getElementById('hero-scroll');
+    const heroSection2 = document.getElementById('hero-scroll-2');
+    const loader      = document.getElementById('loader');
+    const loaderBar   = document.getElementById('loader-bar');
 
-    const frames     = new Array(TOTAL_FRAMES);
-    let loadedCount  = 0;
-    let currentFrame = 0;
+    const frames = [];
+    let loadedCount = 0;
 
     function pad(n) {
       return String(n).padStart(4, '0');
     }
 
     function frameSrc(i) {
-      return `${FRAME_DIR}${FRAME_PREFIX}${pad(i + 1)}${FRAME_EXT}`;
+      return `${FRAME_PREFIX}${pad(i + 1)}${FRAME_EXT}`;
     }
 
-    function resizeCanvas() {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
-      drawFrame(currentFrame);
+    // Preload all frames
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const img = new Image();
+      img.src = frameSrc(i);
+      img.onload = img.onerror = () => {
+        loadedCount++;
+        loaderBar.style.width = (loadedCount / TOTAL_FRAMES * 100) + '%';
+        if (loadedCount >= TOTAL_FRAMES) {
+          loader.classList.add('hidden');
+        }
+      };
+      frames.push(img);
     }
 
-    function drawFrame(index) {
-      const img = frames[index];
-      if (!img || !img.complete || !img.naturalWidth) return;
-      const cw = canvas.width,  ch = canvas.height;
-      const iw = img.naturalWidth, ih = img.naturalHeight;
-      const scale = Math.max(cw / iw, ch / ih);
-      const dw = iw * scale, dh = ih * scale;
-      const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
-      ctx.clearRect(0, 0, cw, ch);
-      ctx.drawImage(img, dx, dy, dw, dh);
+    // Set first frame immediately
+    heroImg.src = frameSrc(0);
+    heroImg2.src = frameSrc(0);
+
+    function getSectionProgress(section) {
+      const rect = section.getBoundingClientRect();
+      const totalScroll = section.offsetHeight - window.innerHeight;
+      const scrolled = -rect.top;
+      return Math.max(0, Math.min(1, scrolled / totalScroll));
     }
 
-    function onFrameLoaded(i) {
-      loadedCount++;
-      loaderBar.style.width = (loadedCount / TOTAL_FRAMES * 100) + '%';
-      if (i === 0) {
-        resizeCanvas();
-        drawFrame(0);
-      }
-      if (loadedCount >= TOTAL_FRAMES) {
-        loader.classList.add('hidden');
-      }
+    function updateFrames() {
+      // Section 1
+      const p1 = getSectionProgress(heroSection);
+      const idx1 = Math.min(Math.floor(p1 * TOTAL_FRAMES), TOTAL_FRAMES - 1);
+      if (frames[idx1]?.complete) heroImg.src = frames[idx1].src;
+
+      // Section 2 (same loop, infinite feel)
+      const p2 = getSectionProgress(heroSection2);
+      const idx2 = Math.min(Math.floor(p2 * TOTAL_FRAMES), TOTAL_FRAMES - 1);
+      if (frames[idx2]?.complete) heroImg2.src = frames[idx2].src;
     }
 
-    function preloadFrames() {
-      for (let i = 0; i < TOTAL_FRAMES; i++) {
-        const img = new Image();
-        const idx = i;
-        img.onload  = () => onFrameLoaded(idx);
-        img.onerror = () => onFrameLoaded(idx);
-        img.src     = frameSrc(i);
-        frames[i]   = img;
-      }
-    }
-
-    // ── Infinite scroll ──
-    const LOOP_HEIGHT = TOTAL_FRAMES * SCROLL_SPEED;
-
-    window.addEventListener('scroll', () => {
-      let scrollY = window.scrollY;
-      if (scrollY >= LOOP_HEIGHT) {
-        scrollY = scrollY % LOOP_HEIGHT;
-        window.scrollTo({ top: scrollY, behavior: 'instant' });
-      }
-      currentFrame = Math.floor(scrollY / SCROLL_SPEED) % TOTAL_FRAMES;
-      drawFrame(currentFrame);
-    }, { passive: true });
-
-    // ── Init ──
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    preloadFrames();
+    window.addEventListener('scroll', updateFrames, { passive: true });
+    updateFrames();
   </script>
 </body>
 </html>
