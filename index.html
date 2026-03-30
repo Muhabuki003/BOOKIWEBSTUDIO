@@ -5,35 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Infinite Scroll Animation</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
       background: #000;
       overflow-x: hidden;
+      height: 100%;
     }
 
     canvas {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      width: 100vw;
+      height: 100vh;
     }
 
-    /* Tall scroll container — gives the user scroll room */
     #scroll-container {
-      height: 600vh; /* adjust this for faster/slower scroll speed */
+      height: 600vh;
       width: 100%;
-      position: relative;
-      z-index: 1;
     }
 
-    /* Optional: loading screen */
     #loader {
       position: fixed;
       inset: 0;
@@ -43,12 +35,12 @@
       align-items: center;
       justify-content: center;
       z-index: 999;
-      transition: opacity 0.6s ease;
+      transition: opacity 0.8s ease;
+      pointer-events: none;
     }
 
     #loader.hidden {
       opacity: 0;
-      pointer-events: none;
     }
 
     #loader-bar-wrap {
@@ -79,7 +71,6 @@
 </head>
 <body>
 
-  <!-- Loading screen -->
   <div id="loader">
     <div id="loader-text">Loading</div>
     <div id="loader-bar-wrap">
@@ -87,129 +78,90 @@
     </div>
   </div>
 
-  <!-- Canvas where frames render -->
   <canvas id="canvas"></canvas>
-
-  <!-- Tall div to allow scrolling -->
   <div id="scroll-container"></div>
 
   <script>
-    // ─────────────────────────────────────────────
-    // CONFIG — edit these to match your setup
-    // ─────────────────────────────────────────────
-    const TOTAL_FRAMES = 369;
-    const FRAME_DIR = '';         // folder your frames sit in
-    const FRAME_PREFIX = 'frame_';       // filename prefix
-    const FRAME_EXT = '.jpg';            // file extension
-    const SCROLL_SPEED = 1;              // higher = faster frame advance per px scrolled
-    // ─────────────────────────────────────────────
+    // ── CONFIG ──────────────────────────────────
+    const TOTAL_FRAMES  = 369;
+    const FRAME_DIR     = '';          // '' = root, 'frames/' = subfolder
+    const FRAME_PREFIX  = 'frame_';
+    const FRAME_EXT     = '.jpg';
+    const SCROLL_SPEED  = 20;          // px of scroll per frame step
+    // ────────────────────────────────────────────
 
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const loader = document.getElementById('loader');
+    const canvas    = document.getElementById('canvas');
+    const ctx       = canvas.getContext('2d');
+    const loader    = document.getElementById('loader');
     const loaderBar = document.getElementById('loader-bar');
 
-    // Pad frame number to 4 digits: 1 → 0001
+    const frames     = new Array(TOTAL_FRAMES);
+    let loadedCount  = 0;
+    let currentFrame = 0;
+
     function pad(n) {
       return String(n).padStart(4, '0');
     }
 
-    // Build frame path
-    function framePath(index) {
-      return `${FRAME_DIR}${FRAME_PREFIX}${pad(index + 1)}${FRAME_EXT}`;
+    function frameSrc(i) {
+      return `${FRAME_DIR}${FRAME_PREFIX}${pad(i + 1)}${FRAME_EXT}`;
     }
 
-    // Fit canvas to window
     function resizeCanvas() {
-      canvas.width = window.innerWidth;
+      canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
-      if (frames[currentFrame]?.complete) {
-        drawFrame(currentFrame);
-      }
+      drawFrame(currentFrame);
     }
 
-    // Draw a frame to canvas (cover fit)
     function drawFrame(index) {
       const img = frames[index];
-      if (!img || !img.complete) return;
-
-      const cw = canvas.width;
-      const ch = canvas.height;
-      const iw = img.naturalWidth;
-      const ih = img.naturalHeight;
-
+      if (!img || !img.complete || !img.naturalWidth) return;
+      const cw = canvas.width,  ch = canvas.height;
+      const iw = img.naturalWidth, ih = img.naturalHeight;
       const scale = Math.max(cw / iw, ch / ih);
-      const dw = iw * scale;
-      const dh = ih * scale;
-      const dx = (cw - dw) / 2;
-      const dy = (ch - dh) / 2;
-
+      const dw = iw * scale, dh = ih * scale;
+      const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
       ctx.clearRect(0, 0, cw, ch);
       ctx.drawImage(img, dx, dy, dw, dh);
     }
 
-    // ─── Load all frames ───
-    const frames = [];
-    let loadedCount = 0;
-    let currentFrame = 0;
+    function onFrameLoaded(i) {
+      loadedCount++;
+      loaderBar.style.width = (loadedCount / TOTAL_FRAMES * 100) + '%';
+      if (i === 0) {
+        resizeCanvas();
+        drawFrame(0);
+      }
+      if (loadedCount >= TOTAL_FRAMES) {
+        loader.classList.add('hidden');
+      }
+    }
 
     function preloadFrames() {
       for (let i = 0; i < TOTAL_FRAMES; i++) {
         const img = new Image();
-        img.src = framePath(i);
-        img.onload = () => {
-          loadedCount++;
-          const pct = (loadedCount / TOTAL_FRAMES) * 100;
-          loaderBar.style.width = pct + '%';
-
-          // Draw first frame as soon as it's ready
-          if (i === 0) drawFrame(0);
-
-          // Hide loader once all frames loaded
-          if (loadedCount === TOTAL_FRAMES) {
-            loader.classList.add('hidden');
-          }
-        };
-        img.onerror = () => { loadedCount++; }; // skip missing frames gracefully
-        frames[i] = img;
+        const idx = i;
+        img.onload  = () => onFrameLoaded(idx);
+        img.onerror = () => onFrameLoaded(idx);
+        img.src     = frameSrc(i);
+        frames[i]   = img;
       }
     }
 
-    // ─── Infinite scroll logic ───
-    // How this works:
-    // - scrollY maps to frameIndex via modulo (wraps forever)
-    // - When scrollY gets too high, silently snap back to keep it looping
-    // - User never hits a real bottom
-
-    const RESET_THRESHOLD = TOTAL_FRAMES * 20 * SCROLL_SPEED; // scroll distance for one full loop
-    let ticking = false;
+    // ── Infinite scroll ──
+    const LOOP_HEIGHT = TOTAL_FRAMES * SCROLL_SPEED;
 
     window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(updateFrame);
-        ticking = true;
-      }
-    });
-
-    function updateFrame() {
-      ticking = false;
       let scrollY = window.scrollY;
-
-      // Silent reset — snap back without visual jump
-      if (scrollY >= RESET_THRESHOLD) {
-        const remainder = scrollY % RESET_THRESHOLD;
-        window.scrollTo({ top: remainder, behavior: 'instant' });
-        scrollY = remainder;
+      if (scrollY >= LOOP_HEIGHT) {
+        scrollY = scrollY % LOOP_HEIGHT;
+        window.scrollTo({ top: scrollY, behavior: 'instant' });
       }
-
-      // Map scroll position to frame index
-      const rawIndex = Math.floor(scrollY * SCROLL_SPEED / 20);
-      currentFrame = rawIndex % TOTAL_FRAMES;
-
+      currentFrame = Math.floor(scrollY / SCROLL_SPEED) % TOTAL_FRAMES;
       drawFrame(currentFrame);
-    }
+    }, { passive: true });
 
-    // ─── Init ───
+    // ── Init ──
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
     preloadFrames();
