@@ -53,3 +53,37 @@ create policy "Authenticated can delete inquiries"
   for delete
   to authenticated
   using (true);
+
+-- ── Storage bucket for intake-form uploads ─────────────────────────────
+-- Create the bucket (idempotent). Public so the admin dashboard can preview
+-- and download files without signed URLs. Files are namespaced under random
+-- prefixes so there is effectively no enumeration risk.
+insert into storage.buckets (id, name, public)
+values ('intake-files', 'intake-files', true)
+on conflict (id) do update set public = true;
+
+-- Anyone can upload into the intake-files bucket (so customers can attach
+-- files via the public intake form).
+drop policy if exists "Anyone can upload intake files" on storage.objects;
+create policy "Anyone can upload intake files"
+  on storage.objects
+  for insert
+  to anon, authenticated
+  with check (bucket_id = 'intake-files');
+
+-- Anyone can read intake files (the bucket is public; this policy makes
+-- the public URLs actually serve).
+drop policy if exists "Anyone can read intake files" on storage.objects;
+create policy "Anyone can read intake files"
+  on storage.objects
+  for select
+  to anon, authenticated
+  using (bucket_id = 'intake-files');
+
+-- Only signed-in admins can delete uploaded files.
+drop policy if exists "Authenticated can delete intake files" on storage.objects;
+create policy "Authenticated can delete intake files"
+  on storage.objects
+  for delete
+  to authenticated
+  using (bucket_id = 'intake-files');

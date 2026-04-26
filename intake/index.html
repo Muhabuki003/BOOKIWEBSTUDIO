@@ -1317,10 +1317,42 @@
       .map(el => ((el.querySelector('.option-label') || {}).textContent || '').trim())
       .filter(Boolean);
   }
-  function getFileInfo(id) {
-    const inp = document.getElementById(id);
+  // Upload files to Supabase Storage (`intake-files` bucket) and return
+  // metadata + public URL for each file. Files that fail to upload still get
+  // recorded with name + size so nothing is silently dropped.
+  async function uploadFiles(inputId, prefix) {
+    const inp = document.getElementById(inputId);
     if (!inp || !inp.files || !inp.files.length) return [];
-    return Array.from(inp.files).map(f => ({ name: f.name, size: f.size }));
+    const out = [];
+    for (const f of Array.from(inp.files)) {
+      const safeName = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
+      try {
+        const { data, error } = await sb.storage
+          .from('intake-files')
+          .upload(path, f, { cacheControl: '3600', upsert: false, contentType: f.type || undefined });
+        if (error) {
+          console.warn('Storage upload failed for', f.name, error);
+          out.push({ name: f.name, size: f.size, error: error.message });
+          continue;
+        }
+        const { data: urlData } = sb.storage.from('intake-files').getPublicUrl(data.path);
+        out.push({ name: f.name, size: f.size, path: data.path, url: urlData.publicUrl });
+      } catch (err) {
+        console.warn('Storage upload threw for', f.name, err);
+        out.push({ name: f.name, size: f.size, error: String(err) });
+      }
+    }
+    return out;
+  }
+
+  function countSelectedFiles() {
+    let n = 0;
+    for (const id of ['logo_upload', 'owner_photo', 'business_photos']) {
+      const inp = document.getElementById(id);
+      if (inp && inp.files) n += inp.files.length;
+    }
+    return n;
   }
   function getTeamMembers() {
     const wrappers = document.querySelectorAll('#team-members .team-member');
@@ -1334,15 +1366,23 @@
     }).filter(m => m.name || m.role || m.bio);
   }
 
-  function buildIntakeInquiry() {
+  async function buildIntakeInquiry() {
     const logo     = getSingleSelect('logo');
     const goal     = getSingleSelect('goal');
     const domain   = getSingleSelect('domain');
     const budget   = getSingleSelect('budget');
     const timeline = getSingleSelect('timeline');
 
+    const id = Date.now();
+    const filePrefix = `submissions/${id}-${Math.random().toString(36).slice(2, 8)}`;
+    const [logoFiles, ownerPhotoFiles, businessPhotoFiles] = await Promise.all([
+      uploadFiles('logo_upload', filePrefix + '/logo'),
+      uploadFiles('owner_photo', filePrefix + '/owner-photo'),
+      uploadFiles('business_photos', filePrefix + '/business-photos'),
+    ]);
+
     return {
-      id: Date.now(),
+      id: id,
       type: 'intake',
       date: new Date().toISOString(),
       read: false,
@@ -1398,11 +1438,11 @@
       referral: val('referral'),
       notes: val('notes'),
 
-      // Files (metadata only — not uploaded)
+      // Files (uploaded to Supabase Storage; URL is the public download link).
       files: {
-        logo: getFileInfo('logo_upload'),
-        owner_photo: getFileInfo('owner_photo'),
-        business_photos: getFileInfo('business_photos'),
+        logo: logoFiles,
+        owner_photo: ownerPhotoFiles,
+        business_photos: businessPhotoFiles,
       },
     };
   }
@@ -1473,13 +1513,27 @@
     push('Referral Source', inq.referral);
     push('Notes', inq.notes);
 
-    const fileNames = [];
-    if (inq.files.logo.length) fileNames.push(`Logo: ${inq.files.logo.map(f => f.name).join(', ')}`);
-    if (inq.files.owner_photo.length) fileNames.push(`Owner Photo: ${inq.files.owner_photo.map(f => f.name).join(', ')}`);
-    if (inq.files.business_photos.length) fileNames.push(`Business Photos: ${inq.files.business_photos.map(f => f.name).join(', ')}`);
-    if (fileNames.length) {
-      section('Files Mentioned (not attached — request from client)');
-      fileNames.forEach(l => lines.push(l));
+    const fileGroups = [
+      ['Logo', inq.files.logo],
+      ['Owner Photo', inq.files.owner_photo],
+      ['Business Photos', inq.files.business_photos],
+    ].filter(([_, arr]) => arr && arr.length);
+    if (fileGroups.length) {
+      section('Files Uploaded');
+      for (const [label, arr] of fileGroups) {
+        lines.push(`${label}:`);
+        for (const f of arr) {
+          if (f.url) {
+            lines.push(`  • ${f.name} — ${f.url}`);
+          } else if (f.error) {
+            lines.push(`  • ${f.name} (upload failed: ${f.error})`);
+          } else {
+            lines.push(`  • ${f.name}`);
+          }
+        }
+      }
+      lines.push('');
+      lines.push('Tip: Sign in to the BOOKISTUDIO admin to view previews and download all files as a ZIP.');
     }
 
     return lines.join('\n').trim();
@@ -1498,7 +1552,10 @@
     const originalText = btn ? btn.textContent : '';
     if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'Submitting…'; }
 
-    const inquiry = buildIntakeInquiry();
+    const fileCount = countSelectedFiles();
+    if (btn && fileCount) btn.textContent = `Uploading ${fileCount} file${fileCount > 1 ? 's' : ''}…`;
+    const inquiry = await buildIntakeInquiry();
+    if (btn) btn.textContent = 'Submitting…';
 
     // 1. Insert into Supabase (primary store the admin dashboard reads from).
     let supabaseOk = false;

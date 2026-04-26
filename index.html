@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
   // Supabase client — anon key is safe for browser use; RLS enforces access.
   const SUPABASE_URL      = 'https://rrunczvxquobjgeghclh.supabase.co';
@@ -1454,8 +1455,12 @@ function renderIntakeBody(inq) {
   };
   const files = (label, arr) => {
     if (!arr || !arr.length) return '';
-    const lines = arr.map(f => `${f.name}${f.size ? ' (' + Math.round(f.size/1024) + ' KB)' : ''}`);
-    return chips(label, lines);
+    return `<div style="margin-bottom: 1rem;">
+      <div style="font-size: 0.72rem; color: #888; margin-bottom: 0.5rem; font-weight: 600; letter-spacing: 0.05em;">${escHtml(label)}</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+        ${arr.map(renderFileItem).join('')}
+      </div>
+    </div>`;
   };
 
   return `
@@ -1541,12 +1546,114 @@ function renderIntakeBody(inq) {
 
     ${(inq.files && (inq.files.logo?.length || inq.files.owner_photo?.length || inq.files.business_photos?.length)) ? `
     <div class="intake-section">
-      <div class="intake-section-title">Files Mentioned (not attached)</div>
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+        <div class="intake-section-title" style="margin-bottom:0;">Files Uploaded</div>
+        ${countDownloadableFiles(inq) ? `<button class="inq-btn" style="background:#1a1a1a; border:1px solid #444; color:#E4D9CC; margin-left:auto;" onclick="downloadAllFiles(${inq.id}, this)">⬇ Download All as ZIP (${countDownloadableFiles(inq)})</button>` : ''}
+      </div>
       ${files('Logo', inq.files.logo)}
       ${files('Owner Photo', inq.files.owner_photo)}
       ${files('Business Photos', inq.files.business_photos)}
     </div>` : ''}
   `;
+}
+
+function renderFileItem(f) {
+  const sizeKB = f.size ? Math.round(f.size / 1024) + ' KB' : '';
+  const isImage = /\.(png|jpe?g|gif|webp|avif|bmp|svg)$/i.test(f.name);
+  if (!f.url) {
+    // Pre-Storage submission (legacy data) — just show the filename.
+    return `<span class="intake-chip" title="No upload URL — submitted before file uploads were wired">${escHtml(f.name)}${sizeKB ? ' (' + sizeKB + ')' : ''}</span>`;
+  }
+  if (isImage) {
+    return `
+      <div style="display:flex; flex-direction:column; gap:0.3rem; align-items:flex-start; max-width:140px;">
+        <a href="${escHtml(f.url)}" target="_blank" rel="noopener" title="Open full size">
+          <img src="${escHtml(f.url)}" alt="${escHtml(f.name)}" loading="lazy" style="width:120px; height:120px; object-fit:cover; border-radius:3px; border:1px solid #2a2a2a; display:block; background:#0a0a0a;"/>
+        </a>
+        <div style="font-size:0.68rem; color:#888; word-break:break-all; line-height:1.3;">${escHtml(f.name)}</div>
+        <div style="font-size:0.65rem; color:#555;">
+          ${sizeKB ? sizeKB + ' · ' : ''}<a href="${escHtml(f.url)}" download="${escHtml(f.name)}" style="color:#D63929; text-decoration:none;">↓ Download</a>
+        </div>
+      </div>
+    `;
+  }
+  return `
+    <div style="display:flex; flex-direction:column; gap:0.3rem; padding:0.7rem 0.9rem; background:#181818; border:1px solid #262626; border-radius:3px; min-width:180px;">
+      <a href="${escHtml(f.url)}" target="_blank" rel="noopener" style="font-size:0.78rem; color:#E4D9CC; text-decoration:none; word-break:break-all;">📄 ${escHtml(f.name)}</a>
+      <div style="font-size:0.65rem; color:#555;">
+        ${sizeKB ? sizeKB + ' · ' : ''}<a href="${escHtml(f.url)}" download="${escHtml(f.name)}" style="color:#D63929; text-decoration:none;">↓ Download</a>
+      </div>
+    </div>
+  `;
+}
+
+function collectInquiryFiles(inq) {
+  const all = [];
+  if (!inq || !inq.files) return all;
+  for (const [label, arr] of Object.entries(inq.files)) {
+    for (const f of (arr || [])) {
+      if (f && f.url) all.push({ name: f.name, url: f.url, label });
+    }
+  }
+  return all;
+}
+
+function countDownloadableFiles(inq) {
+  return collectInquiryFiles(inq).length;
+}
+
+async function downloadAllFiles(inqId, btn) {
+  const inq = supabaseInquiries.find(i => i.id === inqId);
+  if (!inq) return;
+  const all = collectInquiryFiles(inq);
+  if (!all.length) { alert('No downloadable files on this submission.'); return; }
+  if (typeof JSZip === 'undefined') { alert('Zip library not loaded — please retry in a moment.'); return; }
+
+  const orig = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Zipping…'; }
+
+  const zip = new JSZip();
+  let succeeded = 0, failed = 0;
+  for (let i = 0; i < all.length; i++) {
+    const f = all[i];
+    if (btn) btn.textContent = `Zipping ${i + 1}/${all.length}…`;
+    try {
+      const res = await fetch(f.url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const blob = await res.blob();
+      // De-dupe filenames within the same folder by prefixing with index.
+      const folder = f.label.replace(/_/g, '-');
+      const safeName = f.name.replace(/[\\/:*?"<>|]/g, '_');
+      zip.file(`${folder}/${safeName}`, blob);
+      succeeded++;
+    } catch (err) {
+      console.warn('Failed to fetch', f.url, err);
+      failed++;
+    }
+  }
+
+  if (succeeded === 0) {
+    alert(`Couldn't fetch any files. They may have been deleted from storage.`);
+    if (btn) { btn.disabled = false; btn.textContent = orig; }
+    return;
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const tag = (inq.business || inq.biz_name || inq.owner_name || inqId).toString().replace(/[^a-z0-9-]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase() || ('inquiry-' + inqId);
+  a.href = url;
+  a.download = `intake-${tag}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = failed ? `⬇ Downloaded (${failed} failed)` : '✓ Downloaded';
+    setTimeout(() => { btn.textContent = orig; }, 3000);
+  }
 }
 
 function escHtml(s) {
@@ -1638,18 +1745,26 @@ async function handleSubmit(e) {
     localStorage.setItem('bookistudio_inquiries', JSON.stringify(existing));
   }
 
-  // 3. Send to Formspree so it hits your inbox.
+  // 3. Send to Web3Forms so it hits your inbox.
   let emailOk = false;
   try {
-    const res = await fetch('https://formspree.io/f/xvzwjonz', {
+    const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name:     inquiry.name,
-        email:    inquiry.email,
-        business: inquiry.business,
-        budget:   inquiry.budget,
-        message:  inquiry.message
+        access_key: 'ca86a6d6-2cc4-4dd2-b534-5ca94bf3f3fe',
+        subject: `New Contact Inquiry — ${inquiry.name}${inquiry.business && inquiry.business !== '—' ? ' (' + inquiry.business + ')' : ''}`,
+        from_name: inquiry.name || 'Contact Form',
+        email: inquiry.email,
+        message: [
+          `Name: ${inquiry.name}`,
+          `Email: ${inquiry.email}`,
+          `Business: ${inquiry.business}`,
+          `Budget: ${inquiry.budget}`,
+          ``,
+          `Message:`,
+          inquiry.message,
+        ].join('\n'),
       })
     });
     emailOk = res.ok;
