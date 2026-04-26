@@ -1026,6 +1026,41 @@
 }
 .inq-meta-item { font-size: 0.78rem; color: #555; }
 .inq-meta-item strong { color: #888; margin-right: 0.4rem; }
+
+.inq-type-badge {
+  font-family: 'Syne', sans-serif; font-size: 0.6rem; font-weight: 800;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 0.25rem 0.55rem; border-radius: 2px;
+  border: 1px solid; white-space: nowrap;
+}
+.inq-type-badge.contact { color: #6da3c2; border-color: #234356; background: #0f1c25; }
+.inq-type-badge.intake  { color: #d6a829; border-color: #4a3a10; background: #1f1808; }
+
+.intake-section {
+  margin-top: 1.4rem; padding-top: 1.1rem;
+  border-top: 1px dashed #1e1e1e;
+}
+.intake-section:first-of-type { border-top: none; padding-top: 0; margin-top: 0.6rem; }
+.intake-section-title {
+  font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 800;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: #D63929; margin-bottom: 0.7rem;
+}
+.intake-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.4rem 1.5rem;
+}
+.intake-row {
+  font-size: 0.8rem; color: #aaa; line-height: 1.5;
+  padding: 0.2rem 0;
+}
+.intake-row strong { color: #888; margin-right: 0.4rem; font-weight: 600; }
+.intake-row.full { grid-column: 1 / -1; white-space: pre-wrap; }
+.intake-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.2rem; }
+.intake-chip {
+  font-size: 0.72rem; color: #d4cfbf; background: #181818;
+  border: 1px solid #262626; padding: 0.2rem 0.55rem; border-radius: 2px;
+}
 </style>
 
 
@@ -1057,6 +1092,9 @@
       <button class="admin-filter active" onclick="setFilter('all',this)">All</button>
       <button class="admin-filter" onclick="setFilter('unread',this)">Unread</button>
       <button class="admin-filter" onclick="setFilter('read',this)">Read</button>
+      <button class="admin-filter active" onclick="setTypeFilter('all',this)" data-type-filter="all" style="margin-left:auto;">All Types</button>
+      <button class="admin-filter" onclick="setTypeFilter('contact',this)" data-type-filter="contact">Contact</button>
+      <button class="admin-filter" onclick="setTypeFilter('intake',this)" data-type-filter="intake">Intake</button>
       <input class="admin-search" type="text" placeholder="Search name, email, message..." oninput="renderInquiries()" id="adminSearch"/>
       <button class="admin-clear-btn" onclick="clearAll()">Clear All</button>
     </div>
@@ -1086,6 +1124,7 @@
 <script>
 // ---- ADMIN LOGIC ----
 let adminFilter = 'all';
+let adminTypeFilter = 'all';
 
 const ADMIN_HASH = '9f4d8c2b1e7a3f6d5c0b9e2a4f7d1c8b3e6a9f2d5c8b1e4a7f0d3c6b9e2a5f8'; // hashed pw
 
@@ -1173,7 +1212,14 @@ function saveInquiries(arr) {
 
 function setFilter(f, btn) {
   adminFilter = f;
-  document.querySelectorAll('.admin-filter').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-filter:not([data-type-filter])').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderInquiries();
+}
+
+function setTypeFilter(t, btn) {
+  adminTypeFilter = t;
+  document.querySelectorAll('.admin-filter[data-type-filter]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderInquiries();
 }
@@ -1188,9 +1234,10 @@ function renderInquiries() {
   const all = getInquiries();
   const search = document.getElementById('adminSearch').value.toLowerCase();
   const unread = all.filter(i => !i.read).length;
+  const contactCount = all.filter(i => (i.type || 'contact') === 'contact').length;
+  const intakeCount  = all.filter(i => i.type === 'intake').length;
 
   // Stats
-  const budgets = all.map(i => i.budget).filter(b => b && b !== '—');
   document.getElementById('adminStats').innerHTML = `
     <div class="admin-stat highlight">
       <div class="admin-stat-num">${unread}</div>
@@ -1198,27 +1245,25 @@ function renderInquiries() {
     </div>
     <div class="admin-stat">
       <div class="admin-stat-num">${all.length}</div>
-      <div class="admin-stat-label">Total Inquiries</div>
+      <div class="admin-stat-label">Total</div>
     </div>
     <div class="admin-stat">
-      <div class="admin-stat-num">${all.filter(i=>i.read).length}</div>
-      <div class="admin-stat-label">Read</div>
+      <div class="admin-stat-num">${contactCount}</div>
+      <div class="admin-stat-label">Contact</div>
     </div>
     <div class="admin-stat">
-      <div class="admin-stat-num">${budgets.length > 0 ? budgets[budgets.length-1] : '—'}</div>
-      <div class="admin-stat-label">Latest Budget</div>
+      <div class="admin-stat-num">${intakeCount}</div>
+      <div class="admin-stat-label">Intake</div>
     </div>
   `;
 
   let filtered = all;
-  if (adminFilter === 'unread') filtered = all.filter(i => !i.read);
-  if (adminFilter === 'read')   filtered = all.filter(i => i.read);
-  if (search) filtered = filtered.filter(i =>
-    (i.name||'').toLowerCase().includes(search) ||
-    (i.email||'').toLowerCase().includes(search) ||
-    (i.message||'').toLowerCase().includes(search) ||
-    (i.business||'').toLowerCase().includes(search)
-  );
+  if (adminFilter === 'unread') filtered = filtered.filter(i => !i.read);
+  if (adminFilter === 'read')   filtered = filtered.filter(i => i.read);
+  if (adminTypeFilter !== 'all') {
+    filtered = filtered.filter(i => (i.type || 'contact') === adminTypeFilter);
+  }
+  if (search) filtered = filtered.filter(i => inquiryMatchesSearch(i, search));
 
   const list = document.getElementById('inquiryList');
   if (filtered.length === 0) {
@@ -1226,12 +1271,29 @@ function renderInquiries() {
     return;
   }
 
-  list.innerHTML = filtered.map(inq => `
+  list.innerHTML = filtered.map(inq =>
+    (inq.type === 'intake') ? renderIntakeCard(inq) : renderContactCard(inq)
+  ).join('');
+}
+
+function inquiryMatchesSearch(inq, q) {
+  const fields = [
+    inq.name, inq.email, inq.message, inq.business,
+    inq.owner_name, inq.owner_email, inq.biz_name, inq.biz_email,
+    inq.notes, inq.services_list, inq.reference_sites, inq.color_notes,
+    inq.domain_name, inq.domain_want
+  ];
+  return fields.some(v => v && String(v).toLowerCase().includes(q));
+}
+
+function renderContactCard(inq) {
+  return `
     <div class="inquiry-card ${inq.read ? 'read' : 'unread'}" id="card-${inq.id}">
       <div class="inquiry-header" onclick="toggleCard(${inq.id})">
         <div class="inq-dot"></div>
         <div class="inq-name">${escHtml(inq.name)}</div>
         <div class="inq-business">${escHtml(inq.business || '—')}</div>
+        <span class="inq-type-badge contact">Contact</span>
         <div class="inq-budget">${escHtml(inq.budget || '—')}</div>
         <div class="inq-date">${formatDate(inq.date)}</div>
         <div class="inq-chevron">▼</div>
@@ -1250,7 +1312,149 @@ function renderInquiries() {
         </div>
       </div>
     </div>
-  `).join('');
+  `;
+}
+
+function renderIntakeCard(inq) {
+  const headerName = inq.owner_name || inq.biz_name || 'Unnamed';
+  const headerBiz  = inq.biz_name || '—';
+  const headerBudget = inq.budget_label || inq.budget || '—';
+  const replyEmail = inq.owner_email || inq.biz_email || '';
+
+  return `
+    <div class="inquiry-card ${inq.read ? 'read' : 'unread'}" id="card-${inq.id}">
+      <div class="inquiry-header" onclick="toggleCard(${inq.id})">
+        <div class="inq-dot"></div>
+        <div class="inq-name">${escHtml(headerName)}</div>
+        <div class="inq-business">${escHtml(headerBiz)}</div>
+        <span class="inq-type-badge intake">Intake</span>
+        <div class="inq-budget">${escHtml(headerBudget)}</div>
+        <div class="inq-date">${formatDate(inq.date)}</div>
+        <div class="inq-chevron">▼</div>
+      </div>
+      <div class="inquiry-body">
+        ${renderIntakeBody(inq)}
+        <div class="inq-actions" style="margin-top:1.2rem;">
+          ${replyEmail ? `<a class="inq-btn reply" href="mailto:${escHtml(replyEmail)}?subject=Your BOOKISTUDIO Intake Form">✉ Reply</a>` : ''}
+          <button class="inq-btn mark-read" onclick="toggleRead(${inq.id})">${inq.read ? 'Mark Unread' : 'Mark as Read'}</button>
+          <button class="inq-btn delete" onclick="deleteInq(${inq.id})">Delete</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderIntakeBody(inq) {
+  const row = (label, value, full) => {
+    if (value === undefined || value === null || value === '' || value === '—') return '';
+    return `<div class="intake-row${full ? ' full' : ''}"><strong>${escHtml(label)}:</strong>${escHtml(value)}</div>`;
+  };
+  const chips = (label, arr) => {
+    if (!arr || !arr.length) return '';
+    return `<div class="intake-row full"><strong>${escHtml(label)}:</strong>
+      <div class="intake-chips">${arr.map(v => `<span class="intake-chip">${escHtml(v)}</span>`).join('')}</div></div>`;
+  };
+  const team = (members) => {
+    if (!members || !members.length) return '';
+    return `<div class="intake-row full"><strong>Team:</strong>
+      ${members.map(m => `<div style="margin-top:0.3rem; color:#aaa;">• ${escHtml(m.name || '—')}${m.role ? ' — ' + escHtml(m.role) : ''}${m.bio ? '<div style="color:#666; font-size:0.75rem; margin-left:0.8rem;">' + escHtml(m.bio) + '</div>' : ''}</div>`).join('')}
+    </div>`;
+  };
+  const files = (label, arr) => {
+    if (!arr || !arr.length) return '';
+    const lines = arr.map(f => `${f.name}${f.size ? ' (' + Math.round(f.size/1024) + ' KB)' : ''}`);
+    return chips(label, lines);
+  };
+
+  return `
+    <div class="inq-meta">
+      <div class="inq-meta-item"><strong>Received:</strong>${formatDate(inq.date)}</div>
+      ${inq.owner_email ? `<div class="inq-meta-item"><strong>Owner Email:</strong>${escHtml(inq.owner_email)}</div>` : ''}
+      ${inq.biz_email ? `<div class="inq-meta-item"><strong>Business Email:</strong>${escHtml(inq.biz_email)}</div>` : ''}
+    </div>
+
+    <div class="intake-section">
+      <div class="intake-section-title">Business</div>
+      <div class="intake-grid">
+        ${row('Name', inq.biz_name)}
+        ${row('Industry', inq.biz_industry)}
+        ${row('Phone', inq.biz_phone)}
+        ${row('Email', inq.biz_email)}
+        ${row('Website', inq.biz_website)}
+        ${row('Year Established', inq.biz_year)}
+        ${row('Address', inq.biz_address, true)}
+        ${row('City', inq.biz_city)}
+        ${row('State', inq.biz_state)}
+        ${row('ZIP', inq.biz_zip)}
+        ${row('Weekday Hours', inq.hours_weekday)}
+        ${row('Weekend Hours', inq.hours_weekend)}
+        ${row('Facebook', inq.social_fb)}
+        ${row('Instagram', inq.social_ig)}
+        ${row('Google', inq.social_google)}
+        ${row('Other Social', inq.social_other)}
+      </div>
+    </div>
+
+    <div class="intake-section">
+      <div class="intake-section-title">Owner & Team</div>
+      <div class="intake-grid">
+        ${row('Owner Name', inq.owner_name)}
+        ${row('Title', inq.owner_title)}
+        ${row('Phone', inq.owner_phone)}
+        ${row('Email', inq.owner_email)}
+        ${row('Owner Bio', inq.owner_bio, true)}
+        ${row('Business Story', inq.biz_story, true)}
+      </div>
+      ${team(inq.team_members)}
+    </div>
+
+    <div class="intake-section">
+      <div class="intake-section-title">Design & Brand</div>
+      <div class="intake-grid">
+        ${row('Logo Status', inq.logo_choice)}
+        ${row('Color Palette', inq.selected_palette)}
+        ${row('Color Notes', inq.color_notes, true)}
+        ${row('Reference Sites', inq.reference_sites, true)}
+      </div>
+      ${chips('Vibe', inq.vibes)}
+    </div>
+
+    <div class="intake-section">
+      <div class="intake-section-title">Site Goals & Features</div>
+      <div class="intake-grid">
+        ${row('Primary Goal', inq.primary_goal)}
+      </div>
+      ${chips('Features', inq.features)}
+      ${row('Services / Menu', inq.services_list, true)}
+    </div>
+
+    <div class="intake-section">
+      <div class="intake-section-title">Domain</div>
+      <div class="intake-grid">
+        ${row('Domain Status', inq.domain_choice)}
+        ${row('Existing Domain', inq.domain_name)}
+        ${row('Desired Domain', inq.domain_want)}
+      </div>
+    </div>
+
+    <div class="intake-section">
+      <div class="intake-section-title">Final Details</div>
+      <div class="intake-grid">
+        ${row('Budget', inq.budget_label || inq.budget)}
+        ${row('Timeline', inq.timeline)}
+        ${row('Referral Source', inq.referral)}
+        ${row('Notes', inq.notes, true)}
+      </div>
+    </div>
+
+    ${(inq.files && (inq.files.logo?.length || inq.files.owner_photo?.length || inq.files.business_photos?.length)) ? `
+    <div class="intake-section">
+      <div class="intake-section-title">Files Mentioned (not attached)</div>
+      ${files('Logo', inq.files.logo)}
+      ${files('Owner Photo', inq.files.owner_photo)}
+      ${files('Business Photos', inq.files.business_photos)}
+    </div>` : ''}
+  `;
 }
 
 function escHtml(s) {
@@ -1294,6 +1498,7 @@ async function handleSubmit(e) {
 
   const inquiry = {
     id: Date.now(),
+    type: 'contact',
     date: new Date().toISOString(),
     name: document.getElementById('name').value,
     email: document.getElementById('email').value,

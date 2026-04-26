@@ -1236,11 +1236,14 @@
   function toggleOption(el, group, val) {
     document.querySelectorAll(`[onclick*="'${group}'"]`).forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
+    el.dataset.optionGroup = group;
+    el.dataset.optionValue = val;
   }
 
   // Multi-select options
   function toggleMulti(el, group) {
     el.classList.toggle('selected');
+    el.dataset.optionGroup = group;
   }
 
   // Palette selection
@@ -1288,12 +1291,245 @@
     container.appendChild(div);
   }
 
-  // Submit
-  function submitForm() {
+  // ── Helpers for collecting structured data ──
+  function val(id) {
+    const el = document.getElementById(id);
+    return el ? (el.value || '').trim() : '';
+  }
+  function getSingleSelect(group) {
+    const el = document.querySelector(`.option-card.selected[data-option-group="${group}"]`);
+    if (!el) return { value: '', label: '' };
+    return {
+      value: el.dataset.optionValue || '',
+      label: ((el.querySelector('.option-label') || {}).textContent || '').trim()
+    };
+  }
+  function getMultiSelectLabels(group) {
+    const els = document.querySelectorAll(`.option-card.selected[data-option-group="${group}"]`);
+    return Array.from(els)
+      .map(el => ((el.querySelector('.option-label') || {}).textContent || '').trim())
+      .filter(Boolean);
+  }
+  function getFileInfo(id) {
+    const inp = document.getElementById(id);
+    if (!inp || !inp.files || !inp.files.length) return [];
+    return Array.from(inp.files).map(f => ({ name: f.name, size: f.size }));
+  }
+  function getTeamMembers() {
+    const wrappers = document.querySelectorAll('#team-members .team-member');
+    return Array.from(wrappers).map(w => {
+      const inputs = w.querySelectorAll('input');
+      return {
+        name: (inputs[0] ? inputs[0].value : '').trim(),
+        role: (inputs[1] ? inputs[1].value : '').trim(),
+        bio:  (inputs[2] ? inputs[2].value : '').trim(),
+      };
+    }).filter(m => m.name || m.role || m.bio);
+  }
+
+  function buildIntakeInquiry() {
+    const logo     = getSingleSelect('logo');
+    const goal     = getSingleSelect('goal');
+    const domain   = getSingleSelect('domain');
+    const budget   = getSingleSelect('budget');
+    const timeline = getSingleSelect('timeline');
+
+    return {
+      id: Date.now(),
+      type: 'intake',
+      date: new Date().toISOString(),
+      read: false,
+
+      // Business
+      biz_name: val('biz_name'),
+      biz_industry: val('biz_industry'),
+      biz_phone: val('biz_phone'),
+      biz_email: val('biz_email'),
+      biz_address: val('biz_address'),
+      biz_city: val('biz_city'),
+      biz_state: val('biz_state'),
+      biz_zip: val('biz_zip'),
+      biz_year: val('biz_year'),
+      biz_website: val('biz_website'),
+      hours_weekday: val('hours_weekday'),
+      hours_weekend: val('hours_weekend'),
+      social_fb: val('social_fb'),
+      social_ig: val('social_ig'),
+      social_google: val('social_google'),
+      social_other: val('social_other'),
+
+      // Owner & team
+      owner_name: val('owner_name'),
+      owner_title: val('owner_title'),
+      owner_phone: val('owner_phone'),
+      owner_email: val('owner_email'),
+      owner_bio: val('owner_bio'),
+      biz_story: val('biz_story'),
+      team_members: getTeamMembers(),
+
+      // Design & brand
+      logo_choice: logo.label || logo.value,
+      selected_palette: val('selected_palette'),
+      color_notes: val('color_notes'),
+      vibes: getMultiSelectLabels('vibe'),
+      reference_sites: val('reference_sites'),
+
+      // Site goals
+      primary_goal: goal.label || goal.value,
+      features: getMultiSelectLabels('features'),
+      services_list: val('services_list'),
+
+      // Domain
+      domain_choice: domain.label || domain.value,
+      domain_name: val('domain_name'),
+      domain_want: val('domain_want'),
+
+      // Final
+      budget: budget.value,
+      budget_label: budget.label,
+      timeline: timeline.label || timeline.value,
+      referral: val('referral'),
+      notes: val('notes'),
+
+      // Files (metadata only — not uploaded)
+      files: {
+        logo: getFileInfo('logo_upload'),
+        owner_photo: getFileInfo('owner_photo'),
+        business_photos: getFileInfo('business_photos'),
+      },
+    };
+  }
+
+  function buildEmailMessage(inq) {
+    const lines = [];
+    const push = (label, value) => {
+      if (value === undefined || value === null || value === '') return;
+      if (Array.isArray(value)) {
+        if (!value.length) return;
+        lines.push(`${label}: ${value.join(', ')}`);
+        return;
+      }
+      lines.push(`${label}: ${value}`);
+    };
+    const section = (title) => { lines.push(''); lines.push('── ' + title.toUpperCase() + ' ──'); };
+
+    section('Business');
+    push('Name', inq.biz_name);
+    push('Industry', inq.biz_industry);
+    push('Phone', inq.biz_phone);
+    push('Email', inq.biz_email);
+    push('Website', inq.biz_website);
+    push('Year Established', inq.biz_year);
+    push('Address', [inq.biz_address, inq.biz_city, inq.biz_state, inq.biz_zip].filter(Boolean).join(', '));
+    push('Weekday Hours', inq.hours_weekday);
+    push('Weekend Hours', inq.hours_weekend);
+    push('Facebook', inq.social_fb);
+    push('Instagram', inq.social_ig);
+    push('Google', inq.social_google);
+    push('Other Social', inq.social_other);
+
+    section('Owner & Team');
+    push('Owner Name', inq.owner_name);
+    push('Title', inq.owner_title);
+    push('Phone', inq.owner_phone);
+    push('Email', inq.owner_email);
+    push('Owner Bio', inq.owner_bio);
+    push('Business Story', inq.biz_story);
+    if (inq.team_members && inq.team_members.length) {
+      lines.push('Team Members:');
+      inq.team_members.forEach((m, i) => {
+        lines.push(`  ${i + 1}. ${m.name || '—'}${m.role ? ' — ' + m.role : ''}`);
+        if (m.bio) lines.push(`     ${m.bio}`);
+      });
+    }
+
+    section('Design & Brand');
+    push('Logo Status', inq.logo_choice);
+    push('Color Palette', inq.selected_palette);
+    push('Color Notes', inq.color_notes);
+    push('Vibe', inq.vibes);
+    push('Reference Sites', inq.reference_sites);
+
+    section('Site Goals & Features');
+    push('Primary Goal', inq.primary_goal);
+    push('Features', inq.features);
+    push('Services / Menu', inq.services_list);
+
+    section('Domain');
+    push('Domain Status', inq.domain_choice);
+    push('Existing Domain', inq.domain_name);
+    push('Desired Domain', inq.domain_want);
+
+    section('Final Details');
+    push('Budget', inq.budget_label || inq.budget);
+    push('Timeline', inq.timeline);
+    push('Referral Source', inq.referral);
+    push('Notes', inq.notes);
+
+    const fileNames = [];
+    if (inq.files.logo.length) fileNames.push(`Logo: ${inq.files.logo.map(f => f.name).join(', ')}`);
+    if (inq.files.owner_photo.length) fileNames.push(`Owner Photo: ${inq.files.owner_photo.map(f => f.name).join(', ')}`);
+    if (inq.files.business_photos.length) fileNames.push(`Business Photos: ${inq.files.business_photos.map(f => f.name).join(', ')}`);
+    if (fileNames.length) {
+      section('Files Mentioned (not attached — request from client)');
+      fileNames.forEach(l => lines.push(l));
+    }
+
+    return lines.join('\n').trim();
+  }
+
+  function showSuccess() {
     document.getElementById(`section-${currentSection}`).classList.remove('active');
     document.getElementById('success-screen').style.display = 'block';
     document.querySelectorAll('.step').forEach(s => { s.classList.remove('active'); s.classList.add('done'); });
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Submit
+  async function submitForm() {
+    const btn = document.querySelector('.btn-submit');
+    const originalText = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'Submitting…'; }
+
+    const inquiry = buildIntakeInquiry();
+
+    // 1. Save to localStorage so the BOOKISTUDIO admin dashboard sees it
+    try {
+      const existing = JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]');
+      existing.unshift(inquiry);
+      localStorage.setItem('bookistudio_inquiries', JSON.stringify(existing));
+    } catch (e) {
+      // localStorage may be unavailable in private mode — proceed with email only
+    }
+
+    // 2. Send to Web3Forms (email notification)
+    const replyEmail = inquiry.owner_email || inquiry.biz_email || '';
+    const fromName   = inquiry.owner_name || inquiry.biz_name || 'Intake Form';
+    const subject    = `New Intake — ${inquiry.biz_name || fromName}${inquiry.budget_label ? ' (' + inquiry.budget_label + ')' : ''}`;
+    const message    = buildEmailMessage(inquiry);
+
+    const payload = {
+      access_key: 'ca86a6d6-2cc4-4dd2-b534-5ca94bf3f3fe',
+      subject: subject,
+      from_name: fromName,
+      email: replyEmail,
+      message: message,
+    };
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Web3Forms responded ' + res.status);
+    } catch (err) {
+      // Email failed but the data is still saved locally for the admin panel.
+      console.warn('Intake email submission failed:', err);
+    }
+
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = originalText; }
+    showSuccess();
   }
 </script>
 
