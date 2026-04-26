@@ -7,6 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Supabase client — anon key is safe for browser use; RLS enforces access.
+  const SUPABASE_URL      = 'https://rrunczvxquobjgeghclh.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydW5jenZ4cXVvYmpnZWdoY2xoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNjc2MzUsImV4cCI6MjA5Mjc0MzYzNX0.Il0If-fj8kN0NXo_3L_uztDBZmL17dxuNfxB1aAJecI';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true }
+  });
+</script>
 <style>
   :root {
     --black: #080808;
@@ -1071,11 +1080,14 @@
     <div class="login-title">BOOKI<span>|</span>STUDIO</div>
     <div class="login-sub">Admin Access Required</div>
     <div class="login-field">
-      <input type="password" id="adminPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()"/>
+      <input type="email" id="adminEmail" placeholder="Email" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('adminPassword').focus()"/>
+    </div>
+    <div class="login-field">
+      <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkLogin()"/>
       <button class="login-toggle" onclick="togglePw()" tabindex="-1" id="pwToggle">👁</button>
     </div>
-    <button class="login-btn" onclick="checkPassword()">Unlock Admin →</button>
-    <div class="login-error" id="loginError">Incorrect password</div>
+    <button class="login-btn" onclick="checkLogin()" id="loginBtn">Sign In →</button>
+    <div class="login-error" id="loginError">Sign in failed</div>
     <button class="login-cancel" onclick="closeLogin()">Cancel</button>
   </div>
 </div>
@@ -1084,7 +1096,10 @@
 <div id="admin-panel">
   <div class="admin-nav">
     <div class="admin-logo">BOOKI<span>|</span>STUDIO <sub>Admin</sub></div>
-    <button class="admin-close" onclick="closeAdmin()">✕ Close</button>
+    <div style="display:flex; gap:0.5rem;">
+      <button class="admin-close" onclick="signOutAdmin()">Sign Out</button>
+      <button class="admin-close" onclick="closeAdmin()">✕ Close</button>
+    </div>
   </div>
   <div class="admin-body">
     <div class="admin-stats-row" id="adminStats"></div>
@@ -1125,56 +1140,58 @@
 // ---- ADMIN LOGIC ----
 let adminFilter = 'all';
 let adminTypeFilter = 'all';
+let supabaseInquiries = []; // hydrated from Supabase after sign-in
 
-const ADMIN_HASH = '9f4d8c2b1e7a3f6d5c0b9e2a4f7d1c8b3e6a9f2d5c8b1e4a7f0d3c6b9e2a5f8'; // hashed pw
+async function openAdmin() {
+  // Check Supabase session first — if signed in, skip the login screen.
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) { showAdminPanel(); return; }
+  } catch (e) { /* fall through to login UI */ }
 
-function hashStr(str) {
-  // Simple non-crypto hash for client-side gating (not for sensitive data)
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash).toString(16).padStart(8,'0');
-}
-
-function openAdmin() {
-  // Check if already authenticated this session
-  if (sessionStorage.getItem('bookistudio_auth') === 'true') {
-    showAdminPanel();
-    return;
-  }
   document.getElementById('admin-login').classList.add('open');
   document.body.style.overflow = 'hidden';
-  setTimeout(() => document.getElementById('adminPassword').focus(), 100);
+  setTimeout(() => document.getElementById('adminEmail').focus(), 100);
 }
 
-function showAdminPanel() {
+async function showAdminPanel() {
   document.getElementById('admin-login').classList.remove('open');
   document.getElementById('admin-panel').classList.add('open');
   document.body.style.overflow = 'hidden';
-  renderInquiries();
+  await loadInquiries();
 }
 
-function checkPassword() {
-  const pw = document.getElementById('adminPassword').value;
-  const err = document.getElementById('loginError');
-  // Check password
-  if (pw === atob('aWxvdmVkaWFuZTIyMg==')) {
-    sessionStorage.setItem('bookistudio_auth', 'true');
-    document.getElementById('adminPassword').value = '';
-    err.classList.remove('show');
-    showAdminPanel();
-  } else {
+async function checkLogin() {
+  const email = (document.getElementById('adminEmail').value || '').trim();
+  const pw    = document.getElementById('adminPassword').value;
+  const err   = document.getElementById('loginError');
+  const btn   = document.getElementById('loginBtn');
+
+  if (!email || !pw) {
+    err.textContent = 'Email and password required';
+    err.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+  btn.disabled = false; btn.textContent = 'Sign In →';
+
+  if (error) {
+    err.textContent = error.message || 'Sign in failed';
     err.classList.add('show');
     document.getElementById('adminPassword').value = '';
     document.getElementById('adminPassword').focus();
-    // Shake the box
     const box = document.querySelector('.login-box');
     box.style.animation = 'none';
     box.offsetHeight;
     box.style.animation = 'shake 0.4s ease';
+    return;
   }
+
+  document.getElementById('adminPassword').value = '';
+  err.classList.remove('show');
+  showAdminPanel();
 }
 
 function closeLogin() {
@@ -1188,9 +1205,16 @@ function togglePw() {
   const input = document.getElementById('adminPassword');
   input.type = input.type === 'password' ? 'text' : 'password';
 }
+
 function closeAdmin() {
   document.getElementById('admin-panel').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+async function signOutAdmin() {
+  await sb.auth.signOut();
+  supabaseInquiries = [];
+  closeAdmin();
 }
 
 // Secret shortcut: Shift + Ctrl + A
@@ -1203,11 +1227,70 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// Source of truth = Supabase (hydrated via loadInquiries).
+// localStorage is kept as an offline queue for submissions made while
+// Supabase was unreachable, plus any data from before this migration.
 function getInquiries() {
-  return JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]');
+  return supabaseInquiries;
 }
-function saveInquiries(arr) {
+function getLocalInquiries() {
+  try { return JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]'); }
+  catch (e) { return []; }
+}
+function setLocalInquiries(arr) {
   localStorage.setItem('bookistudio_inquiries', JSON.stringify(arr));
+}
+
+function rowToInquiry(row) {
+  // Supabase row → unified inquiry shape used by the renderer.
+  return Object.assign({}, row.data || {}, {
+    id: row.id,
+    type: row.type,
+    date: row.created_at,
+    read: row.read,
+  });
+}
+
+async function loadInquiries() {
+  const list = document.getElementById('inquiryList');
+  list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⏳</div>Loading…</div>`;
+
+  const { data, error } = await sb
+    .from('inquiries')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⚠️</div>Failed to load: ${escHtml(error.message)}</div>`;
+    return;
+  }
+
+  supabaseInquiries = (data || []).map(rowToInquiry);
+  renderInquiries();
+}
+
+async function uploadLocalCache() {
+  const local = getLocalInquiries();
+  if (!local.length) { alert('No local cache to upload.'); return; }
+  if (!confirm(`Upload ${local.length} cached submission(s) to Supabase? They'll then be visible from any device.`)) return;
+
+  const rows = local.map(inq => ({
+    type: inq.type === 'intake' ? 'intake' : 'contact',
+    name: inq.name || inq.owner_name || inq.biz_name || null,
+    email: inq.email || inq.owner_email || inq.biz_email || null,
+    business: inq.business || inq.biz_name || null,
+    budget: inq.budget_label || inq.budget || null,
+    read: !!inq.read,
+    created_at: inq.date || new Date().toISOString(),
+    data: inq,
+  }));
+
+  const { error } = await sb.from('inquiries').insert(rows);
+  if (error) { alert('Upload failed: ' + error.message); return; }
+
+  setLocalInquiries([]);
+  alert(`Uploaded ${local.length} submission(s). Local cache cleared.`);
+  await loadInquiries();
 }
 
 function setFilter(f, btn) {
@@ -1266,12 +1349,21 @@ function renderInquiries() {
   if (search) filtered = filtered.filter(i => inquiryMatchesSearch(i, search));
 
   const list = document.getElementById('inquiryList');
+
+  const localCount = getLocalInquiries().length;
+  const banner = localCount
+    ? `<div style="background:#1f1808; border:1px solid #4a3a10; color:#d6a829; padding:0.9rem 1.2rem; margin-bottom:1rem; font-size:0.85rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+         <span>📦 ${localCount} submission(s) cached locally on this browser. Upload them so they show on every device.</span>
+         <button class="admin-clear-btn" style="border-color:#d6a829; color:#d6a829; margin-left:auto;" onclick="uploadLocalCache()">Upload to Supabase</button>
+       </div>`
+    : '';
+
   if (filtered.length === 0) {
-    list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">📭</div>No inquiries found</div>`;
+    list.innerHTML = banner + `<div class="admin-empty"><div class="admin-empty-icon">📭</div>No inquiries found</div>`;
     return;
   }
 
-  list.innerHTML = filtered.map(inq =>
+  list.innerHTML = banner + filtered.map(inq =>
     (inq.type === 'intake') ? renderIntakeCard(inq) : renderContactCard(inq)
   ).join('');
 }
@@ -1461,32 +1553,41 @@ function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function toggleCard(id) {
-  const card = document.getElementById('card-'+id);
+async function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
   card.classList.toggle('expanded');
-  // auto mark read on open
   if (card.classList.contains('expanded')) {
-    const all = getInquiries();
-    const inq = all.find(i => i.id === id);
-    if (inq && !inq.read) { inq.read = true; saveInquiries(all); renderInquiries(); }
+    const inq = supabaseInquiries.find(i => i.id === id);
+    if (inq && !inq.read) {
+      const { error } = await sb.from('inquiries').update({ read: true }).eq('id', id);
+      if (!error) { inq.read = true; renderInquiries(); }
+    }
   }
 }
 
-function toggleRead(id) {
-  const all = getInquiries();
-  const inq = all.find(i => i.id === id);
-  if (inq) { inq.read = !inq.read; saveInquiries(all); renderInquiries(); }
-}
-
-function deleteInq(id) {
-  if (!confirm('Delete this inquiry?')) return;
-  saveInquiries(getInquiries().filter(i => i.id !== id));
+async function toggleRead(id) {
+  const inq = supabaseInquiries.find(i => i.id === id);
+  if (!inq) return;
+  const newRead = !inq.read;
+  const { error } = await sb.from('inquiries').update({ read: newRead }).eq('id', id);
+  if (error) { alert('Update failed: ' + error.message); return; }
+  inq.read = newRead;
   renderInquiries();
 }
 
-function clearAll() {
+async function deleteInq(id) {
+  if (!confirm('Delete this inquiry?')) return;
+  const { error } = await sb.from('inquiries').delete().eq('id', id);
+  if (error) { alert('Delete failed: ' + error.message); return; }
+  supabaseInquiries = supabaseInquiries.filter(i => i.id !== id);
+  renderInquiries();
+}
+
+async function clearAll() {
   if (!confirm('Delete ALL inquiries? This cannot be undone.')) return;
-  localStorage.removeItem('bookistudio_inquiries');
+  const { error } = await sb.from('inquiries').delete().gte('id', 0);
+  if (error) { alert('Delete failed: ' + error.message); return; }
+  supabaseInquiries = [];
   renderInquiries();
 }
 
@@ -1508,16 +1609,37 @@ async function handleSubmit(e) {
     read: false
   };
 
-  // Always save to localStorage for admin panel
-  const existing = JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]');
-  existing.unshift(inquiry);
-  localStorage.setItem('bookistudio_inquiries', JSON.stringify(existing));
-
-  // Send to Formspree so it hits your email
   btn.textContent = 'Sending...';
   btn.disabled = true;
   btn.style.opacity = '0.7';
 
+  // 1. Insert into Supabase (primary store for the admin dashboard).
+  let supabaseOk = false;
+  try {
+    const { error } = await sb.from('inquiries').insert({
+      type: 'contact',
+      name: inquiry.name,
+      email: inquiry.email,
+      business: inquiry.business,
+      budget: inquiry.budget,
+      read: false,
+      data: inquiry,
+    });
+    supabaseOk = !error;
+    if (error) console.warn('Supabase insert failed:', error);
+  } catch (err) {
+    console.warn('Supabase insert threw:', err);
+  }
+
+  // 2. If Supabase is unreachable, queue to localStorage so we don't lose it.
+  if (!supabaseOk) {
+    const existing = JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]');
+    existing.unshift(inquiry);
+    localStorage.setItem('bookistudio_inquiries', JSON.stringify(existing));
+  }
+
+  // 3. Send to Formspree so it hits your inbox.
+  let emailOk = false;
   try {
     const res = await fetch('https://formspree.io/f/xvzwjonz', {
       method: 'POST',
@@ -1530,15 +1652,17 @@ async function handleSubmit(e) {
         message:  inquiry.message
       })
     });
-    if (res.ok) {
-      btn.textContent = 'Message Sent ✓';
-      btn.style.background = '#2a6a3a';
-      form.reset();
-    } else {
-      throw new Error('Formspree error');
-    }
-  } catch(err) {
-    btn.textContent = 'Saved — check admin';
+    emailOk = res.ok;
+  } catch (err) {
+    emailOk = false;
+  }
+
+  if (supabaseOk || emailOk) {
+    btn.textContent = 'Message Sent ✓';
+    btn.style.background = '#2a6a3a';
+    form.reset();
+  } else {
+    btn.textContent = 'Saved locally — will sync';
     btn.style.background = '#8a6a10';
   }
 

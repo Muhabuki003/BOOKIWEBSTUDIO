@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Client Intake Form — BOOKISTUDIO</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Supabase client — anon key is safe in the browser; RLS enforces access.
+    const SUPABASE_URL      = 'https://rrunczvxquobjgeghclh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydW5jenZ4cXVvYmpnZWdoY2xoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNjc2MzUsImV4cCI6MjA5Mjc0MzYzNX0.Il0If-fj8kN0NXo_3L_uztDBZmL17dxuNfxB1aAJecI';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  </script>
   <style>
     :root {
       --red: #E8322A;
@@ -1493,16 +1500,34 @@
 
     const inquiry = buildIntakeInquiry();
 
-    // 1. Save to localStorage so the BOOKISTUDIO admin dashboard sees it
+    // 1. Insert into Supabase (primary store the admin dashboard reads from).
+    let supabaseOk = false;
     try {
-      const existing = JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]');
-      existing.unshift(inquiry);
-      localStorage.setItem('bookistudio_inquiries', JSON.stringify(existing));
-    } catch (e) {
-      // localStorage may be unavailable in private mode — proceed with email only
+      const { error } = await sb.from('inquiries').insert({
+        type: 'intake',
+        name: inquiry.owner_name || inquiry.biz_name || null,
+        email: inquiry.owner_email || inquiry.biz_email || null,
+        business: inquiry.biz_name || null,
+        budget: inquiry.budget_label || inquiry.budget || null,
+        read: false,
+        data: inquiry,
+      });
+      supabaseOk = !error;
+      if (error) console.warn('Supabase insert failed:', error);
+    } catch (err) {
+      console.warn('Supabase insert threw:', err);
     }
 
-    // 2. Send to Web3Forms (email notification)
+    // 2. If Supabase is unreachable, queue to localStorage so we don't lose it.
+    if (!supabaseOk) {
+      try {
+        const existing = JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]');
+        existing.unshift(inquiry);
+        localStorage.setItem('bookistudio_inquiries', JSON.stringify(existing));
+      } catch (e) { /* localStorage unavailable; continue with email only */ }
+    }
+
+    // 3. Send to Web3Forms so a notification email lands in the founder inbox.
     const replyEmail = inquiry.owner_email || inquiry.biz_email || '';
     const fromName   = inquiry.owner_name || inquiry.biz_name || 'Intake Form';
     const subject    = `New Intake — ${inquiry.biz_name || fromName}${inquiry.budget_label ? ' (' + inquiry.budget_label + ')' : ''}`;
