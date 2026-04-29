@@ -87,14 +87,28 @@
     justify-content: flex-end; padding: 0 4rem 5rem;
     position: relative; overflow: hidden;
   }
+  #hero-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: 0; opacity: 0.55;
+    pointer-events: none;
+  }
+  .hero::after {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background:
+      radial-gradient(ellipse at center, rgba(8,8,8,0.4) 0%, rgba(8,8,8,0.85) 70%, var(--black) 100%),
+      linear-gradient(to bottom, rgba(8,8,8,0.3) 0%, rgba(8,8,8,0.6) 60%, var(--black) 100%);
+    pointer-events: none;
+  }
+  .hero > *:not(#hero-canvas) { position: relative; z-index: 2; }
   .hero-bg-text {
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Bebas Neue', sans-serif;
     font-size: clamp(8rem, 20vw, 22rem);
     color: transparent;
-    -webkit-text-stroke: 1px rgba(228,217,204,0.04);
+    -webkit-text-stroke: 1px rgba(228,217,204,0.06);
     white-space: nowrap; pointer-events: none; user-select: none;
+    z-index: 2;
   }
   .hero-tag {
     font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 600;
@@ -493,6 +507,7 @@
 </nav>
 
 <section class="hero">
+  <canvas id="hero-canvas"></canvas>
   <div class="hero-bg-text">BOOKISTUDIO</div>
   <p class="hero-tag">Website Design &amp; Development Studio</p>
   <h1>We Build Sites<br/>That <em>Convert.</em></h1>
@@ -660,6 +675,30 @@
         <div class="project-industry">Restaurant · Cypress, TX</div>
         <div class="project-name">The Dumpling Zone</div>
         <div class="project-desc">Made from scratch, every single day — a warm, editorial restaurant site with a 4.8 Google rating and a menu that makes you hungry on arrival.</div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+
+    <!-- Featured: Virdi Transport -->
+    <a href="#" target="_blank" class="project-card featured">
+      <img src="virdi.jpg" alt="Virdi Transport" class="project-thumb"/>
+      <div class="project-overlay"></div>
+      <div class="project-badge">⚡ New Build</div>
+      <div class="project-info">
+        <div class="project-industry">Freight &amp; Logistics · Houston, TX</div>
+        <div class="project-name">Virdi Transport</div>
+        <div class="project-desc">Built to Move — a bold, cinematic carrier site for a North American freight operator. Engineered for credibility, quotes, and 24/7 dispatch.</div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+
+    <a href="#" target="_blank" class="project-card">
+      <img src="sunburst.jpg" alt="Sunburst Trucking" class="project-thumb"/>
+      <div class="project-overlay"></div>
+      <div class="project-info">
+        <div class="project-industry">Trucking · Houston, TX</div>
+        <div class="project-name">Sunburst Trucking</div>
+        <div class="project-desc">Houston's premier carrier since 1989 — 35+ years of intermodal freight from the Port of Houston to the nation, packaged in a site that earns trust on first scroll.</div>
       </div>
       <div class="project-arrow">↗</div>
     </a>
@@ -1659,6 +1698,60 @@ async function handleSubmit(e) {
   btn.style.opacity = '1';
   setTimeout(() => { btn.textContent = 'Send Message →'; btn.style.background = ''; }, 3500);
 }
+</script>
+
+<script>
+// Hero looping frame animation (369 frames)
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const TOTAL = 369;
+  const FPS = 24;
+  const frames = [];
+  let loaded = 0;
+  let current = 0;
+  let started = false;
+
+  function resize() {
+    canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+    canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+    draw(frames[current]);
+  }
+
+  function draw(img) {
+    if (!img || !img.complete || !img.naturalWidth) return;
+    const cw = canvas.width, ch = canvas.height;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const s = Math.max(cw / iw, ch / ih);
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, (cw - iw * s) / 2, (ch - ih * s) / 2, iw * s, ih * s);
+  }
+
+  function pad(n) { return String(n).padStart(4, '0'); }
+
+  function tick() {
+    current = (current + 1) % TOTAL;
+    const img = frames[current];
+    if (img && img.complete && img.naturalWidth) draw(img);
+  }
+
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < TOTAL; i++) {
+    const img = new Image();
+    img.onload = () => {
+      loaded++;
+      if (i === 0) { resize(); }
+      if (!started && loaded > 24) {
+        started = true;
+        setInterval(tick, 1000 / FPS);
+      }
+    };
+    img.src = 'frame_' + pad(i + 1) + '.jpg';
+    frames[i] = img;
+  }
+})();
 </script>
 
 </body>
