@@ -72,13 +72,22 @@ create index if not exists sites_active_idx     on public.sites (active);
 -- ── Row Level Security for sites ─────────────────────────────────────
 alter table public.sites enable row level security;
 
--- Anyone (anon + authenticated) can read active sites (for the public portfolio grid).
+-- Anon (public visitors) can only read active sites (for the public portfolio grid).
 drop policy if exists "Anyone can read active sites" on public.sites;
-create policy "Anyone can read active sites"
+drop policy if exists "Anon can read active sites" on public.sites;
+create policy "Anon can read active sites"
   on public.sites
   for select
-  to anon, authenticated
+  to anon
   using (active = true);
+
+-- Authenticated admins can read ALL sites (including inactive) for the admin panel.
+drop policy if exists "Authenticated can read all sites" on public.sites;
+create policy "Authenticated can read all sites"
+  on public.sites
+  for select
+  to authenticated
+  using (true);
 
 -- Only authenticated admins can insert, update, or delete sites.
 drop policy if exists "Authenticated can insert sites" on public.sites;
