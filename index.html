@@ -438,8 +438,8 @@
 
   /* FOOTER */
   footer {
-    border-top: 1px solid var(--border); padding: 2.5rem 4rem;
-    display: flex; justify-content: space-between; align-items: center;
+    display: block;
+    padding: 0;
   }
   .footer-logo {
     font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
@@ -454,6 +454,120 @@
     color: var(--muted); text-decoration: none; transition: color 0.2s;
   }
   .footer-links a:hover { color: var(--red); }
+
+  .footer-scroll-stage {
+    position: relative;
+    min-height: 145vh;
+    border-top: 1px solid var(--border);
+    background:
+      radial-gradient(circle at 50% 22%, rgba(214,57,41,0.18), transparent 34%),
+      linear-gradient(180deg, #080808 0%, #0f0f0f 58%, #080808 100%);
+    overflow: clip;
+  }
+
+  .footer-video-sticky {
+    position: sticky;
+    top: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 7rem 4rem 5rem;
+  }
+
+  .footer-video-copy {
+    position: absolute;
+    top: 5.5rem;
+    left: 4rem;
+    z-index: 2;
+    max-width: 560px;
+    pointer-events: none;
+  }
+
+  .footer-video-kicker {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1rem;
+  }
+
+  .footer-video-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 11vw, 12rem);
+    line-height: 0.82;
+    letter-spacing: 0.02em;
+    color: rgba(228,217,204,0.92);
+    text-transform: uppercase;
+  }
+
+  .footer-video-frame {
+    position: relative;
+    width: min(74vw, 980px);
+    aspect-ratio: 752 / 416;
+    border: 1px solid rgba(228,217,204,0.16);
+    background: #050505;
+    box-shadow: 0 38px 110px rgba(0,0,0,0.66), 0 0 0 1px rgba(214,57,41,0.12);
+    transform: translateY(7vh) scale(0.92);
+    opacity: 0.72;
+    transition: transform 0.12s linear, opacity 0.12s linear;
+    overflow: hidden;
+  }
+
+  .footer-video-frame::before,
+  .footer-video-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .footer-video-frame::before {
+    background: linear-gradient(90deg, rgba(8,8,8,0.34), transparent 18%, transparent 82%, rgba(8,8,8,0.34));
+  }
+
+  .footer-video-frame::after {
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(8,8,8,0.46) 100%);
+    mix-blend-mode: multiply;
+  }
+
+  .footer-scroll-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.92) contrast(1.08) brightness(0.9);
+  }
+
+  .footer-video-progress {
+    position: absolute;
+    left: 50%;
+    bottom: 3.5rem;
+    z-index: 3;
+    width: min(520px, calc(100vw - 4rem));
+    height: 1px;
+    transform: translateX(-50%);
+    background: rgba(228,217,204,0.18);
+    overflow: hidden;
+  }
+
+  .footer-video-progress span {
+    display: block;
+    height: 100%;
+    width: calc(var(--footer-video-progress, 0) * 100%);
+    background: var(--red);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
@@ -479,7 +593,14 @@
     #services { padding: 0 2rem 4rem; }
     .services-grid { grid-template-columns: 1fr; }
     #contact { padding: 4rem 2rem; grid-template-columns: 1fr; gap: 3rem; }
-    footer { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
+    footer { padding: 0; text-align: center; }
+    .footer-scroll-stage { min-height: 130vh; }
+    .footer-video-sticky { padding: 6rem 1.25rem 4rem; }
+    .footer-video-copy { left: 1.25rem; right: 1.25rem; top: 4rem; }
+    .footer-video-title { font-size: clamp(3.6rem, 17vw, 7rem); }
+    .footer-video-frame { width: calc(100vw - 2.5rem); transform: translateY(8vh) scale(0.94); }
+    .footer-bottom { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
     .form-row { grid-template-columns: 1fr; }
   }
 
@@ -809,14 +930,29 @@
 </section>
 
 <footer>
-  <div class="footer-logo">BOOKI<span>|</span>STUDIO</div>
-  <div class="footer-copy">© 2026 BOOKISTUDIO. All rights reserved.</div>
-  <div class="footer-links" style="align-items:center;">
-    <a href="#work">Work</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-    <a href="https://www.linkedin.com/in/adrien-muhabuki-aa63a9351/" target="_blank">LinkedIn</a>
-    <button onclick="openAdmin()" style="background:none;border:1px solid #1e1e1e;color:#2a2a2a;font-family:'Syne',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.4rem 0.8rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.borderColor='#D63929';this.style.color='#D63929'" onmouseout="this.style.borderColor='#1e1e1e';this.style.color='#2a2a2a'">Admin</button>
+  <section class="footer-scroll-stage" id="footer-scroll-video" aria-label="Bookistudio scroll animation">
+    <div class="footer-video-sticky">
+      <div class="footer-video-copy">
+        <p class="footer-video-kicker">Scroll-linked footer reel</p>
+        <h2 class="footer-video-title">Booki<br/>Studio</h2>
+      </div>
+      <div class="footer-video-frame" data-footer-video-frame>
+        <video class="footer-scroll-video" data-footer-scroll-video src="assets/bookistudio-footer-scroll.mp4" muted playsinline preload="auto" aria-label="Bookistudio visual reel controlled by page scroll"></video>
+      </div>
+      <div class="footer-video-progress" aria-hidden="true"><span data-footer-video-progress></span></div>
+    </div>
+  </section>
+
+  <div class="footer-bottom">
+    <div class="footer-logo">BOOKI<span>|</span>STUDIO</div>
+    <div class="footer-copy">© 2026 BOOKISTUDIO. All rights reserved.</div>
+    <div class="footer-links" style="align-items:center;">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <a href="https://www.linkedin.com/in/adrien-muhabuki-aa63a9351/" target="_blank">LinkedIn</a>
+      <button onclick="openAdmin()" style="background:none;border:1px solid #1e1e1e;color:#2a2a2a;font-family:'Syne',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.4rem 0.8rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.borderColor='#D63929';this.style.color='#D63929'" onmouseout="this.style.borderColor='#1e1e1e';this.style.color='#2a2a2a'">Admin</button>
+    </div>
   </div>
 </footer>
 
@@ -1903,6 +2039,68 @@ async function handleSubmit(e) {
     img.src = 'frame_' + pad(i + 1) + '.jpg';
     frames[i] = img;
   }
+})();
+</script>
+
+<script>
+// Footer scroll-linked video scrub
+(function() {
+  const stage = document.getElementById('footer-scroll-video');
+  const video = document.querySelector('[data-footer-scroll-video]');
+  const frame = document.querySelector('[data-footer-video-frame]');
+  const progressBar = document.querySelector('[data-footer-video-progress]');
+  if (!stage || !video || !frame) return;
+
+  let duration = 0;
+  let targetTime = 0;
+  let raf = null;
+
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+  function calculateProgress() {
+    const rect = stage.getBoundingClientRect();
+    const scrollable = Math.max(1, rect.height - window.innerHeight);
+    return clamp(-rect.top / scrollable, 0, 1);
+  }
+
+  function render() {
+    raf = null;
+    const progress = calculateProgress();
+    stage.style.setProperty('--footer-video-progress', progress.toFixed(4));
+
+    const scale = 0.92 + progress * 0.08;
+    const opacity = 0.72 + progress * 0.28;
+    const lift = 7 - progress * 7;
+    frame.style.transform = `translateY(${lift}vh) scale(${scale})`;
+    frame.style.opacity = opacity.toFixed(3);
+
+    if (duration && Number.isFinite(duration)) {
+      targetTime = clamp(progress * duration, 0, Math.max(0, duration - 0.04));
+      if (Math.abs(video.currentTime - targetTime) > 0.035) {
+        try { video.currentTime = targetTime; } catch (error) { /* wait for metadata */ }
+      }
+    }
+
+    if (progressBar) progressBar.style.width = `${progress * 100}%`;
+  }
+
+  function requestRender() {
+    if (raf) return;
+    raf = requestAnimationFrame(render);
+  }
+
+  function primeVideo() {
+    duration = video.duration || duration;
+    video.pause();
+    video.currentTime = 0.001;
+    requestRender();
+  }
+
+  video.addEventListener('loadedmetadata', primeVideo, { once: true });
+  video.addEventListener('canplay', requestRender, { once: true });
+  window.addEventListener('scroll', requestRender, { passive: true });
+  window.addEventListener('resize', requestRender);
+  requestRender();
 })();
 </script>
 
