@@ -1335,6 +1335,178 @@
   font-size: 0.72rem; color: #d4cfbf; background: #181818;
   border: 1px solid #262626; padding: 0.2rem 0.55rem; border-radius: 2px;
 }
+
+/* ===== ADMIN MOBILE RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .login-box {
+    padding: 1.8rem 1.2rem;
+    margin: 1rem;
+  }
+
+  .admin-nav {
+    padding: 0.9rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .admin-logo {
+    font-size: 1.1rem;
+  }
+  .admin-logo sub {
+    display: none;
+  }
+  .admin-close {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.62rem;
+  }
+
+  .admin-tabs-nav {
+    padding: 0 1rem;
+    top: auto;
+    position: relative;
+  }
+  .admin-tab-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.65rem;
+  }
+
+  .admin-body {
+    padding: 1.25rem 1rem;
+  }
+
+  .admin-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+  .admin-stat {
+    padding: 0.9rem 1rem;
+  }
+  .admin-stat-num {
+    font-size: 1.7rem;
+  }
+
+  .admin-toolbar {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .admin-filter {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.62rem;
+  }
+  .admin-search {
+    max-width: 100%;
+    width: 100%;
+    flex: 1 1 100%;
+  }
+  .admin-clear-btn {
+    margin-left: 0;
+  }
+
+  .inquiry-header {
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+  }
+  .inq-name {
+    min-width: 0;
+    font-size: 0.82rem;
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .inq-business {
+    font-size: 0.75rem;
+    flex: 1 1 100%;
+    order: 3;
+  }
+  .inq-budget {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.6rem;
+    order: 4;
+  }
+  .inq-date {
+    font-size: 0.68rem;
+    margin-left: 0;
+    order: 5;
+  }
+  .inq-chevron {
+    margin-left: auto;
+    order: 2;
+  }
+  .inq-type-badge {
+    font-size: 0.55rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .inquiry-body {
+    padding: 0 1rem 1rem;
+  }
+  .inq-meta {
+    gap: 0.75rem;
+  }
+  .inq-actions {
+    gap: 0.5rem;
+  }
+  .inq-btn {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.6rem;
+  }
+
+  .sites-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .site-image-drop {
+    max-width: 100%;
+    aspect-ratio: 16/9;
+  }
+
+  .site-row {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+  }
+  .site-row-thumb {
+    width: 60px;
+    height: 38px;
+  }
+  .site-row-del {
+    margin-left: auto;
+  }
+
+  .sites-section-title {
+    font-size: 1.3rem;
+  }
+  .sites-form-card {
+    padding: 1.2rem 1rem;
+  }
+
+  .intake-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .admin-nav {
+    padding: 1rem 1.5rem;
+  }
+  .admin-tabs-nav {
+    padding: 0 1.5rem;
+  }
+  .admin-body {
+    padding: 1.5rem 1.5rem;
+  }
+  .admin-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sites-form-grid {
+    grid-template-columns: 180px 1fr;
+  }
+  .inq-name {
+    min-width: 120px;
+  }
+}
 </style>
 
 
