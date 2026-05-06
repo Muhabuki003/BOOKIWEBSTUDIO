@@ -457,30 +457,32 @@
 
   .footer-scroll-stage {
     position: relative;
-    min-height: 145vh;
+    min-height: 300vh;
     border-top: 1px solid var(--border);
-    background:
-      radial-gradient(circle at 50% 22%, rgba(214,57,41,0.18), transparent 34%),
-      linear-gradient(180deg, #080808 0%, #0f0f0f 58%, #080808 100%);
+    background: #050505;
     overflow: clip;
   }
 
   .footer-video-sticky {
     position: sticky;
     top: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 7rem 4rem 5rem;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050505;
   }
 
   .footer-video-copy {
     position: absolute;
     top: 5.5rem;
     left: 4rem;
-    z-index: 2;
+    z-index: 4;
     max-width: 560px;
     pointer-events: none;
+    transition: opacity 0.3s ease;
   }
 
   .footer-video-kicker {
@@ -503,49 +505,28 @@
   }
 
   .footer-video-frame {
-    position: relative;
-    width: min(74vw, 980px);
-    aspect-ratio: 752 / 416;
-    border: 1px solid rgba(228,217,204,0.16);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: #050505;
-    box-shadow: 0 38px 110px rgba(0,0,0,0.66), 0 0 0 1px rgba(214,57,41,0.12);
-    transform: translateY(7vh) scale(0.92);
-    opacity: 0.72;
-    transition: transform 0.12s linear, opacity 0.12s linear;
     overflow: hidden;
   }
 
-  .footer-video-frame::before,
-  .footer-video-frame::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  .footer-video-frame::before {
-    background: linear-gradient(90deg, rgba(8,8,8,0.34), transparent 18%, transparent 82%, rgba(8,8,8,0.34));
-  }
-
-  .footer-video-frame::after {
-    background: radial-gradient(ellipse at center, transparent 45%, rgba(8,8,8,0.46) 100%);
-    mix-blend-mode: multiply;
-  }
-
-  .footer-scroll-video {
+  .footer-scroll-img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: saturate(0.92) contrast(1.08) brightness(0.9);
+    filter: saturate(0.92) contrast(1.08) brightness(0.88);
   }
 
   .footer-video-progress {
     position: absolute;
     left: 50%;
-    bottom: 3.5rem;
-    z-index: 3;
+    bottom: 2rem;
+    z-index: 5;
     width: min(520px, calc(100vw - 4rem));
     height: 1px;
     transform: translateX(-50%);
@@ -556,8 +537,9 @@
   .footer-video-progress span {
     display: block;
     height: 100%;
-    width: calc(var(--footer-video-progress, 0) * 100%);
+    width: 0%;
     background: var(--red);
+    transition: width 0.08s linear;
   }
 
   .footer-bottom {
@@ -594,11 +576,9 @@
     .services-grid { grid-template-columns: 1fr; }
     #contact { padding: 4rem 2rem; grid-template-columns: 1fr; gap: 3rem; }
     footer { padding: 0; text-align: center; }
-    .footer-scroll-stage { min-height: 130vh; }
-    .footer-video-sticky { padding: 6rem 1.25rem 4rem; }
+    .footer-scroll-stage { min-height: 280vh; }
     .footer-video-copy { left: 1.25rem; right: 1.25rem; top: 4rem; }
     .footer-video-title { font-size: clamp(3.6rem, 17vw, 7rem); }
-    .footer-video-frame { width: calc(100vw - 2.5rem); transform: translateY(8vh) scale(0.94); }
     .footer-bottom { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
     .footer-links { flex-wrap: wrap; justify-content: center; }
     .form-row { grid-template-columns: 1fr; }
@@ -925,8 +905,8 @@
         <p class="footer-video-kicker">Scroll-linked footer reel</p>
         <h2 class="footer-video-title">Booki<br/>Studio</h2>
       </div>
-      <div class="footer-video-frame" data-footer-video-frame>
-        <video class="footer-scroll-video" data-footer-scroll-video src="assets/bookistudio-footer-scroll.mp4" muted playsinline preload="auto" aria-label="Bookistudio visual reel controlled by page scroll"></video>
+      <div class="footer-video-frame">
+        <img class="footer-scroll-img" id="footer-scroll-img" src="footer-frames/frame_0001.jpg" alt="" aria-hidden="true">
       </div>
       <div class="footer-video-progress" aria-hidden="true"><span data-footer-video-progress></span></div>
     </div>
@@ -2032,45 +2012,44 @@ async function handleSubmit(e) {
 </script>
 
 <script>
-// Footer scroll-linked video scrub
+// Footer scroll-scrubbed frame animation
 (function() {
   const stage = document.getElementById('footer-scroll-video');
-  const video = document.querySelector('[data-footer-scroll-video]');
-  const frame = document.querySelector('[data-footer-video-frame]');
+  const imgEl = document.getElementById('footer-scroll-img');
   const progressBar = document.querySelector('[data-footer-video-progress]');
-  if (!stage || !video || !frame) return;
+  const copyEl = stage ? stage.querySelector('.footer-video-copy') : null;
+  if (!stage || !imgEl) return;
 
-  let duration = 0;
-  let targetTime = 0;
+  const FRAME_COUNT = 145;
+  const frames = [];
   let raf = null;
+  let lastIndex = -1;
 
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
 
-  function calculateProgress() {
+  function pad(n) { return String(n).padStart(4, '0'); }
+
+  function getSectionProgress() {
     const rect = stage.getBoundingClientRect();
-    const scrollable = Math.max(1, rect.height - window.innerHeight);
-    return clamp(-rect.top / scrollable, 0, 1);
+    const totalScroll = stage.offsetHeight - window.innerHeight;
+    return clamp(-rect.top / Math.max(1, totalScroll), 0, 1);
   }
 
   function render() {
     raf = null;
-    const progress = calculateProgress();
-    stage.style.setProperty('--footer-video-progress', progress.toFixed(4));
+    const progress = getSectionProgress();
+    const idx = Math.min(Math.floor(progress * FRAME_COUNT), FRAME_COUNT - 1);
 
-    const scale = 0.92 + progress * 0.08;
-    const opacity = 0.72 + progress * 0.28;
-    const lift = 7 - progress * 7;
-    frame.style.transform = `translateY(${lift}vh) scale(${scale})`;
-    frame.style.opacity = opacity.toFixed(3);
-
-    if (duration && Number.isFinite(duration)) {
-      targetTime = clamp(progress * duration, 0, Math.max(0, duration - 0.04));
-      if (Math.abs(video.currentTime - targetTime) > 0.035) {
-        try { video.currentTime = targetTime; } catch (error) { /* wait for metadata */ }
-      }
+    if (idx !== lastIndex && frames[idx] && frames[idx].complete && frames[idx].naturalWidth) {
+      imgEl.src = frames[idx].src;
+      lastIndex = idx;
     }
 
-    if (progressBar) progressBar.style.width = `${progress * 100}%`;
+    if (copyEl) {
+      copyEl.style.opacity = Math.max(0, 1 - progress * 3).toFixed(3);
+    }
+
+    if (progressBar) progressBar.style.width = `${(progress * 100).toFixed(2)}%`;
   }
 
   function requestRender() {
@@ -2078,15 +2057,14 @@ async function handleSubmit(e) {
     raf = requestAnimationFrame(render);
   }
 
-  function primeVideo() {
-    duration = video.duration || duration;
-    video.pause();
-    video.currentTime = 0.001;
-    requestRender();
+  // Preload all frames
+  for (let i = 0; i < FRAME_COUNT; i++) {
+    const img = new Image();
+    img.src = 'footer-frames/frame_' + pad(i + 1) + '.jpg';
+    img.onload = requestRender;
+    frames.push(img);
   }
 
-  video.addEventListener('loadedmetadata', primeVideo, { once: true });
-  video.addEventListener('canplay', requestRender, { once: true });
   window.addEventListener('scroll', requestRender, { passive: true });
   window.addEventListener('resize', requestRender);
   requestRender();
