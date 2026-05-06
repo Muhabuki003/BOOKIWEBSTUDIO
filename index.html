@@ -514,7 +514,7 @@
     overflow: hidden;
   }
 
-  .footer-scroll-video {
+  .footer-scroll-img {
     display: block;
     width: 100%;
     height: 100%;
@@ -905,8 +905,8 @@
         <p class="footer-video-kicker">Scroll-linked footer reel</p>
         <h2 class="footer-video-title">Booki<br/>Studio</h2>
       </div>
-      <div class="footer-video-frame" data-footer-video-frame>
-        <video class="footer-scroll-video" data-footer-scroll-video src="assets/bookistudio-footer-scroll.mp4" muted playsinline preload="auto" aria-label="Bookistudio visual reel controlled by page scroll"></video>
+      <div class="footer-video-frame">
+        <img class="footer-scroll-img" id="footer-scroll-img" src="footer-frames/frame_0001.jpg" alt="" aria-hidden="true">
       </div>
       <div class="footer-video-progress" aria-hidden="true"><span data-footer-video-progress></span></div>
     </div>
@@ -2012,16 +2012,22 @@ async function handleSubmit(e) {
 </script>
 
 <script>
-// Footer scroll-scrubbed fullscreen video
+// Footer scroll-scrubbed frame animation
 (function() {
   const stage = document.getElementById('footer-scroll-video');
-  const video = document.querySelector('[data-footer-scroll-video]');
+  const imgEl = document.getElementById('footer-scroll-img');
   const progressBar = document.querySelector('[data-footer-video-progress]');
   const copyEl = stage ? stage.querySelector('.footer-video-copy') : null;
-  if (!stage || !video) return;
+  if (!stage || !imgEl) return;
 
+  const FRAME_COUNT = 145;
+  const frames = [];
   let raf = null;
+  let lastIndex = -1;
+
   const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+
+  function pad(n) { return String(n).padStart(4, '0'); }
 
   function getSectionProgress() {
     const rect = stage.getBoundingClientRect();
@@ -2032,15 +2038,13 @@ async function handleSubmit(e) {
   function render() {
     raf = null;
     const progress = getSectionProgress();
+    const idx = Math.min(Math.floor(progress * FRAME_COUNT), FRAME_COUNT - 1);
 
-    // Scrub video — only seek when we have a valid duration
-    const d = video.duration;
-    if (d && Number.isFinite(d) && d > 0 && video.readyState >= 1) {
-      const targetTime = clamp(progress * d, 0, d - 0.04);
-      try { video.currentTime = targetTime; } catch (e) {}
+    if (idx !== lastIndex && frames[idx] && frames[idx].complete && frames[idx].naturalWidth) {
+      imgEl.src = frames[idx].src;
+      lastIndex = idx;
     }
 
-    // Fade out the text overlay as user scrolls in
     if (copyEl) {
       copyEl.style.opacity = Math.max(0, 1 - progress * 3).toFixed(3);
     }
@@ -2053,13 +2057,14 @@ async function handleSubmit(e) {
     raf = requestAnimationFrame(render);
   }
 
-  // Kick off load and pause immediately so scrubbing works
-  video.load();
-  video.addEventListener('loadedmetadata', () => {
-    video.pause();
-    requestRender();
-  });
-  video.addEventListener('durationchange', requestRender);
+  // Preload all frames
+  for (let i = 0; i < FRAME_COUNT; i++) {
+    const img = new Image();
+    img.src = 'footer-frames/frame_' + pad(i + 1) + '.jpg';
+    img.onload = requestRender;
+    frames.push(img);
+  }
+
   window.addEventListener('scroll', requestRender, { passive: true });
   window.addEventListener('resize', requestRender);
   requestRender();
