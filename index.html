@@ -506,18 +506,12 @@
 
   .footer-video-frame {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100vw;
-    height: 100vh;
-    transform: translate(-50%, -50%) scale(0.38);
-    border-radius: 16px;
-    border: 1px solid rgba(228,217,204,0.16);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: #050505;
-    box-shadow: 0 38px 110px rgba(0,0,0,0.8), 0 0 0 1px rgba(214,57,41,0.14);
-    opacity: 0.45;
     overflow: hidden;
-    will-change: transform, opacity, border-radius;
   }
 
   .footer-scroll-video {
@@ -2018,18 +2012,15 @@ async function handleSubmit(e) {
 </script>
 
 <script>
-// Footer scroll-linked fullscreen video takeover
+// Footer scroll-scrubbed fullscreen video
 (function() {
   const stage = document.getElementById('footer-scroll-video');
   const video = document.querySelector('[data-footer-scroll-video]');
-  const frame = document.querySelector('[data-footer-video-frame]');
   const progressBar = document.querySelector('[data-footer-video-progress]');
   const copyEl = stage ? stage.querySelector('.footer-video-copy') : null;
-  if (!stage || !video || !frame) return;
+  if (!stage || !video) return;
 
-  let duration = 0;
   let raf = null;
-
   const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
 
   function getSectionProgress() {
@@ -2042,26 +2033,16 @@ async function handleSubmit(e) {
     raf = null;
     const progress = getSectionProgress();
 
-    // Fullscreen takeover: scale 0.38 → 1.0
-    const scale = 0.38 + progress * 0.62;
-    // Opacity 0.45 → 1.0
-    const opacity = 0.45 + progress * 0.55;
-    // Border-radius 16px → 0px
-    const radius = 16 * (1 - progress);
-
-    frame.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(4)})`;
-    frame.style.opacity = opacity.toFixed(3);
-    frame.style.borderRadius = `${radius.toFixed(2)}px`;
-
-    // Fade out text copy as video fills screen (gone by 40% scroll)
-    if (copyEl) {
-      copyEl.style.opacity = Math.max(0, 1 - progress * 2.5).toFixed(3);
+    // Scrub video — only seek when we have a valid duration
+    const d = video.duration;
+    if (d && Number.isFinite(d) && d > 0 && video.readyState >= 1) {
+      const targetTime = clamp(progress * d, 0, d - 0.04);
+      try { video.currentTime = targetTime; } catch (e) {}
     }
 
-    // Scrub video playback position
-    if (duration && Number.isFinite(duration)) {
-      const targetTime = clamp(progress * duration, 0, Math.max(0, duration - 0.04));
-      try { video.currentTime = targetTime; } catch (e) {}
+    // Fade out the text overlay as user scrolls in
+    if (copyEl) {
+      copyEl.style.opacity = Math.max(0, 1 - progress * 3).toFixed(3);
     }
 
     if (progressBar) progressBar.style.width = `${(progress * 100).toFixed(2)}%`;
@@ -2072,15 +2053,13 @@ async function handleSubmit(e) {
     raf = requestAnimationFrame(render);
   }
 
-  function primeVideo() {
-    duration = video.duration || duration;
+  // Kick off load and pause immediately so scrubbing works
+  video.load();
+  video.addEventListener('loadedmetadata', () => {
     video.pause();
-    video.currentTime = 0.001;
     requestRender();
-  }
-
-  video.addEventListener('loadedmetadata', primeVideo, { once: true });
-  video.addEventListener('canplay', () => { duration = video.duration || duration; requestRender(); }, { once: true });
+  });
+  video.addEventListener('durationchange', requestRender);
   window.addEventListener('scroll', requestRender, { passive: true });
   window.addEventListener('resize', requestRender);
   requestRender();
