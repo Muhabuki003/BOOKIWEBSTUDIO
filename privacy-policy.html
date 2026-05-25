@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Privacy Policy — BOOKISTUDIO</title>
+<meta name="description" content="BOOKISTUDIO Privacy Policy — how we collect, use, and protect your personal information."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --black: #080808;
+    --cream: #E4D9CC;
+    --red: #D63929;
+    --mid: #161616;
+    --border: #2a2a2a;
+    --muted: #888;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--red); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(228,217,204,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.35s ease, width 0.3s, height 0.3s;
+    transform: translate(-50%, -50%);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.5rem 4rem;
+    background: rgba(8,8,8,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem;
+    letter-spacing: 0.08em; color: var(--cream); text-decoration: none;
+  }
+  .nav-logo span { color: var(--red); }
+  .nav-back {
+    font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--cream); }
+
+  /* HERO */
+  .legal-hero {
+    padding: 10rem 4rem 4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .legal-tag {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 800;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--red);
+    margin-bottom: 1.2rem;
+  }
+  .legal-hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+  .legal-meta {
+    font-size: 0.8rem; color: var(--muted);
+    display: flex; gap: 2rem; flex-wrap: wrap;
+  }
+  .legal-meta span { display: flex; align-items: center; gap: 0.5rem; }
+
+  /* CONTENT */
+  .legal-body {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 5rem 4rem;
+  }
+
+  .toc {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 2rem 2.5rem;
+    margin-bottom: 4rem;
+  }
+  .toc-title {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 800;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--red);
+    margin-bottom: 1.2rem;
+  }
+  .toc ol {
+    list-style: decimal; padding-left: 1.4rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;
+  }
+  .toc li { font-size: 0.8rem; color: var(--muted); }
+  .toc a {
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+    font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .toc a:hover { color: var(--red); }
+
+  .legal-section {
+    margin-bottom: 3.5rem;
+    padding-bottom: 3.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .legal-section:last-child { border-bottom: none; }
+
+  .section-num {
+    font-family: 'Syne', sans-serif; font-size: 0.6rem; font-weight: 800;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--red);
+    margin-bottom: 0.75rem;
+  }
+  .legal-section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+  .legal-section h3 {
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream);
+    margin: 1.8rem 0 0.8rem;
+  }
+  .legal-section p {
+    font-size: 0.95rem; line-height: 1.85; color: rgba(228,217,204,0.78);
+    margin-bottom: 1rem;
+  }
+  .legal-section ul, .legal-section ol {
+    padding-left: 1.5rem; margin-bottom: 1rem;
+  }
+  .legal-section li {
+    font-size: 0.95rem; line-height: 1.8; color: rgba(228,217,204,0.78);
+    margin-bottom: 0.4rem;
+  }
+  .legal-section li strong, .legal-section p strong {
+    color: var(--cream); font-weight: 500;
+  }
+
+  .highlight-box {
+    background: var(--mid);
+    border-left: 3px solid var(--red);
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .highlight-box p { margin-bottom: 0; font-size: 0.9rem; }
+
+  .data-table {
+    width: 100%; border-collapse: collapse; margin: 1.5rem 0;
+    font-size: 0.85rem;
+  }
+  .data-table th {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--red);
+    padding: 0.8rem 1rem; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 0.8rem 1rem; color: rgba(228,217,204,0.78);
+    border-bottom: 1px solid rgba(42,42,42,0.5);
+    vertical-align: top; line-height: 1.6;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+
+  /* FOOTER */
+  .legal-footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .legal-footer-logo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
+    letter-spacing: 0.1em; color: var(--cream);
+  }
+  .legal-footer-logo span { color: var(--red); }
+  .legal-footer-copy { font-size: 0.75rem; color: var(--muted); }
+  .legal-footer-links { display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; }
+  .legal-footer-links a {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+  }
+  .legal-footer-links a:hover { color: var(--red); }
+  .legal-footer-links a.active { color: var(--cream); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .legal-hero { padding: 8rem 1.5rem 3rem; }
+    .legal-body { padding: 3rem 1.5rem; }
+    .toc ol { grid-template-columns: 1fr; }
+    .legal-footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+    .legal-footer-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<nav>
+  <a href="/" class="nav-logo">BOOKI<span>|</span>STUDIO</a>
+  <a href="/" class="nav-back">← Back to Home</a>
+</nav>
+
+<header class="legal-hero">
+  <p class="legal-tag">Legal</p>
+  <h1>Privacy<br/>Policy</h1>
+  <div class="legal-meta">
+    <span>Effective Date: May 25, 2026</span>
+    <span>Last Updated: May 25, 2026</span>
+  </div>
+</header>
+
+<main class="legal-body">
+
+  <div class="highlight-box">
+    <p><strong>Summary:</strong> BOOKISTUDIO collects personal information you voluntarily provide through our contact and intake forms. We use it solely to respond to your inquiries and deliver our services. We do not sell, rent, or trade your data to third parties. You have full rights to access, correct, or delete your information at any time.</p>
+  </div>
+
+  <nav class="toc" aria-label="Table of contents">
+    <p class="toc-title">Table of Contents</p>
+    <ol>
+      <li><a href="#s1">Who We Are</a></li>
+      <li><a href="#s2">Information We Collect</a></li>
+      <li><a href="#s3">How We Use Your Information</a></li>
+      <li><a href="#s4">Legal Basis for Processing</a></li>
+      <li><a href="#s5">Data Sharing &amp; Third Parties</a></li>
+      <li><a href="#s6">Data Retention</a></li>
+      <li><a href="#s7">Security</a></li>
+      <li><a href="#s8">Cookies &amp; Tracking</a></li>
+      <li><a href="#s9">Your Rights</a></li>
+      <li><a href="#s10">Children's Privacy</a></li>
+      <li><a href="#s11">International Transfers</a></li>
+      <li><a href="#s12">Changes to This Policy</a></li>
+      <li><a href="#s13">Contact Us</a></li>
+    </ol>
+  </nav>
+
+  <!-- SECTION 1 -->
+  <section class="legal-section" id="s1">
+    <p class="section-num">01</p>
+    <h2>Who We Are</h2>
+    <p>BOOKISTUDIO ("we," "us," or "our") is a web design studio operated by Adrien Muhabuki as a sole proprietorship. We provide professional web design, development, and digital strategy services to businesses and individuals.</p>
+    <p>This Privacy Policy explains how BOOKISTUDIO collects, uses, discloses, and safeguards personal information obtained through our website located at bookistudio.com (the "Site"), our client intake form, and any other interactions you have with us.</p>
+    <p>By using our Site or submitting information to us, you acknowledge that you have read, understood, and agree to the terms of this Privacy Policy. If you do not agree, please do not use our Site or submit personal information to us.</p>
+    <p><strong>Data Controller:</strong> Adrien Muhabuki, BOOKISTUDIO</p>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="legal-section" id="s2">
+    <p class="section-num">02</p>
+    <h2>Information We Collect</h2>
+    <p>We collect personal information in the following ways:</p>
+
+    <h3>2.1 Information You Provide Directly</h3>
+    <p>When you contact us through our website contact form, you may provide:</p>
+    <ul>
+      <li><strong>Full name</strong></li>
+      <li><strong>Email address</strong></li>
+      <li><strong>Business name</strong></li>
+      <li><strong>Project budget range</strong></li>
+      <li><strong>Project description and requirements</strong></li>
+    </ul>
+
+    <p>When you complete our client intake form, you may additionally provide:</p>
+    <ul>
+      <li>Business owner name and contact information</li>
+      <li>Business email address and phone number</li>
+      <li>Business type, industry, and description</li>
+      <li>Target audience and competitor information</li>
+      <li>Website goals, features, and design preferences</li>
+      <li>Existing branding materials and assets</li>
+      <li>Social media handles and existing web presence</li>
+      <li>Project timeline and budget details</li>
+      <li>References and inspiration links</li>
+    </ul>
+
+    <h3>2.2 Information Collected Automatically</h3>
+    <p>When you visit our Site, we may automatically collect certain technical information, including:</p>
+    <ul>
+      <li><strong>IP address</strong> (anonymized where possible)</li>
+      <li><strong>Browser type and version</strong></li>
+      <li><strong>Operating system</strong></li>
+      <li><strong>Referring URL</strong></li>
+      <li><strong>Pages visited and time spent</strong></li>
+      <li><strong>Date and time of access</strong></li>
+    </ul>
+    <p>This technical data is used for site performance and security purposes only. We do not use this data to build individual profiles or for behavioral advertising.</p>
+
+    <h3>2.3 Information We Do Not Collect</h3>
+    <p>We do not collect sensitive personal information such as social security numbers, financial account details, payment card information (payment processing is handled externally), health information, or government-issued identification numbers through our Site.</p>
+
+    <table class="data-table" aria-label="Summary of data collected">
+      <thead>
+        <tr>
+          <th>Data Type</th>
+          <th>Source</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Name, Email, Business Name</td><td>Contact / Intake Form</td><td>Responding to inquiries; service delivery</td></tr>
+        <tr><td>Project details, budget</td><td>Contact / Intake Form</td><td>Scoping and proposing work</td></tr>
+        <tr><td>Business information</td><td>Intake Form</td><td>Understanding client needs; project execution</td></tr>
+        <tr><td>IP address, browser data</td><td>Server logs (Supabase)</td><td>Security; site performance</td></tr>
+        <tr><td>Google Fonts requests</td><td>Third-party CDN</td><td>Typography rendering</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="legal-section" id="s3">
+    <p class="section-num">03</p>
+    <h2>How We Use Your Information</h2>
+    <p>We use the personal information we collect for the following purposes:</p>
+
+    <h3>3.1 Service Delivery</h3>
+    <ul>
+      <li>To respond to your inquiries and contact form submissions</li>
+      <li>To review, assess, and prepare proposals for requested web design projects</li>
+      <li>To onboard new clients and manage project execution</li>
+      <li>To communicate project status, timelines, and deliverables</li>
+      <li>To provide ongoing support and post-launch assistance</li>
+    </ul>
+
+    <h3>3.2 Business Operations</h3>
+    <ul>
+      <li>To maintain records of client relationships and project history</li>
+      <li>To generate invoices and manage billing (via third-party payment processors)</li>
+      <li>To comply with legal and regulatory obligations</li>
+      <li>To protect against fraud or unauthorized use of our services</li>
+    </ul>
+
+    <h3>3.3 Site Improvement</h3>
+    <ul>
+      <li>To monitor site performance and diagnose technical issues</li>
+      <li>To improve the overall user experience</li>
+    </ul>
+
+    <h3>3.4 What We Do Not Do</h3>
+    <ul>
+      <li>We do <strong>not</strong> sell your personal information to any third party</li>
+      <li>We do <strong>not</strong> use your information for targeted advertising</li>
+      <li>We do <strong>not</strong> share your information with data brokers</li>
+      <li>We do <strong>not</strong> use automated decision-making or profiling in ways that significantly affect you</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="legal-section" id="s4">
+    <p class="section-num">04</p>
+    <h2>Legal Basis for Processing</h2>
+    <p>For individuals located in the European Economic Area (EEA), the United Kingdom, or other jurisdictions that require a legal basis for processing personal data, we rely on the following:</p>
+
+    <h3>4.1 Contractual Necessity</h3>
+    <p>Processing is necessary to perform a contract with you or to take steps prior to entering into a contract (e.g., reviewing your project inquiry and preparing a proposal).</p>
+
+    <h3>4.2 Legitimate Interests</h3>
+    <p>Processing is necessary for our legitimate interests — specifically, operating and improving our business, responding to inquiries, and maintaining client relationships — provided these interests are not overridden by your rights and interests.</p>
+
+    <h3>4.3 Consent</h3>
+    <p>Where we rely on your consent (e.g., for optional communications), you may withdraw that consent at any time by contacting us at the details in Section 13. Withdrawal of consent does not affect the lawfulness of processing carried out before withdrawal.</p>
+
+    <h3>4.4 Legal Obligation</h3>
+    <p>Processing is necessary to comply with applicable legal obligations (e.g., tax record-keeping requirements).</p>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="legal-section" id="s5">
+    <p class="section-num">05</p>
+    <h2>Data Sharing &amp; Third Parties</h2>
+    <p>We do not sell, trade, or rent your personal information. We may share your information with trusted third-party service providers in the limited circumstances described below.</p>
+
+    <h3>5.1 Supabase (Backend Infrastructure)</h3>
+    <p>Our Site uses <strong>Supabase</strong> (Supabase Inc., headquartered in San Francisco, California, USA) as our backend database and authentication provider. All form submissions from our contact form and client intake form are stored in Supabase-hosted databases. Supabase acts as a data processor on our behalf and is bound by its own Privacy Policy and data processing agreements.</p>
+    <p>Supabase stores data in data centers located in the United States. For users in the EEA or UK, this constitutes an international data transfer — please see Section 11.</p>
+
+    <h3>5.2 Google Fonts</h3>
+    <p>Our Site loads fonts via Google Fonts (Google LLC). When your browser requests these fonts, Google's servers receive your IP address and browser metadata. This is a standard, industry-wide practice. Please refer to <strong>Google's Privacy Policy</strong> for details on how Google handles this data.</p>
+
+    <h3>5.3 Payment Processors</h3>
+    <p>If you engage our services, payment processing is handled by third-party providers (such as Stripe, PayPal, or bank transfer). We do not store payment card details on our systems. Those processors operate under their own privacy policies and PCI-DSS compliance frameworks.</p>
+
+    <h3>5.4 Legal Requirements</h3>
+    <p>We may disclose your personal information if required to do so by law or in good faith belief that such action is necessary to: (a) comply with a legal obligation or valid legal process; (b) protect and defend our rights or property; (c) prevent or investigate possible wrongdoing in connection with our services; or (d) protect the personal safety of users or the public.</p>
+
+    <h3>5.5 Business Transfers</h3>
+    <p>In the event BOOKISTUDIO is acquired, merged with, or its assets are transferred to another entity, your personal information may be transferred as part of that transaction. We will notify you via email or prominent notice on our Site prior to your information becoming subject to a different privacy policy.</p>
+
+    <h3>5.6 No Other Sharing</h3>
+    <p>Beyond the situations listed above, we do not share your personal information with any other third party without your prior explicit consent.</p>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section class="legal-section" id="s6">
+    <p class="section-num">06</p>
+    <h2>Data Retention</h2>
+    <p>We retain personal information only as long as necessary for the purposes for which it was collected, or as required by applicable law.</p>
+    <ul>
+      <li><strong>Contact form inquiries:</strong> Retained for up to 3 years from the date of submission, unless you request earlier deletion or we engage in an ongoing business relationship.</li>
+      <li><strong>Client intake forms:</strong> Retained for the duration of the client relationship, plus up to 5 years thereafter, to comply with record-keeping obligations and to handle any disputes.</li>
+      <li><strong>Active client project data:</strong> Retained for the duration of the project plus 5 years, for business and legal compliance purposes.</li>
+      <li><strong>Server and access logs:</strong> Automatically purged within 90 days by Supabase infrastructure.</li>
+    </ul>
+    <p>When your data is no longer needed, we will securely delete or anonymize it. You may request early deletion at any time — see Section 9 for your rights.</p>
+  </section>
+
+  <!-- SECTION 7 -->
+  <section class="legal-section" id="s7">
+    <p class="section-num">07</p>
+    <h2>Security</h2>
+    <p>We take the security of your personal information seriously and implement appropriate technical and organizational measures to protect it against unauthorized access, alteration, disclosure, or destruction.</p>
+
+    <h3>7.1 Technical Measures</h3>
+    <ul>
+      <li><strong>HTTPS encryption:</strong> All data transmitted between your browser and our Site is encrypted via TLS/SSL.</li>
+      <li><strong>Database security:</strong> Our Supabase database uses Row Level Security (RLS) policies, ensuring that public users can only submit data — not read or modify existing records without authentication.</li>
+      <li><strong>Access controls:</strong> Administrative access to the database requires authenticated credentials and is restricted to authorized personnel only.</li>
+      <li><strong>Minimal data exposure:</strong> The anon key embedded in our client-side code is intentionally limited in scope; RLS enforces strict access rules at the database level.</li>
+    </ul>
+
+    <h3>7.2 Limitations</h3>
+    <p>No method of data transmission over the Internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your personal information, we cannot guarantee absolute security. In the event of a data breach that is likely to result in a risk to your rights and freedoms, we will notify you and relevant authorities as required by applicable law.</p>
+
+    <h3>7.3 Breach Notification</h3>
+    <p>If a security breach occurs involving your personal data, we will notify affected individuals within 72 hours of becoming aware of the breach (where feasible), and will notify the appropriate supervisory authority where required by law (e.g., under GDPR Article 33).</p>
+  </section>
+
+  <!-- SECTION 8 -->
+  <section class="legal-section" id="s8">
+    <p class="section-num">08</p>
+    <h2>Cookies &amp; Tracking Technologies</h2>
+
+    <h3>8.1 Session Storage &amp; Local Storage</h3>
+    <p>Our Site may use browser session storage or local storage to maintain your session state and preferences within the scope of a single browsing session. This data is not transmitted to external servers and is not used for tracking across sessions.</p>
+
+    <h3>8.2 Third-Party Cookies</h3>
+    <p>Third-party services we integrate (such as Google Fonts) may set cookies or use similar tracking technologies in your browser. We do not control these third-party cookies. You can disable or manage cookies through your browser settings at any time without loss of core site functionality.</p>
+
+    <h3>8.3 Analytics</h3>
+    <p>We currently do not deploy any analytics platforms (such as Google Analytics) on our Site. If we add analytics in the future, this policy will be updated accordingly, and we will implement appropriate consent mechanisms where required by law.</p>
+
+    <h3>8.4 Do Not Track</h3>
+    <p>Our Site does not currently respond to browser "Do Not Track" (DNT) signals, as there is no universally accepted standard for how websites should respond to DNT. We do not engage in cross-site tracking.</p>
+
+    <h3>8.5 Managing Cookies</h3>
+    <p>You can control and/or delete cookies through your browser settings. Removing or blocking cookies may affect the functionality of some features on our Site. For instructions on how to manage cookies, please visit your browser's help documentation or <a href="https://www.allaboutcookies.org" target="_blank" rel="noopener noreferrer" style="color:var(--red);">allaboutcookies.org</a>.</p>
+  </section>
+
+  <!-- SECTION 9 -->
+  <section class="legal-section" id="s9">
+    <p class="section-num">09</p>
+    <h2>Your Rights</h2>
+    <p>Depending on your location, you may have certain rights with respect to your personal information. We honor these rights regardless of where you are located.</p>
+
+    <h3>9.1 Rights Available to All Users</h3>
+    <ul>
+      <li><strong>Right to Access:</strong> You may request a copy of the personal information we hold about you.</li>
+      <li><strong>Right to Rectification:</strong> You may request that we correct inaccurate or incomplete personal information.</li>
+      <li><strong>Right to Deletion ("Right to Be Forgotten"):</strong> You may request that we delete your personal information, subject to certain legal exceptions (e.g., information we must retain for legal or contractual obligations).</li>
+      <li><strong>Right to Restrict Processing:</strong> You may request that we limit how we use your personal information in certain circumstances.</li>
+      <li><strong>Right to Data Portability:</strong> Where applicable, you may request that we provide your personal information in a structured, machine-readable format.</li>
+      <li><strong>Right to Object:</strong> You may object to the processing of your personal information where we rely on legitimate interests as the legal basis.</li>
+    </ul>
+
+    <h3>9.2 Additional Rights for California Residents (CCPA/CPRA)</h3>
+    <p>If you are a California resident, you have the following additional rights under the California Consumer Privacy Act (CCPA) and California Privacy Rights Act (CPRA):</p>
+    <ul>
+      <li><strong>Right to Know:</strong> The right to know what personal information is collected, used, shared, or sold.</li>
+      <li><strong>Right to Delete:</strong> The right to request deletion of your personal information.</li>
+      <li><strong>Right to Opt-Out of Sale:</strong> The right to opt out of the sale of your personal information. <strong>We do not sell personal information.</strong></li>
+      <li><strong>Right to Non-Discrimination:</strong> You have the right not to receive discriminatory treatment for exercising your CCPA rights.</li>
+      <li><strong>Right to Correct:</strong> The right to correct inaccurate personal information we hold about you.</li>
+      <li><strong>Right to Limit Use of Sensitive Personal Information:</strong> The right to limit the use and disclosure of sensitive personal information.</li>
+    </ul>
+    <p>To exercise any California privacy right, please contact us using the details in Section 13. We will respond to verifiable consumer requests within 45 days.</p>
+
+    <h3>9.3 Additional Rights for EEA/UK Residents (GDPR/UK GDPR)</h3>
+    <p>If you are located in the EEA or the UK, you have additional rights under the General Data Protection Regulation (GDPR) or UK GDPR, including the rights listed in Section 9.1. You also have the right to lodge a complaint with your local supervisory authority if you believe we have not handled your personal data in accordance with applicable law.</p>
+    <ul>
+      <li>EU residents may contact their national data protection authority.</li>
+      <li>UK residents may contact the Information Commissioner's Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer" style="color:var(--red);">ico.org.uk</a>.</li>
+    </ul>
+
+    <h3>9.4 How to Exercise Your Rights</h3>
+    <p>To exercise any of your rights, please email us at <strong>privacy@bookistudio.com</strong> with the subject line "Privacy Rights Request." We will respond within 30 days and may need to verify your identity before processing your request. We will not charge a fee for handling reasonable requests.</p>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section class="legal-section" id="s10">
+    <p class="section-num">10</p>
+    <h2>Children's Privacy</h2>
+    <p>Our Site and services are not directed to individuals under the age of 16. We do not knowingly collect personal information from children under 16. If you are a parent or guardian and believe that your child has provided us with personal information, please contact us immediately at the address in Section 13 and we will take steps to delete that information.</p>
+    <p>If we discover that we have collected personal information from a child under 16 without parental consent, we will promptly delete that data from our systems.</p>
+  </section>
+
+  <!-- SECTION 11 -->
+  <section class="legal-section" id="s11">
+    <p class="section-num">11</p>
+    <h2>International Data Transfers</h2>
+    <p>BOOKISTUDIO operates from Canada and the United States. If you are located in the European Economic Area (EEA), the United Kingdom, or other jurisdictions with data protection laws, please be aware that your personal information may be transferred to and processed in countries that do not provide the same level of data protection as your home country.</p>
+    <p>For transfers from the EEA or UK to our Supabase infrastructure in the United States, we rely on the following safeguards:</p>
+    <ul>
+      <li>Supabase's Standard Contractual Clauses (SCCs) as approved by the European Commission</li>
+      <li>Supabase's compliance with applicable international data transfer mechanisms</li>
+    </ul>
+    <p>By submitting your information through our Site, you acknowledge that your information may be transferred to the United States and processed there.</p>
+  </section>
+
+  <!-- SECTION 12 -->
+  <section class="legal-section" id="s12">
+    <p class="section-num">12</p>
+    <h2>Changes to This Policy</h2>
+    <p>We reserve the right to update or modify this Privacy Policy at any time. When we make material changes, we will:</p>
+    <ul>
+      <li>Update the "Last Updated" date at the top of this page</li>
+      <li>Post a notice on our Site's homepage for 30 days following any material change</li>
+      <li>Where required by applicable law, notify existing clients by email</li>
+    </ul>
+    <p>Your continued use of our Site after any changes become effective constitutes your acceptance of the revised Privacy Policy. If you do not agree to the revised policy, please cease using our Site and contact us to request deletion of your data.</p>
+    <p>We encourage you to review this Privacy Policy periodically to stay informed about how we protect your information.</p>
+  </section>
+
+  <!-- SECTION 13 -->
+  <section class="legal-section" id="s13">
+    <p class="section-num">13</p>
+    <h2>Contact Us</h2>
+    <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:</p>
+
+    <div class="highlight-box">
+      <p><strong>BOOKISTUDIO</strong><br/>
+      Attn: Adrien Muhabuki — Privacy<br/>
+      Email: <strong>privacy@bookistudio.com</strong><br/>
+      General contact: <a href="/#contact" style="color:var(--red);">bookistudio.com/#contact</a></p>
+    </div>
+
+    <p>We aim to respond to all privacy-related inquiries within 5 business days, and to fulfill all rights requests within 30 days. For EEA/UK residents, if we cannot fulfill your request within 30 days due to complexity, we will notify you of the extension and the reasons for the delay, with a maximum extension of a further 60 days.</p>
+  </section>
+
+</main>
+
+<footer class="legal-footer">
+  <div class="legal-footer-logo">BOOKI<span>|</span>STUDIO</div>
+  <div class="legal-footer-copy">© 2026 BOOKISTUDIO. All rights reserved.</div>
+  <div class="legal-footer-links">
+    <a href="/">Home</a>
+    <a href="/#work">Work</a>
+    <a href="/#contact">Contact</a>
+    <a href="/privacy-policy.html" class="active">Privacy Policy</a>
+    <a href="/terms.html">Terms of Service</a>
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function loop() {
+    rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,button').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.style.transform = 'translate(-50%,-50%) scale(1.8)');
+    el.addEventListener('mouseleave', () => ring.style.transform = 'translate(-50%,-50%) scale(1)');
+  });
+</script>
+</body>
+</html>

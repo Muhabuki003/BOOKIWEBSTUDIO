@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Terms of Service — BOOKISTUDIO</title>
+<meta name="description" content="BOOKISTUDIO Terms of Service — the agreement governing our web design and development services."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --black: #080808;
+    --cream: #E4D9CC;
+    --red: #D63929;
+    --mid: #161616;
+    --border: #2a2a2a;
+    --muted: #888;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--red); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(228,217,204,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.35s ease, width 0.3s, height 0.3s;
+    transform: translate(-50%, -50%);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.5rem 4rem;
+    background: rgba(8,8,8,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem;
+    letter-spacing: 0.08em; color: var(--cream); text-decoration: none;
+  }
+  .nav-logo span { color: var(--red); }
+  .nav-back {
+    font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--cream); }
+
+  /* HERO */
+  .legal-hero {
+    padding: 10rem 4rem 4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .legal-tag {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 800;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--red);
+    margin-bottom: 1.2rem;
+  }
+  .legal-hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+  .legal-meta {
+    font-size: 0.8rem; color: var(--muted);
+    display: flex; gap: 2rem; flex-wrap: wrap;
+  }
+
+  /* CONTENT */
+  .legal-body {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 5rem 4rem;
+  }
+
+  .toc {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 2rem 2.5rem;
+    margin-bottom: 4rem;
+  }
+  .toc-title {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 800;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--red);
+    margin-bottom: 1.2rem;
+  }
+  .toc ol {
+    list-style: decimal; padding-left: 1.4rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;
+  }
+  .toc li { font-size: 0.8rem; color: var(--muted); }
+  .toc a {
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+    font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .toc a:hover { color: var(--red); }
+
+  .legal-section {
+    margin-bottom: 3.5rem;
+    padding-bottom: 3.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .legal-section:last-child { border-bottom: none; }
+
+  .section-num {
+    font-family: 'Syne', sans-serif; font-size: 0.6rem; font-weight: 800;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--red);
+    margin-bottom: 0.75rem;
+  }
+  .legal-section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+  .legal-section h3 {
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream);
+    margin: 1.8rem 0 0.8rem;
+  }
+  .legal-section p {
+    font-size: 0.95rem; line-height: 1.85; color: rgba(228,217,204,0.78);
+    margin-bottom: 1rem;
+  }
+  .legal-section ul, .legal-section ol {
+    padding-left: 1.5rem; margin-bottom: 1rem;
+  }
+  .legal-section li {
+    font-size: 0.95rem; line-height: 1.8; color: rgba(228,217,204,0.78);
+    margin-bottom: 0.4rem;
+  }
+  .legal-section li strong, .legal-section p strong {
+    color: var(--cream); font-weight: 500;
+  }
+
+  .highlight-box {
+    background: var(--mid);
+    border-left: 3px solid var(--red);
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .highlight-box p { margin-bottom: 0; font-size: 0.9rem; }
+
+  .warning-box {
+    background: rgba(214,57,41,0.08);
+    border: 1px solid rgba(214,57,41,0.3);
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .warning-box p { margin-bottom: 0; font-size: 0.9rem; }
+
+  /* FOOTER */
+  .legal-footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .legal-footer-logo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
+    letter-spacing: 0.1em; color: var(--cream);
+  }
+  .legal-footer-logo span { color: var(--red); }
+  .legal-footer-copy { font-size: 0.75rem; color: var(--muted); }
+  .legal-footer-links { display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; }
+  .legal-footer-links a {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+  }
+  .legal-footer-links a:hover { color: var(--red); }
+  .legal-footer-links a.active { color: var(--cream); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .legal-hero { padding: 8rem 1.5rem 3rem; }
+    .legal-body { padding: 3rem 1.5rem; }
+    .toc ol { grid-template-columns: 1fr; }
+    .legal-footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+    .legal-footer-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<nav>
+  <a href="/" class="nav-logo">BOOKI<span>|</span>STUDIO</a>
+  <a href="/" class="nav-back">← Back to Home</a>
+</nav>
+
+<header class="legal-hero">
+  <p class="legal-tag">Legal</p>
+  <h1>Terms of<br/>Service</h1>
+  <div class="legal-meta">
+    <span>Effective Date: May 25, 2026</span>
+    <span>Last Updated: May 25, 2026</span>
+  </div>
+</header>
+
+<main class="legal-body">
+
+  <div class="highlight-box">
+    <p><strong>Please read these Terms carefully before engaging our services.</strong> By submitting a contact or intake form, entering into a project agreement, or using our website, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
+  </div>
+
+  <nav class="toc" aria-label="Table of contents">
+    <p class="toc-title">Table of Contents</p>
+    <ol>
+      <li><a href="#t1">Acceptance of Terms</a></li>
+      <li><a href="#t2">Description of Services</a></li>
+      <li><a href="#t3">Project Agreements &amp; Proposals</a></li>
+      <li><a href="#t4">Payment Terms</a></li>
+      <li><a href="#t5">Revisions &amp; Change Orders</a></li>
+      <li><a href="#t6">Client Responsibilities</a></li>
+      <li><a href="#t7">Intellectual Property</a></li>
+      <li><a href="#t8">Confidentiality</a></li>
+      <li><a href="#t9">Warranties &amp; Representations</a></li>
+      <li><a href="#t10">Limitation of Liability</a></li>
+      <li><a href="#t11">Indemnification</a></li>
+      <li><a href="#t12">Termination</a></li>
+      <li><a href="#t13">Dispute Resolution</a></li>
+      <li><a href="#t14">Governing Law</a></li>
+      <li><a href="#t15">General Provisions</a></li>
+      <li><a href="#t16">Contact</a></li>
+    </ol>
+  </nav>
+
+  <!-- SECTION 1 -->
+  <section class="legal-section" id="t1">
+    <p class="section-num">01</p>
+    <h2>Acceptance of Terms</h2>
+    <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("Client," "you," or "your") and BOOKISTUDIO, operated by Adrien Muhabuki ("BOOKISTUDIO," "we," "us," or "our"), governing your access to and use of our website at bookistudio.com (the "Site") and any web design, development, or related services provided by BOOKISTUDIO (collectively, the "Services").</p>
+    <p>By any of the following actions, you agree to be bound by these Terms:</p>
+    <ul>
+      <li>Accessing or using our Site</li>
+      <li>Submitting a contact form or client intake form</li>
+      <li>Accepting a project proposal or quote</li>
+      <li>Making any payment for our services</li>
+      <li>Communicating with us for the purpose of engaging our services</li>
+    </ul>
+    <p>If you are entering into these Terms on behalf of a company or other legal entity, you represent and warrant that you have the authority to bind that entity. If you do not have such authority, you must not accept these Terms or use our services.</p>
+    <p>We reserve the right to modify these Terms at any time. Changes take effect immediately upon posting to this page. Continued use of our services following any changes constitutes your acceptance of the updated Terms.</p>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="legal-section" id="t2">
+    <p class="section-num">02</p>
+    <h2>Description of Services</h2>
+    <p>BOOKISTUDIO offers professional web design and development services, including but not limited to:</p>
+
+    <h3>2.1 Service Categories</h3>
+    <ul>
+      <li><strong>Landing Pages:</strong> Single-page conversion-focused websites designed to drive a specific action (lead capture, product promotion, event registration, etc.).</li>
+      <li><strong>Business Websites:</strong> Multi-page websites designed to represent a business online, including home, about, services, and contact pages.</li>
+      <li><strong>Website Redesigns:</strong> Redesigning and redeveloping an existing website to improve performance, aesthetics, usability, or conversion rates.</li>
+      <li><strong>Custom Web Development:</strong> Bespoke front-end development, interactive features, animations, and web experiences as scoped in individual project proposals.</li>
+      <li><strong>Consulting &amp; Strategy:</strong> Web strategy, UX consultation, and digital advisory services.</li>
+    </ul>
+
+    <h3>2.2 Service Scope</h3>
+    <p>The specific scope, deliverables, timeline, and pricing for each engagement are defined in a written project proposal or Statement of Work (SOW) agreed upon by both parties. These Terms govern all such engagements unless a separate written contract is executed, in which case that contract controls to the extent of any conflict.</p>
+
+    <h3>2.3 Site Use</h3>
+    <p>Access to and use of our Site (including the contact form and intake form) is provided for the purpose of exploring and engaging our services. You may not use the Site for any unlawful purpose, to submit false or misleading information, to attempt unauthorized access to our systems, or to engage in any activity that disrupts or damages the Site or its underlying infrastructure.</p>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="legal-section" id="t3">
+    <p class="section-num">03</p>
+    <h2>Project Agreements &amp; Proposals</h2>
+
+    <h3>3.1 Proposal Process</h3>
+    <p>Following receipt of a contact or intake form submission, we may (at our sole discretion) prepare and present a written project proposal outlining the scope of work, timeline, deliverables, and pricing. A proposal does not constitute a binding agreement until accepted in writing by the Client and accompanied by the required deposit payment (see Section 4).</p>
+
+    <h3>3.2 Proposal Validity</h3>
+    <p>Proposals are valid for 30 days from the date of issuance unless otherwise stated. After 30 days, pricing and availability are subject to change.</p>
+
+    <h3>3.3 Project Kickoff</h3>
+    <p>A project commences upon: (a) written acceptance of the proposal by the Client; and (b) receipt of the required deposit payment. BOOKISTUDIO will confirm a project start date following both conditions being met.</p>
+
+    <h3>3.4 Project Timelines</h3>
+    <p>Estimated timelines stated in proposals are good-faith estimates based on project scope and current workload. BOOKISTUDIO will make reasonable efforts to meet agreed timelines; however, timelines may be affected by factors including client feedback delays, scope changes, force majeure events, or other circumstances outside our reasonable control. BOOKISTUDIO is not liable for delays caused by the Client's failure to provide required materials, approvals, or feedback in a timely manner.</p>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="legal-section" id="t4">
+    <p class="section-num">04</p>
+    <h2>Payment Terms</h2>
+
+    <h3>4.1 Pricing</h3>
+    <p>All prices are quoted in Canadian Dollars (CAD) or US Dollars (USD) as specified in the project proposal, unless otherwise agreed in writing. Prices are exclusive of applicable taxes unless stated otherwise.</p>
+
+    <h3>4.2 Payment Schedule</h3>
+    <p>Unless otherwise specified in the project proposal, the default payment schedule is:</p>
+    <ul>
+      <li><strong>50% deposit</strong> — due upon acceptance of the proposal, before work commences</li>
+      <li><strong>50% final payment</strong> — due upon project completion, before delivery of final files and/or site launch</li>
+    </ul>
+    <p>For larger projects, milestone-based payment schedules may be proposed and agreed upon in writing.</p>
+
+    <h3>4.3 Payment Methods</h3>
+    <p>Accepted payment methods will be specified in the proposal or invoice. Payments may be processed through third-party payment processors. The Client agrees to bear any transaction fees imposed by their bank or payment provider unless otherwise agreed.</p>
+
+    <h3>4.4 Late Payments</h3>
+    <p>Invoices are due upon receipt unless otherwise specified. If payment is not received within 14 days of the invoice date, BOOKISTUDIO reserves the right to:</p>
+    <ul>
+      <li>Pause work on the project until outstanding amounts are settled</li>
+      <li>Charge a late fee of 1.5% per month (18% per annum) on the overdue balance</li>
+      <li>Withhold delivery of final files, source code, or site launch until full payment is received</li>
+    </ul>
+
+    <h3>4.5 Non-Payment &amp; Debt Recovery</h3>
+    <p>If an account remains unpaid for 60 days or more, BOOKISTUDIO reserves the right to refer the matter to a collections agency or pursue legal remedies. The Client agrees to be responsible for all costs of collection, including reasonable legal fees.</p>
+
+    <h3>4.6 Refund Policy</h3>
+    <p>Deposits are non-refundable once work has commenced. If the Client cancels a project after work has begun:</p>
+    <ul>
+      <li>The deposit (50%) is forfeited and covers work completed to date</li>
+      <li>If work completed exceeds the value of the deposit, the Client will be invoiced for additional time at our standard hourly rate</li>
+      <li>If a project is cancelled before any work commences, the deposit may be refunded at our sole discretion, minus any administrative fees</li>
+    </ul>
+    <p>If BOOKISTUDIO terminates a project without cause, the Client will receive a pro-rata refund for work not yet performed.</p>
+
+    <h3>4.7 Taxes</h3>
+    <p>The Client is responsible for all applicable taxes, including sales tax, VAT, GST, or HST, where applicable. If BOOKISTUDIO is required to collect and remit taxes, these will be added to invoices as required by law.</p>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="legal-section" id="t5">
+    <p class="section-num">05</p>
+    <h2>Revisions &amp; Change Orders</h2>
+
+    <h3>5.1 Included Revisions</h3>
+    <p>Each project proposal specifies the number of revision rounds included in the quoted price. A "revision round" means a single compiled set of feedback submitted after a design or development milestone. Multiple rounds of revisions on the same milestone may count as separate revision rounds.</p>
+
+    <h3>5.2 Additional Revisions</h3>
+    <p>Revision requests beyond the included rounds will be billed at BOOKISTUDIO's then-current hourly rate, with a minimum charge of one hour per revision session. We will notify the Client before proceeding with billable revisions.</p>
+
+    <h3>5.3 Scope Changes</h3>
+    <p>Any changes to the agreed project scope — including adding new pages, features, functionality, or design elements not specified in the original proposal — constitute a "change order" and require a separate written agreement and may result in additional costs and timeline adjustments.</p>
+
+    <h3>5.4 No Retroactive Changes</h3>
+    <p>Once a design element, page, or feature has been approved by the Client and development has proceeded based on that approval, returning to revise that element may be treated as a new change order.</p>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section class="legal-section" id="t6">
+    <p class="section-num">06</p>
+    <h2>Client Responsibilities</h2>
+    <p>The Client agrees to fulfill the following responsibilities to enable BOOKISTUDIO to perform the Services effectively:</p>
+
+    <h3>6.1 Content &amp; Materials</h3>
+    <ul>
+      <li>Provide all required content (text, images, logos, brand assets, videos, documents) in a timely manner and in formats specified by BOOKISTUDIO</li>
+      <li>Ensure all provided content is owned by the Client or that the Client holds appropriate licenses to use it</li>
+      <li>Provide accurate, complete, and up-to-date information throughout the project</li>
+    </ul>
+
+    <h3>6.2 Feedback &amp; Approvals</h3>
+    <ul>
+      <li>Provide feedback on deliverables within the timeframes agreed in the project proposal (typically 5–7 business days per milestone)</li>
+      <li>Designate a single point of contact with authority to approve design and development decisions</li>
+      <li>Provide clear, consolidated feedback (not contradictory instructions from multiple stakeholders)</li>
+    </ul>
+
+    <h3>6.3 Third-Party Access</h3>
+    <ul>
+      <li>Provide access to necessary third-party accounts and services (domain registrar, hosting provider, CMS logins, social media accounts) as needed for the project</li>
+      <li>Ensure BOOKISTUDIO's access is revoked upon project completion if no ongoing relationship exists</li>
+    </ul>
+
+    <h3>6.4 Legal Compliance</h3>
+    <ul>
+      <li>Ensure the Client's website content complies with all applicable laws, including advertising standards, privacy laws, accessibility requirements, and industry-specific regulations</li>
+      <li>Not request that BOOKISTUDIO create content or functionality that is illegal, defamatory, fraudulent, or that infringes third-party rights</li>
+    </ul>
+
+    <h3>6.5 Delay Consequence</h3>
+    <p>Project delays caused by the Client's failure to provide materials, feedback, or approvals within agreed timeframes may result in rescheduled timelines, additional fees, and/or project suspension. BOOKISTUDIO reserves the right to charge for idle time caused by Client delays at our standard hourly rate.</p>
+  </section>
+
+  <!-- SECTION 7 -->
+  <section class="legal-section" id="t7">
+    <p class="section-num">07</p>
+    <h2>Intellectual Property</h2>
+
+    <h3>7.1 Client-Provided Materials</h3>
+    <p>The Client retains all ownership rights to content, trademarks, logos, images, and other materials they provide to BOOKISTUDIO. The Client grants BOOKISTUDIO a limited, non-exclusive license to use these materials solely for the purpose of performing the agreed Services.</p>
+
+    <h3>7.2 Final Deliverables</h3>
+    <p>Upon receipt of full and final payment, BOOKISTUDIO assigns to the Client all ownership rights in the final deliverables created specifically for the Client's project (the "Work Product"), including any custom code, designs, and graphics produced exclusively for the Client.</p>
+
+    <h3>7.3 BOOKISTUDIO Retained Rights</h3>
+    <p>Notwithstanding Section 7.2, BOOKISTUDIO retains ownership of:</p>
+    <ul>
+      <li><strong>Pre-existing intellectual property:</strong> Any tools, frameworks, libraries, templates, code snippets, or methodologies developed by BOOKISTUDIO prior to or outside of this engagement</li>
+      <li><strong>Third-party components:</strong> Open-source libraries, licensed fonts, stock imagery, and other third-party materials incorporated into the Work Product (governed by their respective licenses)</li>
+      <li><strong>General skills and know-how:</strong> The general expertise, techniques, and knowledge acquired or developed during the engagement</li>
+    </ul>
+
+    <h3>7.4 Portfolio Rights</h3>
+    <p>BOOKISTUDIO reserves the right to display the completed project in our portfolio, on our website, and in marketing materials (including case studies and social media) unless the Client requests confidentiality in writing prior to project completion. We will not disclose any confidential business information or proprietary content in such displays.</p>
+
+    <h3>7.5 Third-Party Licenses</h3>
+    <p>Where the Work Product incorporates third-party materials (stock photos, fonts, plugins, APIs, etc.), the Client is responsible for maintaining any required licenses or subscriptions after project delivery. BOOKISTUDIO will identify any such dependencies in the project documentation.</p>
+
+    <h3>7.6 BOOKISTUDIO Branding</h3>
+    <p>Unless otherwise agreed in writing, BOOKISTUDIO may include a small, discreet "Designed by BOOKISTUDIO" credit link in the footer of delivered websites. The Client may request removal of this credit in the project proposal for an additional fee.</p>
+
+    <h3>7.7 Non-Payment</h3>
+    <p>If the Client fails to make full payment, the intellectual property assignment described in Section 7.2 does not take effect, and BOOKISTUDIO retains all rights to the Work Product. The Client may not use, publish, or display any deliverables until full payment is received.</p>
+  </section>
+
+  <!-- SECTION 8 -->
+  <section class="legal-section" id="t8">
+    <p class="section-num">08</p>
+    <h2>Confidentiality</h2>
+
+    <h3>8.1 Definition</h3>
+    <p>"Confidential Information" means any non-public information disclosed by either party to the other in connection with the Services that is designated as confidential or that reasonably should be understood to be confidential given the nature of the information and the circumstances of disclosure.</p>
+
+    <h3>8.2 Obligations</h3>
+    <p>Each party agrees to:</p>
+    <ul>
+      <li>Hold the other party's Confidential Information in strict confidence</li>
+      <li>Not disclose it to any third party without the disclosing party's prior written consent</li>
+      <li>Use it solely for the purpose of performing obligations under these Terms</li>
+      <li>Protect it with at least the same degree of care used for its own confidential information (but no less than reasonable care)</li>
+    </ul>
+
+    <h3>8.3 Exclusions</h3>
+    <p>Confidentiality obligations do not apply to information that: (a) was already publicly known at the time of disclosure; (b) becomes publicly known through no fault of the receiving party; (c) was independently developed by the receiving party without reference to the Confidential Information; or (d) is required to be disclosed by law or court order (with prompt prior notice to the disclosing party where legally permitted).</p>
+
+    <h3>8.4 Duration</h3>
+    <p>Confidentiality obligations survive termination of the engagement for a period of 3 years.</p>
+  </section>
+
+  <!-- SECTION 9 -->
+  <section class="legal-section" id="t9">
+    <p class="section-num">09</p>
+    <h2>Warranties &amp; Representations</h2>
+
+    <h3>9.1 BOOKISTUDIO Warranties</h3>
+    <p>BOOKISTUDIO warrants that:</p>
+    <ul>
+      <li>We have the right and authority to enter into this agreement</li>
+      <li>The Services will be performed in a professional and workmanlike manner consistent with industry standards</li>
+      <li>To our knowledge, the Work Product (excluding Client-provided and third-party materials) does not infringe the intellectual property rights of any third party</li>
+      <li>We will maintain reasonable security practices to protect Client information as described in our Privacy Policy</li>
+    </ul>
+
+    <h3>9.2 Client Warranties</h3>
+    <p>The Client warrants that:</p>
+    <ul>
+      <li>They have the right and authority to enter into this agreement</li>
+      <li>All materials and content provided to BOOKISTUDIO are owned by the Client or the Client holds valid licenses for their use</li>
+      <li>The use of Client-provided materials will not infringe the rights of any third party</li>
+      <li>The Client's intended use of the delivered website complies with all applicable laws and regulations</li>
+    </ul>
+
+    <h3>9.3 Disclaimer of Warranties</h3>
+    <div class="warning-box">
+      <p>EXCEPT AS EXPRESSLY STATED IN SECTION 9.1, THE SITE AND SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND. TO THE FULLEST EXTENT PERMITTED BY LAW, BOOKISTUDIO DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND ACCURACY. BOOKISTUDIO DOES NOT WARRANT THAT THE SITE WILL BE UNINTERRUPTED, ERROR-FREE, OR FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.</p>
+    </div>
+
+    <h3>9.4 No Guarantee of Results</h3>
+    <p>BOOKISTUDIO makes no guarantee or warranty regarding business outcomes, including but not limited to website traffic, search engine rankings, conversion rates, revenue, or any other business metric. Web design and development is a technical and creative service; results depend on many factors outside our control.</p>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section class="legal-section" id="t10">
+    <p class="section-num">10</p>
+    <h2>Limitation of Liability</h2>
+    <div class="warning-box">
+      <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW:</strong></p>
+    </div>
+
+    <h3>10.1 Exclusion of Consequential Damages</h3>
+    <p>IN NO EVENT WILL BOOKISTUDIO, ITS OWNER, EMPLOYEES, CONTRACTORS, OR AGENTS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOST PROFITS, LOST REVENUE, LOSS OF DATA, LOSS OF GOODWILL, BUSINESS INTERRUPTION, OR COST OF SUBSTITUTE SERVICES, EVEN IF BOOKISTUDIO HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+
+    <h3>10.2 Cap on Liability</h3>
+    <p>BOOKISTUDIO'S TOTAL CUMULATIVE LIABILITY ARISING OUT OF OR RELATED TO THESE TERMS OR THE SERVICES — WHETHER IN CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY, OR OTHERWISE — WILL NOT EXCEED THE TOTAL AMOUNT PAID BY THE CLIENT TO BOOKISTUDIO FOR THE SPECIFIC PROJECT GIVING RISE TO THE CLAIM DURING THE 12 MONTHS PRECEDING THE CLAIM.</p>
+
+    <h3>10.3 Essential Basis</h3>
+    <p>The parties acknowledge that the limitations of liability in this section reflect a reasonable allocation of risk and are an essential basis of the bargain between the parties. BOOKISTUDIO would not have entered into these Terms without these limitations.</p>
+
+    <h3>10.4 Exceptions</h3>
+    <p>Nothing in these Terms limits or excludes liability for: (a) death or personal injury caused by negligence; (b) fraud or fraudulent misrepresentation; or (c) any liability that cannot be excluded or limited under applicable law.</p>
+  </section>
+
+  <!-- SECTION 11 -->
+  <section class="legal-section" id="t11">
+    <p class="section-num">11</p>
+    <h2>Indemnification</h2>
+    <p>The Client agrees to defend, indemnify, and hold harmless BOOKISTUDIO, its owner, and any contractors, agents, or representatives from and against any and all claims, damages, obligations, losses, liabilities, costs, and expenses (including reasonable legal fees) arising from:</p>
+    <ul>
+      <li>The Client's breach of any of these Terms</li>
+      <li>The Client's violation of any applicable law or regulation</li>
+      <li>Content or materials provided by the Client that infringe or misappropriate the intellectual property, privacy, or other rights of any third party</li>
+      <li>The Client's use of the delivered website in a manner not contemplated by these Terms</li>
+      <li>Claims by third parties arising from the Client's website content or operations</li>
+    </ul>
+    <p>BOOKISTUDIO reserves the right, at the Client's expense, to assume exclusive defense and control of any matter subject to indemnification. The Client agrees to cooperate with BOOKISTUDIO's defense of such claims and not to settle any such claim without BOOKISTUDIO's prior written consent.</p>
+  </section>
+
+  <!-- SECTION 12 -->
+  <section class="legal-section" id="t12">
+    <p class="section-num">12</p>
+    <h2>Termination</h2>
+
+    <h3>12.1 Termination by Client</h3>
+    <p>The Client may terminate a project engagement at any time by providing written notice. Upon termination:</p>
+    <ul>
+      <li>The Client forfeits the deposit paid</li>
+      <li>The Client is responsible for payment of all work completed to the date of termination at the project's proportionate rate</li>
+      <li>BOOKISTUDIO will deliver all completed work product to the Client upon receipt of payment for work performed</li>
+      <li>Intellectual property assignment (Section 7.2) applies only to fully paid deliverables</li>
+    </ul>
+
+    <h3>12.2 Termination by BOOKISTUDIO</h3>
+    <p>BOOKISTUDIO may terminate a project engagement with written notice if:</p>
+    <ul>
+      <li>The Client fails to make a required payment within 30 days of its due date</li>
+      <li>The Client materially breaches these Terms and fails to cure the breach within 14 days of written notice</li>
+      <li>The Client requests illegal, defamatory, or infringing content</li>
+      <li>The Client becomes insolvent, files for bankruptcy, or makes an assignment for the benefit of creditors</li>
+      <li>Continuing the project would expose BOOKISTUDIO to legal liability</li>
+    </ul>
+    <p>If BOOKISTUDIO terminates without cause, the Client will receive a refund of fees paid less the fair value of work completed.</p>
+
+    <h3>12.3 Suspension</h3>
+    <p>BOOKISTUDIO may suspend work (without terminating) if payment is overdue or if the Client fails to provide required materials or approvals for more than 30 days. During suspension, timeline guarantees are void and the project will be rescheduled based on availability when work resumes.</p>
+
+    <h3>12.4 Survival</h3>
+    <p>The following sections survive termination: Sections 4 (Payment), 7 (Intellectual Property), 8 (Confidentiality), 9.3–9.4 (Disclaimers), 10 (Limitation of Liability), 11 (Indemnification), and 13 (Dispute Resolution).</p>
+  </section>
+
+  <!-- SECTION 13 -->
+  <section class="legal-section" id="t13">
+    <p class="section-num">13</p>
+    <h2>Dispute Resolution</h2>
+
+    <h3>13.1 Good Faith Negotiation</h3>
+    <p>In the event of any dispute, claim, or controversy arising out of or relating to these Terms or the Services ("Dispute"), the parties agree to first attempt to resolve the Dispute through good-faith negotiation. The party raising the Dispute will send written notice to the other describing the issue in reasonable detail. The parties will have 30 days from receipt of that notice to negotiate a resolution.</p>
+
+    <h3>13.2 Mediation</h3>
+    <p>If the Dispute is not resolved through negotiation within 30 days, either party may request non-binding mediation. The parties will jointly select a mediator; if they cannot agree within 10 days, either party may request appointment of a mediator by a recognized mediation organization. Mediation costs will be shared equally between the parties.</p>
+
+    <h3>13.3 Arbitration</h3>
+    <p>If mediation fails to resolve the Dispute, the parties agree to resolve it through final and binding arbitration, conducted by a single arbitrator. The arbitration will be conducted in English. The arbitrator's decision will be final and binding and may be entered as a judgment in any court of competent jurisdiction.</p>
+
+    <h3>13.4 Exception for Injunctive Relief</h3>
+    <p>Notwithstanding the above, either party may seek emergency or preliminary injunctive relief from a court of competent jurisdiction to prevent irreparable harm pending resolution of a Dispute, without waiving the right to arbitrate the underlying claim.</p>
+
+    <h3>13.5 Limitation Period</h3>
+    <p>Any claim arising out of or relating to these Terms must be brought within 2 years of when the claimant knew or should have known of the basis for the claim, or within the applicable statutory limitation period, whichever is shorter.</p>
+  </section>
+
+  <!-- SECTION 14 -->
+  <section class="legal-section" id="t14">
+    <p class="section-num">14</p>
+    <h2>Governing Law</h2>
+    <p>These Terms are governed by and construed in accordance with the laws of the Province of Ontario and the federal laws of Canada applicable therein, without regard to conflict of law principles.</p>
+    <p>Subject to the arbitration provisions in Section 13, the parties consent to the exclusive jurisdiction of the courts located in Ontario, Canada for the resolution of any disputes not subject to arbitration.</p>
+    <p>For Clients located outside of Canada, you acknowledge that these Terms are governed by Canadian law and that you are contracting with a Canadian service provider.</p>
+  </section>
+
+  <!-- SECTION 15 -->
+  <section class="legal-section" id="t15">
+    <p class="section-num">15</p>
+    <h2>General Provisions</h2>
+
+    <h3>15.1 Entire Agreement</h3>
+    <p>These Terms, together with any project proposal, Statement of Work, or written agreement between the parties, constitute the entire agreement between BOOKISTUDIO and the Client with respect to the subject matter hereof, and supersede all prior or contemporaneous agreements, understandings, negotiations, and discussions, whether oral or written.</p>
+
+    <h3>15.2 Amendments</h3>
+    <p>No amendment to these Terms will be binding unless made in writing and signed (or electronically confirmed) by authorized representatives of both parties. We may update the general Terms posted on this page at any time; material changes to active project agreements require mutual written consent.</p>
+
+    <h3>15.3 Severability</h3>
+    <p>If any provision of these Terms is found to be invalid, illegal, or unenforceable under applicable law, that provision will be modified to the minimum extent necessary to make it enforceable, or if it cannot be so modified, severed from these Terms. The remaining provisions will continue in full force and effect.</p>
+
+    <h3>15.4 Waiver</h3>
+    <p>BOOKISTUDIO's failure to enforce any right or provision of these Terms will not be deemed a waiver of that right or provision. A waiver of any breach does not constitute a waiver of any subsequent breach of the same or any other provision.</p>
+
+    <h3>15.5 Force Majeure</h3>
+    <p>Neither party will be liable for any delay or failure to perform resulting from causes outside their reasonable control, including but not limited to acts of God, natural disasters, pandemics, war, terrorism, government action, internet outages, or power failures ("Force Majeure Events"). The affected party must provide prompt written notice and use reasonable efforts to resume performance as soon as possible. If a Force Majeure Event continues for more than 60 days, either party may terminate the affected portion of the engagement without penalty.</p>
+
+    <h3>15.6 Assignment</h3>
+    <p>The Client may not assign or transfer any rights or obligations under these Terms without BOOKISTUDIO's prior written consent. BOOKISTUDIO may assign these Terms or any rights hereunder without consent in connection with a merger, acquisition, or sale of substantially all our assets, provided the assignee agrees to be bound by these Terms.</p>
+
+    <h3>15.7 Independent Contractors</h3>
+    <p>The parties are independent contractors. Nothing in these Terms creates a partnership, joint venture, employment, or agency relationship between BOOKISTUDIO and the Client. Neither party has authority to bind the other in any obligation.</p>
+
+    <h3>15.8 Notices</h3>
+    <p>All legal notices under these Terms must be in writing and delivered by: (a) email to the address on record for the receiving party (with confirmation of receipt); or (b) registered mail or overnight courier to the receiving party's last known address. Notices are effective upon confirmed receipt.</p>
+
+    <h3>15.9 Headings</h3>
+    <p>Section headings are for convenience only and do not affect the interpretation of these Terms.</p>
+
+    <h3>15.10 Language</h3>
+    <p>These Terms are written in English. Any translation provided is for convenience only; the English version controls in all respects.</p>
+  </section>
+
+  <!-- SECTION 16 -->
+  <section class="legal-section" id="t16">
+    <p class="section-num">16</p>
+    <h2>Contact</h2>
+    <p>For questions, concerns, or inquiries regarding these Terms of Service, please contact us:</p>
+
+    <div class="highlight-box">
+      <p><strong>BOOKISTUDIO</strong><br/>
+      Attn: Adrien Muhabuki — Legal<br/>
+      Email: <strong>legal@bookistudio.com</strong><br/>
+      General contact: <a href="/#contact" style="color:var(--red);">bookistudio.com/#contact</a></p>
+    </div>
+
+    <p>We will make reasonable efforts to respond to all inquiries within 5 business days.</p>
+  </section>
+
+</main>
+
+<footer class="legal-footer">
+  <div class="legal-footer-logo">BOOKI<span>|</span>STUDIO</div>
+  <div class="legal-footer-copy">© 2026 BOOKISTUDIO. All rights reserved.</div>
+  <div class="legal-footer-links">
+    <a href="/">Home</a>
+    <a href="/#work">Work</a>
+    <a href="/#contact">Contact</a>
+    <a href="/privacy-policy.html">Privacy Policy</a>
+    <a href="/terms.html" class="active">Terms of Service</a>
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function loop() {
+    rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,button').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.style.transform = 'translate(-50%,-50%) scale(1.8)');
+    el.addEventListener('mouseleave', () => ring.style.transform = 'translate(-50%,-50%) scale(1)');
+  });
+</script>
+</body>
+</html>
