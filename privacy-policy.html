@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — BOOKISTUDIO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #D63929;
+      --bg: #f5f3ef;
+      --ink: #0e0e0e;
+      --ink-mid: #2a2a2a;
+      --ink-soft: #666;
+      --border: #d8d4ce;
+      --white: #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 1rem;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .nav-logo span { color: var(--red); }
+
+    .nav-back {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink-mid);
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .nav-back:hover { color: var(--red); border-color: var(--red); }
+
+    /* ── HERO ── */
+    .page-hero {
+      padding: 6rem 4rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-hero .kicker {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 1.2rem;
+    }
+
+    .page-hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      margin-bottom: 2rem;
+    }
+
+    .page-hero .meta {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      font-weight: 300;
+    }
+
+    /* ── CONTENT ── */
+    .policy-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 4rem 8rem;
+    }
+
+    .policy-section {
+      margin-bottom: 4rem;
+      padding-bottom: 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .policy-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .section-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.15em;
+      color: var(--red);
+      margin-bottom: 0.5rem;
+    }
+
+    .policy-section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      line-height: 1.2;
+    }
+
+    .policy-section p {
+      color: var(--ink-mid);
+      margin-bottom: 1rem;
+      font-weight: 300;
+    }
+
+    .policy-section p:last-child { margin-bottom: 0; }
+
+    .policy-section ul {
+      list-style: none;
+      margin: 1rem 0 1rem 0;
+    }
+
+    .policy-section ul li {
+      position: relative;
+      padding-left: 1.4rem;
+      color: var(--ink-mid);
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+    }
+
+    .policy-section ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .highlight-box {
+      background: var(--white);
+      border-left: 3px solid var(--red);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .highlight-box p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    a { color: var(--red); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      background: var(--ink);
+      color: #888;
+      padding: 2.5rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .page-footer .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.08em;
+      color: #ccc;
+    }
+
+    .page-footer .footer-logo span { color: var(--red); }
+
+    .page-footer p {
+      font-size: 0.78rem;
+      font-weight: 300;
+    }
+
+    .page-footer a {
+      color: #888;
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .page-hero { padding: 4rem 1.5rem 3rem; }
+      .policy-wrap { padding: 3rem 1.5rem 6rem; }
+      .page-footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">BOOKI<span>|</span>STUDIO</a>
+    <a href="index.html" class="nav-back">← Back to Site</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <p class="kicker">Legal</p>
+    <h1>Privacy<br/>Policy</h1>
+    <p class="meta">Effective Date: June 1, 2026 &nbsp;·&nbsp; Last Updated: June 1, 2026</p>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="policy-wrap">
+
+    <div class="policy-section">
+      <div class="section-number">00</div>
+      <h2>Overview</h2>
+      <p>BOOKISTUDIO ("we," "our," or "us") is a web design studio operated by Adrien Muhabuki. This Privacy Policy explains how we collect, use, store, and protect the personal information you provide when you visit our website or submit a project inquiry through our contact or client intake forms.</p>
+      <p>By using our website or submitting any form, you agree to the practices described in this policy. If you do not agree, please do not submit personal information through our site.</p>
+      <div class="highlight-box">
+        <p><strong>Plain English summary:</strong> We collect your contact details and business information solely to respond to your project inquiries and deliver our web design services. We do not sell your data. Ever.</p>
+      </div>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">01</div>
+      <h2>Information We Collect</h2>
+      <p>We collect information you voluntarily submit through our website forms. This includes:</p>
+
+      <p><strong>Contact Form</strong></p>
+      <ul>
+        <li>Full name</li>
+        <li>Email address</li>
+        <li>Business name</li>
+        <li>Project budget range</li>
+        <li>Project description (free-text message)</li>
+      </ul>
+
+      <p><strong>Client Intake Form</strong></p>
+      <ul>
+        <li>Full name and job title</li>
+        <li>Email address and phone number</li>
+        <li>Business name, industry, address (street, city, state, ZIP)</li>
+        <li>Business website URL and year founded</li>
+        <li>Business hours and social media profile URLs</li>
+        <li>Owner biography and business story (free-text)</li>
+        <li>Service descriptions and pricing (free-text)</li>
+        <li>Uploaded files including logos, business photos, and owner photos</li>
+        <li>Domain name preferences and design reference websites</li>
+        <li>Referral source (how you heard about us)</li>
+        <li>Special project requirements (free-text)</li>
+      </ul>
+
+      <p>We do not collect payment or financial information through this website. We do not knowingly collect data from anyone under the age of 13.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">02</div>
+      <h2>How We Use Your Information</h2>
+      <p>We use the information you provide exclusively for business purposes related to your inquiry and our service delivery:</p>
+      <ul>
+        <li>To respond to your project inquiry and answer questions</li>
+        <li>To prepare quotes, proposals, and project scopes</li>
+        <li>To deliver contracted web design and development services</li>
+        <li>To communicate project updates, deadlines, and deliverables</li>
+        <li>To use uploaded assets (logos, photos, copy) to build your website as instructed</li>
+        <li>To improve our intake and onboarding process</li>
+      </ul>
+      <p>We will not use your information to send unsolicited marketing emails. If we ever send promotional communications, we will provide a clear unsubscribe option in every message.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">03</div>
+      <h2>How We Store Your Data</h2>
+      <p>Form submissions are stored securely in <strong>Supabase</strong>, a cloud database platform with encryption at rest and in transit. Supabase servers are hosted on AWS infrastructure in the United States. Supabase complies with SOC 2 Type II and GDPR standards.</p>
+      <p>Email notifications of new inquiries are routed through <strong>Web3Forms</strong>, a form-handling service. Web3Forms processes your submission data transiently to deliver the notification email and does not retain your data beyond that delivery.</p>
+      <p>Uploaded files (photos, logos) submitted through the intake form are stored in Supabase Storage, a secure object storage service.</p>
+      <p>We retain your data for as long as necessary to fulfill the purpose it was collected for, or as required by applicable law. If you request deletion, we will remove your data within 30 days unless we are legally required to retain it.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">04</div>
+      <h2>Third-Party Services</h2>
+      <p>We use the following third-party services that may process your data:</p>
+      <ul>
+        <li><strong>Supabase</strong> — Database and file storage (<a href="https://supabase.com/privacy" target="_blank">Privacy Policy</a>)</li>
+        <li><strong>Web3Forms</strong> — Form-to-email notification service (<a href="https://web3forms.com/privacy" target="_blank">Privacy Policy</a>)</li>
+        <li><strong>Google Fonts</strong> — Web font delivery (font requests may be logged by Google)</li>
+      </ul>
+      <p>We do not sell, rent, trade, or otherwise share your personal information with any third party for their own marketing purposes. We only share your data with service providers who assist in operating our website or delivering our services, and only to the extent necessary.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">05</div>
+      <h2>Cookies &amp; Tracking</h2>
+      <p>Our website does not use tracking cookies, analytics platforms (such as Google Analytics), or advertising pixels. We do not track your browsing behavior across other websites.</p>
+      <p>Your browser may store small technical items (such as session tokens) necessary for basic site functionality, but no persistent tracking cookies are set by us.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">06</div>
+      <h2>Your Rights</h2>
+      <p>Depending on your location, you may have the following rights regarding your personal information:</p>
+      <ul>
+        <li><strong>Access</strong> — Request a copy of the personal information we hold about you</li>
+        <li><strong>Correction</strong> — Request that we correct inaccurate or incomplete information</li>
+        <li><strong>Deletion</strong> — Request that we delete your personal information ("right to be forgotten")</li>
+        <li><strong>Portability</strong> — Request your data in a commonly used, machine-readable format</li>
+        <li><strong>Objection</strong> — Object to how we process your data in certain circumstances</li>
+        <li><strong>Withdrawal of consent</strong> — Withdraw consent for any processing based solely on your consent</li>
+      </ul>
+      <p>Residents of California (CCPA), the European Union / European Economic Area (GDPR), and other jurisdictions with applicable privacy laws are entitled to these rights. To exercise any of these rights, contact us using the information in Section 09 below.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">07</div>
+      <h2>Data Security</h2>
+      <p>We take reasonable technical and organizational measures to protect your personal information from unauthorized access, loss, or misuse. These measures include:</p>
+      <ul>
+        <li>Encrypted data transmission (HTTPS/TLS) for all form submissions</li>
+        <li>Encrypted storage via Supabase (AES-256 at rest)</li>
+        <li>Row-level security policies restricting access to stored records</li>
+        <li>Password-protected admin access to stored inquiries</li>
+      </ul>
+      <p>No method of electronic transmission or storage is 100% secure. While we strive to protect your personal information, we cannot guarantee absolute security. In the event of a data breach that affects your rights and freedoms, we will notify you as required by applicable law.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">08</div>
+      <h2>Children's Privacy</h2>
+      <p>Our services are intended for business owners and adults. We do not knowingly collect personal information from children under the age of 13. If you believe a child has submitted personal information through our site, please contact us immediately and we will delete it.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">09</div>
+      <h2>Contact Us</h2>
+      <p>For any privacy-related questions, data requests, or concerns, please contact us:</p>
+      <ul>
+        <li><strong>Studio:</strong> BOOKISTUDIO</li>
+        <li><strong>Operator:</strong> Adrien Muhabuki</li>
+        <li><strong>Email:</strong> <a href="mailto:muhabukia1@gmail.com">muhabukia1@gmail.com</a></li>
+        <li><strong>Website:</strong> <a href="index.html">bookistudio.com</a></li>
+      </ul>
+      <p>We will respond to all privacy requests within 30 days.</p>
+    </div>
+
+    <div class="policy-section">
+      <div class="section-number">10</div>
+      <h2>Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time to reflect changes in our practices or applicable law. When we make material changes, we will update the "Last Updated" date at the top of this page. We encourage you to review this page periodically.</p>
+      <p>Continued use of our website after changes are posted constitutes your acceptance of the updated policy.</p>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <div class="footer-logo">BOOKI<span>|</span>STUDIO</div>
+    <p>© 2026 BOOKISTUDIO. All rights reserved.</p>
+    <a href="index.html">← Back to Site</a>
+  </footer>
+
+</body>
+</html>
