@@ -350,8 +350,13 @@
   /* SERVICES */
   #services { padding: 0 4rem 6rem; border-top: 1px solid var(--border); }
   .services-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 3rem;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 3rem;
   }
+  @media (max-width: 1200px) {
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  a.service-card { display: block; color: inherit; text-decoration: none; }
+  .service-icon svg { width: 1em; height: 1em; display: block; color: var(--red); }
   .service-card {
     background: var(--mid); padding: 2.5rem;
     border: 1px solid var(--border); position: relative; overflow: hidden;
@@ -602,6 +607,7 @@
     <li><a href="#work">Work</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#services">Services</a></li>
+    <li><a href="https://lazusai.com" target="_blank" rel="noopener">LazusAI</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <a href="#contact" class="nav-cta">Start a Project</a>
@@ -612,7 +618,7 @@
   <div class="hero-bg-text">BOOKISTUDIO</div>
   <p class="hero-tag">Website Design &amp; Development Studio</p>
   <h1>We Build Sites<br/>That <em>Convert.</em></h1>
-  <p class="hero-sub">BOOKISTUDIO is a creative web design studio run by Adrien Muhabuki. We craft fast, polished, results-driven websites for small businesses, brands, and entrepreneurs ready to stand out online.</p>
+  <p class="hero-sub">BOOKISTUDIO is a creative web design studio based out of Texas. We craft fast, polished, results-driven websites for small businesses, brands, and entrepreneurs ready to stand out online.</p>
   <div class="hero-actions">
     <a href="#work" class="btn-primary">View Our Work</a>
     <a href="#contact" class="btn-ghost">Start a Project</a>
@@ -863,6 +869,12 @@
       <div class="service-desc">Already have a site but it's outdated or underperforming? We rebuild it from the ground up with a fresh, modern approach.</div>
       <div class="service-price">$1,000 – $4,000</div>
     </div>
+    <a class="service-card" href="https://lazusai.com" target="_blank" rel="noopener">
+      <span class="service-icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3c5.3 0 9.5 3.5 9.5 7.9 0 4.4-4.2 7.9-9.5 7.9-.95 0-1.87-.11-2.73-.32-1.14.77-2.65 1.4-4.53 1.43-.42.01-.63-.5-.35-.8.6-.66 1.16-1.54 1.38-2.48C3.98 15.24 2.5 13.2 2.5 10.9 2.5 6.5 6.7 3 12 3zm.9 3.4c.3-.36.88-.06.77.4l-.72 2.95h2.68c.37 0 .57.42.34.7l-4.17 5.15c-.3.36-.88.06-.77-.4l.72-2.95H9.07c-.37 0-.57-.42-.34-.7l4.17-5.15z" fill-rule="evenodd"/></svg></span>
+      <div class="service-name">LazusAI</div>
+      <div class="service-desc">Our AI receptionist platform — an extension of BOOKISTUDIO. It answers your business texts 24/7, captures and qualifies leads, and books appointments automatically.</div>
+      <div class="service-price">lazusai.com →</div>
+    </a>
   </div>
 </section>
 
