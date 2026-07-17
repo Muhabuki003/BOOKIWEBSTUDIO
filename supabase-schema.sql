@@ -111,3 +111,29 @@ create policy "Authenticated can delete sites"
   for delete
   to authenticated
   using (true);
+
+-- ── Storage: intake form file uploads ─────────────────────────────────
+-- The intake form uploads logos, owner photos, and business photos to the
+-- public 'intake-files' bucket (folders: logos/, photos/, business/) and
+-- emails the resulting public URLs.
+
+insert into storage.buckets (id, name, public)
+values ('intake-files', 'intake-files', true)
+on conflict (id) do nothing;
+
+-- Visitors submit the form anonymously, so anon must be able to upload —
+-- but only into the three folders the form actually uses.
+drop policy if exists "Anon can upload intake files" on storage.objects;
+create policy "Anon can upload intake files"
+  on storage.objects
+  for insert
+  to anon
+  with check (bucket_id = 'intake-files' and (storage.foldername(name))[1] in ('logos', 'photos', 'business'));
+
+-- Files are shared via public URLs in the notification email.
+drop policy if exists "Anyone can view intake files" on storage.objects;
+create policy "Anyone can view intake files"
+  on storage.objects
+  for select
+  to anon, authenticated
+  using (bucket_id = 'intake-files');
