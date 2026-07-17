@@ -1492,15 +1492,58 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // ── Upload a single file to Supabase Storage ──
+  async function uploadFile(file, folder, inquiryId) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    const path = `${folder}/${inquiryId}_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+    const { error } = await sb.storage.from('intake-files').upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type || 'application/octet-stream',
+    });
+    if (error) { console.warn('Upload failed:', path, error); return null; }
+    const { data: { publicUrl } } = sb.storage.from('intake-files').getPublicUrl(path);
+    return publicUrl;
+  }
+
+  // ── Upload all files from a file input ──
+  async function uploadFiles(inputId, folder, inquiryId) {
+    const inp = document.getElementById(inputId);
+    if (!inp || !inp.files || !inp.files.length) return [];
+    const urls = [];
+    for (const file of inp.files) {
+      const url = await uploadFile(file, folder, inquiryId);
+      if (url) urls.push({ name: file.name, url });
+    }
+    return urls;
+  }
+
   // Submit
   async function submitForm() {
     const btn = document.querySelector('.btn-submit');
     const originalText = btn ? btn.textContent : '';
-    if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'Submitting…'; }
+    if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'Uploading files…'; }
 
+    // Generate a unique inquiry ID first so we can reference it in file paths
+    const inquiryId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     const inquiry = buildIntakeInquiry();
+    inquiry._inquiryId = inquiryId;
 
-    // 1. Insert into Supabase (primary store the admin dashboard reads from).
+    // Upload files to Supabase Storage
+    btn.textContent = 'Uploading files…';
+    const logoUrls    = await uploadFiles('logo_upload',    'logos',    inquiryId);
+    const photoUrls   = await uploadFiles('owner_photo',   'photos',   inquiryId);
+    const bizUrls     = await uploadFiles('business_photos', 'business', inquiryId);
+
+    // Attach file URLs to the inquiry data
+    inquiry.files = {
+      logo: logoUrls,
+      owner_photo: photoUrls,
+      business_photos: bizUrls,
+    };
+
+    // 1. Insert into Supabase table
+    btn.textContent = 'Saving…';
     let supabaseOk = false;
     try {
       const { error } = await sb.from('inquiries').insert({
@@ -1518,27 +1561,36 @@
       console.warn('Supabase insert threw:', err);
     }
 
-    // 2. If Supabase is unreachable, queue to localStorage so we don't lose it.
+    // 2. Fallback to localStorage if Supabase is down
     if (!supabaseOk) {
       try {
         const existing = JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]');
         existing.unshift(inquiry);
         localStorage.setItem('bookistudio_inquiries', JSON.stringify(existing));
-      } catch (e) { /* localStorage unavailable; continue with email only */ }
+      } catch (e) {}
     }
 
-    // 3. Send to Web3Forms so a notification email lands in the founder inbox.
+    // 3. Send email notification with download links
+    btn.textContent = 'Notifying…';
     const replyEmail = inquiry.owner_email || inquiry.biz_email || '';
     const fromName   = inquiry.owner_name || inquiry.biz_name || 'Intake Form';
     const subject    = `New Intake — ${inquiry.biz_name || fromName}${inquiry.budget_label ? ' (' + inquiry.budget_label + ')' : ''}`;
     const message    = buildEmailMessage(inquiry);
+
+    // Append file links to the email message
+    let fileSection = '';
+    const allFiles = [...logoUrls, ...photoUrls, ...bizUrls];
+    if (allFiles.length) {
+      fileSection = '\n\n── ATTACHMENTS ──\n';
+      allFiles.forEach(f => { fileSection += `\n${f.name}: ${f.url}`; });
+    }
 
     const payload = {
       access_key: 'ca86a6d6-2cc4-4dd2-b534-5ca94bf3f3fe',
       subject: subject,
       from_name: fromName,
       email: replyEmail,
-      message: message,
+      message: message + fileSection,
     };
 
     try {
@@ -1549,7 +1601,6 @@
       });
       if (!res.ok) throw new Error('Web3Forms responded ' + res.status);
     } catch (err) {
-      // Email failed but the data is still saved locally for the admin panel.
       console.warn('Intake email submission failed:', err);
     }
 
