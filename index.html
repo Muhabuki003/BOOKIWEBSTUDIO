@@ -486,9 +486,14 @@
   /* ---- WORDS ---- */
   #words > div { padding: 0 1.5rem !important; }
 
-  /* ---- BOOKI OS / BRAIN ---- */
-  .bn-grid { grid-auto-flow: column !important; grid-template-columns: none !important; overflow-x: auto !important; gap: 1.25rem !important; padding-bottom: .75rem !important; scroll-snap-type: x mandatory !important; -webkit-overflow-scrolling: touch !important; }
-  .bnode { min-width: 74vw !important; scroll-snap-align: start !important; }
+  /* ---- BOOKI OS / BRAIN ----
+     The step cards become a scroll-driven horizontal slider: .bn-viewport
+     clips at the section edge and GSAP translates .bn-grid on the X axis as
+     the pinned section is scrolled, so nothing bleeds past the viewport and
+     there is no nested native scroll area to fight the page scroll. */
+  .bn-viewport { overflow: hidden !important; }
+  .bn-grid { display: flex !important; grid-template-columns: none !important; overflow: visible !important; gap: 1.25rem !important; width: max-content !important; will-change: transform; }
+  .bnode { width: 74vw !important; flex: 0 0 74vw !important; }
 
   /* ---- S M O K E ---- */
   #sm-1 { max-width: 78vw !important; }
@@ -538,7 +543,7 @@
   #hero-h1 { font-size: clamp(2.2rem,14vw,6rem) !important; }
   #st-2 { font-size: clamp(2.1rem,16vw,14rem) !important; }
   #card1, #card2, #card3 { width: 94vw !important; }
-  .bnode { min-width: 82vw !important; }
+  .bnode { width: 82vw !important; flex: 0 0 82vw !important; }
 }
 
 </style>
@@ -657,7 +662,7 @@
               <span style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#E4D9CC;border:1px solid #2a2a2a;padding:.4rem .9rem;">Plugs into your stack</span>
               <span style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#E4D9CC;border:1px solid #2a2a2a;padding:.4rem .9rem;">Same OS as LazusAI</span>
             </div>
-            <a href="https://ai.bookistudios.com" target="_blank" rel="noopener" style="margin-top:2.2rem;align-self:flex-start;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;background:#D63929;color:#fff;padding:.85rem 1.8rem;">Learn More →</a>
+            <a href="https://office.bookistudios.com" target="_blank" rel="noopener" style="margin-top:2.2rem;align-self:flex-start;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;background:#D63929;color:#fff;padding:.85rem 1.8rem;">Learn More →</a>
           </div>
         </div>
       </article>
@@ -719,6 +724,7 @@
         <div style="position:absolute;left:0;right:0;top:5px;height:1px;background:rgba(228,217,204,.12);"></div>
         <div id="bn-line" style="position:absolute;left:0;top:5px;height:1px;width:0%;background:linear-gradient(90deg,rgba(214,57,41,.25),#D63929);box-shadow:0 0 14px rgba(214,57,41,.7);"></div>
 
+        <div class="bn-viewport" style="position:relative;">
         <div class="bn-grid" style="position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(.9rem,1.8vw,1.6rem);">
           <div class="bnode" id="bn-1" style="display:flex;flex-direction:column;gap:clamp(.45rem,1.3vh,.85rem);">
             <div style="display:flex;align-items:center;gap:.7rem;height:11px;">
@@ -760,6 +766,7 @@
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1rem,min(1.6vw,2.6vh),1.5rem);letter-spacing:.05em;color:#E4D9CC;text-transform:uppercase;">Skill written</div>
             <p style="font-size:clamp(.7rem,1.45vh,.78rem);line-height:1.55;color:rgba(228,217,204,.5);">The steps that worked are saved as a reusable skill. Ask again next month and it's already trained.</p>
           </div>
+        </div>
         </div>
 
         <svg id="bn-arc" viewBox="0 0 1000 120" preserveAspectRatio="none" style="display:block;width:100%;height:clamp(44px,8.5vh,110px);margin-top:clamp(.5rem,1.6vh,1.4rem);overflow:visible;">
@@ -1938,25 +1945,69 @@ function boot(){
     // brain / Booki OS process graph
     const bHead = document.getElementById('bn-head');
     if (bHead){
-      gsap.set('#bn-head', {opacity:0, y:40});
-      gsap.set('.bnode', {opacity:0.16, y:18});
-      gsap.set('#bn-line', {width:'0%'});
       const arc = document.getElementById('bn-arc-path');
       const len = arc && arc.getTotalLength ? arc.getTotalLength() : 1400;
-      if (arc) gsap.set(arc, {strokeDasharray:len, strokeDashoffset:len});
-      gsap.set('#bn-arc-label', {opacity:0});
+      const bTrack = document.querySelector('.bn-grid');
+      const bPort = document.querySelector('.bn-viewport');
+      const dotOn = () => ({backgroundColor:accent, borderColor:accent, boxShadow:'0 0 0 4px rgba(214,57,41,.18), 0 0 16px rgba(214,57,41,.9)', duration:80, ease:'none'});
 
-      const bTl = gsap.timeline({scrollTrigger:{id:'bk-brain', trigger:'#brain', start:'top top', end:'bottom bottom', scrub:true}});
-      bTl.to('#bn-head', {opacity:1, y:0, duration:90, ease:'none'}, 0);
-      bTl.to('#bn-line', {width:'92%', duration:620, ease:'none'}, 90);
-      for (let i = 1; i <= 5; i++){
-        const at = 90 + (i-1)*120;
-        bTl.to('#bn-' + i, {opacity:1, y:0, duration:100, ease:'none'}, at);
-        bTl.to('#bn-' + i + ' .bdot', {backgroundColor:accent, borderColor:accent, boxShadow:'0 0 0 4px rgba(214,57,41,.18), 0 0 16px rgba(214,57,41,.9)', duration:80, ease:'none'}, at);
-      }
-      if (arc) bTl.to(arc, {strokeDashoffset:0, duration:220, ease:'none'}, 700);
-      bTl.to('#bn-arc-label', {opacity:1, duration:100, ease:'none'}, 860);
-      bTl.to('#bn-2 .bdot', {boxShadow:'0 0 0 7px rgba(214,57,41,.14), 0 0 26px rgba(214,57,41,1)', duration:120, ease:'none'}, 900);
+      const bReset = () => {
+        gsap.set('#bn-head', {opacity:0, y:40});
+        gsap.set('#bn-line', {width:'0%'});
+        gsap.set('#bn-arc-label', {opacity:0});
+        if (arc) gsap.set(arc, {strokeDasharray:len, strokeDashoffset:len});
+      };
+
+      // Desktop shows all five steps side by side; mobile turns the same
+      // markup into a scroll-driven horizontal slider inside the pinned
+      // section, so the cards never overflow the viewport.
+      if (window.__bkBrainMM) window.__bkBrainMM.revert();
+      const bMM = window.__bkBrainMM = gsap.matchMedia();
+
+      bMM.add('(min-width: 861px)', () => {
+        bReset();
+        gsap.set('.bnode', {opacity:0.16, y:18});
+        if (bTrack) gsap.set(bTrack, {x:0});
+
+        const bTl = gsap.timeline({scrollTrigger:{id:'bk-brain', trigger:'#brain', start:'top top', end:'bottom bottom', scrub:true}});
+        bTl.to('#bn-head', {opacity:1, y:0, duration:90, ease:'none'}, 0);
+        bTl.to('#bn-line', {width:'92%', duration:620, ease:'none'}, 90);
+        for (let i = 1; i <= 5; i++){
+          const at = 90 + (i-1)*120;
+          bTl.to('#bn-' + i, {opacity:1, y:0, duration:100, ease:'none'}, at);
+          bTl.to('#bn-' + i + ' .bdot', dotOn(), at);
+        }
+        if (arc) bTl.to(arc, {strokeDashoffset:0, duration:220, ease:'none'}, 700);
+        bTl.to('#bn-arc-label', {opacity:1, duration:100, ease:'none'}, 860);
+        bTl.to('#bn-2 .bdot', {boxShadow:'0 0 0 7px rgba(214,57,41,.14), 0 0 26px rgba(214,57,41,1)', duration:120, ease:'none'}, 900);
+      });
+
+      bMM.add('(max-width: 860px)', () => {
+        if (!bTrack || !bPort) return;
+        const nodes = gsap.utils.toArray('.bnode');
+        // how far the track may travel before the last card sits flush right
+        const maxX = () => Math.max(0, bTrack.scrollWidth - bPort.clientWidth);
+        // resting offset for step i, clamped so we never scroll past the end
+        const restX = i => -Math.min(nodes[i] ? nodes[i].offsetLeft : 0, maxX());
+
+        bReset();
+        gsap.set('.bnode', {opacity:0.16, y:0});
+        gsap.set(bTrack, {x:0});
+
+        const step = 120, last = 90 + (nodes.length - 1) * step + 100;
+        const bTl = gsap.timeline({scrollTrigger:{id:'bk-brain', trigger:'#brain', start:'top top', end:'bottom bottom', scrub:true, invalidateOnRefresh:true}});
+        bTl.to('#bn-head', {opacity:1, y:0, duration:90, ease:'none'}, 0);
+        bTl.to('#bn-line', {width:'92%', duration:last - 90, ease:'none'}, 90);
+        nodes.forEach((node, i) => {
+          const at = 90 + i * step;
+          // each step slides in from the right as the page scrolls down
+          if (i > 0) bTl.to(bTrack, {x:() => restX(i), duration:step, ease:'none'}, at);
+          bTl.to(node, {opacity:1, duration:80, ease:'none'}, at);
+          bTl.to(node.querySelector('.bdot'), dotOn(), at);
+        });
+        if (arc) bTl.to(arc, {strokeDashoffset:0, duration:200, ease:'none'}, last);
+        bTl.to('#bn-arc-label', {opacity:1, duration:100, ease:'none'}, last + 160);
+      });
     }
 
     smoke();
