@@ -41,6 +41,13 @@
   .project-desc { font-size: .85rem; color: rgba(228,217,204,.6); margin-top: .4rem; line-height: 1.5; }
   .project-arrow { position: absolute; top: 2rem; right: 2.5rem; z-index: 3; width: 42px; height: 42px; border: 1px solid rgba(228,217,204,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #E4D9CC; }
 
+  /* Product cards (#card1-3): text column can be taller than the card's
+     fixed height cap depending on viewport/content length. Without this,
+     the CTA button gets clipped by the card's overflow:hidden edge and
+     becomes unreachable. Scrolling inside the column keeps it reachable
+     on every screen size without changing the card's outer size/animation. */
+  .product-text { overflow-y: auto; scrollbar-width: thin; }
+
 
 /* ===== ADMIN LOGIN ===== */
 #admin-login {
@@ -609,7 +616,7 @@
       <article id="card1" style="position:absolute;width:78vw;max-width:1080px;height:min(64vh,600px);border-radius:6px;overflow:hidden;background:#161616;border:1px solid #2a2a2a;box-shadow:0 40px 120px rgba(0,0,0,.6);will-change:transform,opacity;transform-style:preserve-3d;">
         <div class="product-chrome" style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:#101010;border-bottom:1px solid #2a2a2a;">
           <div style="display:flex;gap:6px;"><i style="width:10px;height:10px;border-radius:50%;display:block;background:#ff5f57;"></i><i style="width:10px;height:10px;border-radius:50%;display:block;background:#febc2e;"></i><i style="width:10px;height:10px;border-radius:50%;display:block;background:#28c840;"></i></div>
-          <div style="flex:1;max-width:340px;margin:0 auto;background:rgba(228,217,204,.06);border-radius:4px;font-size:11px;color:rgba(228,217,204,.45);padding:5px 14px;text-align:center;font-family:'JetBrains Mono',monospace;">lazus.ai</div>
+          <div style="flex:1;max-width:340px;margin:0 auto;background:rgba(228,217,204,.06);border-radius:4px;font-size:11px;color:rgba(228,217,204,.45);padding:5px 14px;text-align:center;font-family:'JetBrains Mono',monospace;">lazusai.com</div>
         </div>
         <div class="product-card-grid" style="position:relative;height:calc(100% - 40px);display:grid;grid-template-columns:1fr 1fr;">
           <div class="product-text" style="padding:3.5rem 3rem;display:flex;flex-direction:column;justify-content:center;">
@@ -1890,7 +1897,7 @@ function boot(){
     }
 
     // products: 3D stacked card sweep
-    const inCard = {opacity:0, yPercent:70, scale:1.18, rotationX:10, transformPerspective:1200, transformOrigin:'50% 100%'};
+    const inCard = {opacity:0, yPercent:70, scale:1.18, rotationX:10, transformPerspective:1200, transformOrigin:'50% 100%', pointerEvents:'none'};
     ['#card1','#card2','#card3'].forEach(sel => gsap.set(sel, Object.assign({}, inCard)));
     const bar = document.getElementById('prod-progress');
     const pTl = gsap.timeline({
@@ -1899,23 +1906,16 @@ function boot(){
         onUpdate: (self) => { if (bar) bar.style.width = (self.progress*100).toFixed(2) + '%'; }
       }
     });
-    pTl.set('#card1', {pointerEvents:'auto'}, 0);
-    pTl.set('#card2', {pointerEvents:'none'}, 0);
-    pTl.set('#card3', {pointerEvents:'none'}, 0);
-    pTl.to('#card1', {opacity:1, yPercent:0, scale:1, rotationX:0, duration:600, ease:'none'}, 0);
-    pTl.to('#card2', {opacity:1, duration:300, ease:'none'}, 800);
+    pTl.to('#card1', {opacity:1, yPercent:0, scale:1, rotationX:0, pointerEvents:'auto', duration:600, ease:'none'}, 0);
+    pTl.to('#card2', {opacity:1, pointerEvents:'auto', duration:300, ease:'none'}, 800);
     pTl.to('#card2', {yPercent:4, scale:1, rotationX:0, duration:600, ease:'none'}, 800);
-    pTl.to('#card1', {opacity:0.25, scale:0.93, yPercent:-5, duration:600, ease:'none'}, 800);
-    pTl.set('#card1', {pointerEvents:'none'}, 800);
-    pTl.set('#card2', {pointerEvents:'auto'}, 800);
-    pTl.set('#card2', {pointerEvents:'none'}, 1600);
-    pTl.set('#card3', {pointerEvents:'auto'}, 1600);
-    pTl.to('#card3', {opacity:1, duration:300, ease:'none'}, 1600);
+    pTl.to('#card1', {opacity:0.25, scale:0.93, yPercent:-5, pointerEvents:'none', duration:600, ease:'none'}, 800);
+    pTl.to('#card3', {opacity:1, pointerEvents:'auto', duration:300, ease:'none'}, 1600);
     pTl.to('#card3', {yPercent:8, scale:1, rotationX:0, duration:600, ease:'none'}, 1600);
-    pTl.to('#card2', {opacity:0.25, scale:0.94, yPercent:0, duration:600, ease:'none'}, 1600);
+    pTl.to('#card2', {opacity:0.25, scale:0.94, yPercent:0, pointerEvents:'none', duration:600, ease:'none'}, 1600);
     pTl.to('#card1', {opacity:0.12, scale:0.88, yPercent:-9, duration:600, ease:'none'}, 1600);
     pTl.to('#prod-head', {opacity:0, y:-40, duration:300, ease:'none'}, 2300);
-    pTl.to(['#card1','#card2','#card3'], {opacity:0, y:-80, duration:300, ease:'none'}, 2400);
+    pTl.to(['#card1','#card2','#card3'], {opacity:0, y:-80, pointerEvents:'none', duration:300, ease:'none'}, 2400);
 
     // statement: cross-fade + zoom
     gsap.set('#st-1', {opacity:0, y:30});
