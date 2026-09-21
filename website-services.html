@@ -45,21 +45,46 @@
   .track { position:absolute; inset:0; transform-style:preserve-3d; }
   .wcard {
     position:absolute; top:0; left:0;
-    display:block; text-decoration:none; color:var(--ink);
+    display:block; text-decoration:none; color:var(--ink); cursor:pointer;
     border-radius:8px; overflow:hidden; background:#111;
     border:1px solid var(--line);
+    outline:1px solid transparent; outline-offset:2px;
     box-shadow:0 26px 70px rgba(0,0,0,.66);
     will-change:transform,opacity,filter;
     transform-origin:50% 50%;
     backface-visibility:visible;
+    /* NOTE: only non-transform properties are transitioned — the rAF loop owns
+       `transform` on every frame and a transform transition would fight it. */
+    transition:box-shadow .3s ease, outline-color .3s ease, border-color .3s ease;
   }
   .wcard img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
   .wcard .veil { position:absolute; inset:0; background:linear-gradient(180deg, rgba(8,8,8,.02) 42%, rgba(8,8,8,.72) 74%, rgba(8,8,8,.92) 100%); }
-  .wcard .meta { position:absolute; left:0; right:0; bottom:0; padding:clamp(.7rem,1.5vw,1rem) clamp(.8rem,1.7vw,1.15rem); display:flex; flex-direction:column; gap:.16rem; }
+  /* illumination wash — a pseudo-element, so the frame-locked inline transform is untouched */
+  .wcard::after {
+    content:''; position:absolute; inset:0; z-index:1; pointer-events:none; opacity:0;
+    background:radial-gradient(130% 95% at 50% 108%, rgba(214,57,41,.55) 0%, rgba(214,57,41,.16) 40%, rgba(255,246,236,.10) 68%, rgba(255,246,236,0) 100%);
+    mix-blend-mode:screen; transition:opacity .3s ease;
+  }
+  .wcard .meta { position:absolute; left:0; right:0; bottom:0; z-index:3; padding:clamp(.7rem,1.5vw,1rem) clamp(.8rem,1.7vw,1.15rem); display:flex; flex-direction:column; gap:.16rem; }
   .wcard .nm { font-family:var(--bebas); font-size:clamp(1rem,1.55vw,1.35rem); letter-spacing:.05em; line-height:1; }
   .wcard .tg { font-family:var(--syne); font-size:.6rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:rgba(228,217,204,.72); }
   .wcard .dm { font-family:var(--mono); font-size:.55rem; letter-spacing:.08em; color:var(--red); margin-top:.15rem; }
   .wcard:hover .veil { background:linear-gradient(180deg, rgba(8,8,8,0) 30%, rgba(8,8,8,.55) 66%, rgba(8,8,8,.9) 100%); }
+  /* hover / focus illumination (desktop); no transform, no filter — both are set inline by the loop */
+  @media (hover: hover) {
+    .wcard:hover {
+      border-color:rgba(214,57,41,.9);
+      outline-color:rgba(214,57,41,.5);
+      box-shadow:0 0 0 1px rgba(214,57,41,.45),
+                 0 0 30px 4px rgba(214,57,41,.45),
+                 0 0 90px 24px rgba(214,57,41,.22),
+                 0 24px 60px rgba(0,0,0,.72);
+    }
+    .wcard:hover::after { opacity:1; }
+    .wcard:hover .nm { color:#fff; }
+  }
+  .wcard:focus-visible { outline:2px solid var(--red); outline-offset:3px; }
+  .wcard:focus-visible::after { opacity:1; }
   /* ── hud ── */
   .hud {
     position:fixed; left:0; right:0; bottom:0; z-index:200;
@@ -72,10 +97,69 @@
   .hud-r { font-family:var(--mono); font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(228,217,204,.42); text-align:right; }
   .now { font-family:var(--bebas); font-size:clamp(1rem,2.2vw,1.5rem); letter-spacing:.06em; color:var(--ink); }
   .now em { font-family:var(--mono); font-style:normal; font-size:.55rem; letter-spacing:.22em; color:rgba(228,217,204,.45); display:block; margin-top:.2rem; }
+  /* ── demo window (front-of-screen preview of the live site) ── */
+  .demo { position:fixed; inset:0; z-index:900; display:none; }
+  .demo.open { display:block; }
+  .demo .bd { position:absolute; inset:0; background:rgba(4,4,4,.84); opacity:0; transition:opacity .24s ease; }
+  .demo.open .bd { opacity:1; }
+  .demo .win {
+    position:absolute; left:50%; top:50%; width:min(1200px,94vw); height:min(780px,86vh);
+    transform:translate(-50%,-50%) scale(.968); opacity:0;
+    display:flex; flex-direction:column; overflow:hidden;
+    background:#0c0c0c; border:1px solid #333; border-radius:12px;
+    box-shadow:0 40px 120px rgba(0,0,0,.85), 0 0 80px 12px rgba(214,57,41,.20);
+    transition:opacity .24s ease, transform .24s ease;
+  }
+  .demo.open .win { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  .demo .bar {
+    position:relative; z-index:2; flex:none;
+    display:flex; align-items:center; gap:.7rem;
+    padding:.62rem .7rem .62rem .9rem; background:#121212; border-bottom:1px solid #262626;
+  }
+  .demo .dots { display:flex; gap:.32rem; flex:none; }
+  .demo .dots i { width:9px; height:9px; border-radius:50%; background:#333; display:block; }
+  .demo .dots i:first-child { background:var(--red); }
+  .demo .t { font-family:var(--bebas); font-size:1.02rem; letter-spacing:.06em; white-space:nowrap; }
+  .demo .u { font-family:var(--mono); font-size:.54rem; letter-spacing:.1em; color:var(--red); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .demo .bar .sp { flex:1 1 auto; }
+  .demo .ob {
+    flex:none; font-family:var(--mono); font-size:.56rem; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink); text-decoration:none; white-space:nowrap;
+    border:1px solid rgba(214,57,41,.75); background:rgba(214,57,41,.14);
+    padding:.5rem .8rem; border-radius:4px; transition:background .2s ease,color .2s ease;
+  }
+  .demo .ob:hover { background:var(--red); color:#fff; }
+  .demo .x {
+    flex:none; width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    background:transparent; border:1px solid var(--line); border-radius:4px; color:var(--ink);
+    font-family:var(--mono); font-size:.8rem; line-height:1; cursor:pointer;
+    transition:background .2s ease,border-color .2s ease,color .2s ease;
+  }
+  .demo .x:hover { background:var(--red); border-color:var(--red); color:#fff; }
+  .demo .frame { position:relative; flex:1 1 auto; min-height:0; background:#0a0a0a; }
+  .demo iframe { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:#0a0a0a; }
+  .demo .load {
+    position:absolute; inset:0; z-index:2; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:.6rem; letter-spacing:.22em; text-transform:uppercase;
+    color:rgba(228,217,204,.5); background:#0a0a0a; transition:opacity .3s ease;
+  }
+  .demo .load.off { opacity:0; pointer-events:none; }
+  .demo .fb {
+    position:absolute; inset:0; z-index:3; display:none; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.1rem; padding:1.6rem; text-align:center; background:#0a0a0a;
+  }
+  .demo .fb.on { display:flex; }
+  .demo .fb img { width:min(520px,82%); border:1px solid var(--line); border-radius:6px; opacity:.9; }
+  .demo .fb .fbt { font-family:var(--bebas); font-size:1.25rem; letter-spacing:.05em; }
+  .demo .fb .fbs { font-family:var(--mono); font-size:.56rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(228,217,204,.55); margin-top:.4rem; }
+  body.demo-open .scene, body.demo-open .hud { filter:blur(2px) brightness(.6); }
   @media (max-width:760px) {
     .ttl { display:none; }
     .hud-r { display:none; }
     .wcard { box-shadow:0 18px 50px rgba(0,0,0,.7); }
+    .demo .win { width:96vw; height:84vh; border-radius:10px; }
+    .demo .u { display:none; }
+    .demo .t { font-size:.92rem; }
   }
 </style>
 </head>
@@ -83,7 +167,7 @@
 
 <header class="top">
   <a class="brand" href="/">BOOKI<span>|</span>STUDIO</a>
-  <div class="ttl"><b>Website Services</b><i>Seven client sites · infinite</i></div>
+  <div class="ttl"><b>Website Services</b></div>
   <a class="back" href="/">← Back to site</a>
 </header>
 
@@ -96,8 +180,35 @@
     <div class="now" id="now">—<em id="nowTag">Loading the spiral</em></div>
   </div>
   <div class="hud-l" style="text-align:right;">
-    <span id="counter">01</span> / <span id="total">07</span> &nbsp;<b>✦</b>&nbsp; <span id="hint">Scroll · Drag</span>
-    <div class="hud-r" style="margin-top:.4rem;">live client work — click a card to visit</div>
+    <span id="counter">01</span> / <span id="total">07</span> &nbsp;<b>✦</b>&nbsp; <span id="hint">Scroll · Drag · Click</span>
+    <div class="hud-r" style="margin-top:.4rem;">live client work — scroll or drag to explore · click a card to preview it in place</div>
+  </div>
+</div>
+
+<!-- front-of-screen demo window: the live site scrolls inside the iframe -->
+<div class="demo" id="demo" aria-hidden="true">
+  <div class="bd" id="demoBd"></div>
+  <div class="win" role="dialog" aria-modal="true" aria-label="Client site preview" id="demoWin">
+    <div class="bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="t" id="demoName">—</span>
+      <span class="u" id="demoUrl">—</span>
+      <span class="sp"></span>
+      <a class="ob" id="demoOpen" href="#" target="_blank" rel="noopener">Open site ↗</a>
+      <button class="x" id="demoClose" type="button" aria-label="Close preview">✕</button>
+    </div>
+    <div class="frame">
+      <div class="load" id="demoLoad">Loading the live site…</div>
+      <iframe id="demoFrame" title="Live client site preview" referrerpolicy="no-referrer-when-downgrade" loading="eager"></iframe>
+      <div class="fb" id="demoFb">
+        <img id="demoFbImg" alt="">
+        <div>
+          <div class="fbt">This site can’t be previewed here</div>
+          <div class="fbs">It asks browsers not to be embedded in another page</div>
+          <a class="ob" id="demoFbOpen" href="#" target="_blank" rel="noopener">Open site ↗</a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -105,15 +216,18 @@
 (function () {
   'use strict';
 
-  /* ───────────── the seven client sites (only these) ───────────── */
+  /* ───────────── the seven client sites (only these) ─────────────
+     `frame:1` = the host sends no X-Frame-Options and no CSP frame-ancestors,
+     verified from the live response headers (2026-09-21), so it embeds inline.
+     Anything else falls back to the thumbnail + "Open site ↗" card. */
   var SITES = [
-    { name:'Voltecharged',         tag:'DTC · Portable Blender',           dm:'voltecharged.com',                   url:'https://voltecharged.com/',                            img:'assets/ws-voltecharged.jpg' },
-    { name:'ShopGeComo',           tag:'Beauty E-Commerce',                dm:'shopgecomo.com',                     url:'https://shopgecomo.com/',                              img:'assets/ws-gecomo.jpg' },
-    { name:'MG Woodshop & More',   tag:'Custom Woodworking',               dm:'mgwoodshopandmore.com',              url:'https://mgwoodshopandmore.com/',                       img:'assets/ws-mgwoodshop.jpg' },
-    { name:'L&M Woodworking',      tag:'Carpentry & Millwork',             dm:'lmwoodworking.pages.dev',            url:'https://lmwoodworking.pages.dev/',                     img:'assets/ws-lmwoodworking.jpg' },
-    { name:'Sunburst Truck Lines', tag:'Intermodal Freight',               dm:'sunburst-truck-lines.pages.dev',     url:'https://sunburst-truck-lines.pages.dev/',              img:'assets/ws-sunburst.jpg' },
-    { name:'JKW Contracting',      tag:'Construction & Landscaping',       dm:'jkwllc.pages.dev',                   url:'https://jkwllc.pages.dev/',                            img:'assets/ws-jkwllc.jpg' },
-    { name:'HeyCocoa',              tag:'Specialty Coffee',                 dm:'heycocoa.pages.dev',                 url:'https://heycocoa.pages.dev/',                          img:'assets/ws-heycocoa.jpg' }
+    { name:'Voltecharged',         tag:'DTC · Portable Blender',           dm:'voltecharged.com',                   url:'https://voltecharged.com/',                            img:'assets/ws-voltecharged.jpg', frame:1 },
+    { name:'ShopGeComo',           tag:'Beauty E-Commerce',                dm:'shopgecomo.com',                     url:'https://shopgecomo.com/',                              img:'assets/ws-gecomo.jpg',       frame:1 },
+    { name:'MG Woodshop & More',   tag:'Custom Woodworking',               dm:'mgwoodshopandmore.com',              url:'https://mgwoodshopandmore.com/',                       img:'assets/ws-mgwoodshop.jpg',   frame:1 },
+    { name:'L&M Woodworking',      tag:'Carpentry & Millwork',             dm:'lmwoodworking.pages.dev',            url:'https://lmwoodworking.pages.dev/',                     img:'assets/ws-lmwoodworking.jpg',frame:1 },
+    { name:'Sunburst Truck Lines', tag:'Intermodal Freight',               dm:'sunburst-truck-lines.pages.dev',     url:'https://sunburst-truck-lines.pages.dev/',              img:'assets/ws-sunburst.jpg',     frame:1 },
+    { name:'JKW Contracting',      tag:'Construction & Landscaping',       dm:'jkwllc.pages.dev',                   url:'https://jkwllc.pages.dev/',                            img:'assets/ws-jkwllc.jpg',       frame:1 },
+    { name:'HeyCocoa',              tag:'Specialty Coffee',                 dm:'heycocoa.pages.dev',                 url:'https://heycocoa.pages.dev/',                          img:'assets/ws-heycocoa.jpg',     frame:1 }
   ];
 
   /* density: how many times the loop of seven is laid around the helix */
@@ -143,6 +257,95 @@
   var dragging = false, lastX = 0, lastY = 0, moved = 0;
   var lastCenter = -1;
 
+  /* ───────────── front-of-screen demo window ─────────────
+     A card click opens the LIVE site in a scrollable iframe so it can be
+     demoed in place; "Open site ↗" escapes to a real new tab. */
+  var demoEl     = document.getElementById('demo');
+  var demoBd     = document.getElementById('demoBd');
+  var demoName   = document.getElementById('demoName');
+  var demoUrl    = document.getElementById('demoUrl');
+  var demoOpenLn = document.getElementById('demoOpen');
+  var demoClose  = document.getElementById('demoClose');
+  var demoFrame  = document.getElementById('demoFrame');
+  var demoLoad   = document.getElementById('demoLoad');
+  var demoFb     = document.getElementById('demoFb');
+  var demoFbImg  = document.getElementById('demoFbImg');
+  var demoFbOpen = document.getElementById('demoFbOpen');
+
+  var demoSite = null, demoIsOpen = false, frameTimer = null, frameLoaded = false;
+  var lastFocus = null, clickHandled = false;
+
+  function showFrameFallback() {
+    clearTimeout(frameTimer);
+    demoLoad.className = 'load off';
+    demoFb.className = 'fb on';
+    demoFrame.style.visibility = 'hidden';
+  }
+
+  function loadInFrame(site) {
+    clearTimeout(frameTimer);
+    frameLoaded = false;
+    demoFb.className = 'fb';
+    demoFrame.style.visibility = '';
+    demoLoad.className = 'load';
+    if (!site.frame) { showFrameFallback(); return; }
+    demoFrame.src = site.url;
+    /* graceful failure: no load event within 10s means the host is refusing to
+       be framed (X-Frame-Options / CSP frame-ancestors) or is unreachable */
+    frameTimer = setTimeout(function () { if (!frameLoaded) showFrameFallback(); }, 10000);
+  }
+
+  demoFrame.addEventListener('load', function () {
+    if (!demoIsOpen) return;
+    frameLoaded = true;
+    clearTimeout(frameTimer);
+    demoLoad.className = 'load off';
+  });
+  demoFrame.addEventListener('error', function () {
+    if (demoIsOpen) showFrameFallback();
+  });
+
+  function openDemo(site, fromEl) {
+    demoSite = site;
+    lastFocus = fromEl || null;
+    demoName.textContent = site.name;
+    demoUrl.textContent = site.dm;
+    demoOpenLn.href = site.url;
+    demoFbOpen.href = site.url;
+    demoFbImg.src = site.img;
+    demoFbImg.alt = site.name + ' — ' + site.tag;
+    demoIsOpen = true;
+    demoEl.className = 'demo open';
+    demoEl.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('demo-open');
+    loadInFrame(site);
+    try { demoClose.focus({ preventScroll: true }); } catch (err) { try { demoClose.focus(); } catch (e2) {} }
+  }
+
+  function closeDemo() {
+    if (!demoIsOpen) return;
+    demoIsOpen = false;
+    demoEl.className = 'demo';
+    demoEl.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('demo-open');
+    clearTimeout(frameTimer);
+    setTimeout(function () { if (!demoIsOpen) demoFrame.src = 'about:blank'; }, 260);
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (err) {} }
+  }
+
+  /* the card-level and the delegated scene-level click can both fire for one
+     gesture — only the first one opens the window */
+  function requestDemo(site, el) {
+    if (clickHandled) return;
+    clickHandled = true;
+    setTimeout(function () { clickHandled = false; }, 0);
+    openDemo(site, el);
+  }
+
+  demoBd.addEventListener('click', closeDemo);
+  demoClose.addEventListener('click', closeDemo);
+  demoEl.addEventListener('click', function (e) { if (e.target === demoEl) closeDemo(); });
+
   function isMobile() { return window.innerWidth <= MOBILE_BREAK; }
   function cardSize() {
     if (isMobile()) {
@@ -166,7 +369,7 @@
         a.href = site.url;
         a.target = '_blank';
         a.rel = 'noopener';
-        a.setAttribute('aria-label', site.name + ' — ' + site.tag);
+        a.setAttribute('aria-label', site.name + ' — ' + site.tag + ' · opens a preview of the live site');
         var img = document.createElement('img');
         img.src = site.img;
         img.alt = site.name + ' — ' + site.tag;
@@ -180,9 +383,15 @@
         meta.querySelector('.nm').textContent = site.name;
         meta.querySelector('.tg').textContent = site.tag;
         a.appendChild(img); a.appendChild(veil); a.appendChild(meta);
-        /* a drag must not count as a click */
+        /* A drag must not count as a click. NB: the scene captures the pointer on
+           pointerdown, so the browser retargets `click` to the scene itself — this
+           card-level listener only runs for keyboard activation (Enter/Space).
+           Pointer clicks are resolved by the delegated listener on the scene. */
         a.addEventListener('click', function (e) {
-          if (moved > 6) { e.preventDefault(); }
+          if (moved > 8) { e.preventDefault(); return; }          /* that was a drag */
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;  /* let new-tab gestures through */
+          e.preventDefault();
+          requestDemo(site, a);
         });
         track.appendChild(a);
         cards.push({ el: a, site: site, index: n });
@@ -277,11 +486,29 @@
 
   /* ───────────── input ───────────── */
   scene.addEventListener('wheel', function (e) {
+    if (demoIsOpen) return;                 /* the demo window owns the wheel while open */
     e.preventDefault();
     targetScroll += (e.deltaY + (isMobile() ? e.deltaX : 0)) * WHEEL_SENSITIVITY;
   }, { passive: false });
 
+  /* Delegated card clicks. setPointerCapture() on the scene retargets the click to
+     the scene, so resolve the card under the pointer from the coordinates. */
+  scene.addEventListener('click', function (e) {
+    if (demoIsOpen) return;
+    if (moved > 8) return;                                            /* drag, not click */
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var hit = document.elementFromPoint(e.clientX, e.clientY);
+    var card = (hit && hit.closest) ? hit.closest('.wcard') : null;
+    if (!card) return;
+    var rec = null;
+    for (var i = 0; i < cards.length; i++) { if (cards[i].el === card) { rec = cards[i]; break; } }
+    if (!rec) return;
+    e.preventDefault();
+    requestDemo(rec.site, card);
+  });
+
   scene.addEventListener('pointerdown', function (e) {
+    if (demoIsOpen) return;
     dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY;
     if (scene.setPointerCapture) { try { scene.setPointerCapture(e.pointerId); } catch (err) {} }
     scene.style.cursor = 'grabbing';
@@ -312,6 +539,8 @@
   window.addEventListener('touchend', function () { dragging = false; });
 
   window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && demoIsOpen) { e.preventDefault(); closeDemo(); return; }
+    if (demoIsOpen) return;                 /* don't drive the spiral behind the window */
     var step = 140;
     if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { targetScroll += step; }
     if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { targetScroll -= step; }
@@ -325,7 +554,7 @@
   });
   window.addEventListener('orientationchange', function () { setTimeout(build, 200); });
 
-  hintEl.textContent = isMobile() ? 'Swipe ⇄' : 'Scroll · Drag';
+  hintEl.textContent = isMobile() ? 'Swipe ⇄ · Tap to preview' : 'Scroll · Drag · Click to preview';
   build();
   tick();
 })();
