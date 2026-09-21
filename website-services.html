@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Website Services — BOOKISTUDIO · Infinite Spiral of Client Sites</title>
+<meta name="description" content="BookiStudios Website Services — an infinite spiral gallery of the client sites we have designed, built and shipped.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --bg:#080808; --ink:#E4D9CC; --red:#D63929; --line:#2a2a2a;
+    --bebas:'Bebas Neue',sans-serif; --syne:'Syne',sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  html, body {
+    background:var(--bg); color:var(--ink); height:100%; width:100%;
+    overflow:hidden; overscroll-behavior:none;
+    font-family:var(--syne); -webkit-font-smoothing:antialiased;
+  }
+  /* ── top bar ── */
+  .top {
+    position:fixed; top:0; left:0; right:0; z-index:200;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:1.1rem clamp(1rem,3vw,2.4rem);
+    background:linear-gradient(180deg, rgba(8,8,8,.92) 0%, rgba(8,8,8,.55) 70%, rgba(8,8,8,0) 100%);
+    pointer-events:none;
+  }
+  .top a, .top .ttl { pointer-events:auto; }
+  .brand { font-family:var(--bebas); font-size:1.35rem; letter-spacing:.08em; color:var(--ink); text-decoration:none; flex:none; }
+  .brand span { color:var(--red); }
+  .ttl { text-align:center; min-width:0; }
+  .ttl b { display:block; font-family:var(--bebas); font-size:clamp(.95rem,2vw,1.3rem); letter-spacing:.16em; text-transform:uppercase; }
+  .ttl i { display:block; font-family:var(--mono); font-style:normal; font-size:.6rem; letter-spacing:.26em; text-transform:uppercase; color:var(--red); margin-top:.25rem; }
+  .back { font-family:var(--mono); font-size:.6rem; letter-spacing:.22em; text-transform:uppercase; color:rgba(228,217,204,.6); text-decoration:none; border:1px solid var(--line); padding:.55rem .9rem; flex:none; }
+  .back:hover { color:var(--ink); border-color:rgba(228,217,204,.5); }
+  /* ── scene / track ── */
+  .scene {
+    position:fixed; inset:0; perspective:1200px; perspective-origin:50% 50%;
+    overflow:hidden; cursor:grab; touch-action:none; z-index:1;
+  }
+  .scene:active { cursor:grabbing; }
+  .track { position:absolute; inset:0; transform-style:preserve-3d; }
+  .wcard {
+    position:absolute; top:0; left:0;
+    display:block; text-decoration:none; color:var(--ink);
+    border-radius:8px; overflow:hidden; background:#111;
+    border:1px solid var(--line);
+    box-shadow:0 26px 70px rgba(0,0,0,.66);
+    will-change:transform,opacity,filter;
+    transform-origin:50% 50%;
+    backface-visibility:visible;
+  }
+  .wcard img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+  .wcard .veil { position:absolute; inset:0; background:linear-gradient(180deg, rgba(8,8,8,.02) 42%, rgba(8,8,8,.72) 74%, rgba(8,8,8,.92) 100%); }
+  .wcard .meta { position:absolute; left:0; right:0; bottom:0; padding:clamp(.7rem,1.5vw,1rem) clamp(.8rem,1.7vw,1.15rem); display:flex; flex-direction:column; gap:.16rem; }
+  .wcard .nm { font-family:var(--bebas); font-size:clamp(1rem,1.55vw,1.35rem); letter-spacing:.05em; line-height:1; }
+  .wcard .tg { font-family:var(--syne); font-size:.6rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:rgba(228,217,204,.72); }
+  .wcard .dm { font-family:var(--mono); font-size:.55rem; letter-spacing:.08em; color:var(--red); margin-top:.15rem; }
+  .wcard:hover .veil { background:linear-gradient(180deg, rgba(8,8,8,0) 30%, rgba(8,8,8,.55) 66%, rgba(8,8,8,.9) 100%); }
+  /* ── hud ── */
+  .hud {
+    position:fixed; left:0; right:0; bottom:0; z-index:200;
+    display:flex; align-items:flex-end; justify-content:space-between; gap:1rem;
+    padding:1.1rem clamp(1rem,3vw,2.4rem) 1.4rem; pointer-events:none;
+    background:linear-gradient(0deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.5) 60%, rgba(8,8,8,0) 100%);
+  }
+  .hud-l { font-family:var(--mono); font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; }
+  .hud-l b { color:var(--red); font-weight:400; }
+  .hud-r { font-family:var(--mono); font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(228,217,204,.42); text-align:right; }
+  .now { font-family:var(--bebas); font-size:clamp(1rem,2.2vw,1.5rem); letter-spacing:.06em; color:var(--ink); }
+  .now em { font-family:var(--mono); font-style:normal; font-size:.55rem; letter-spacing:.22em; color:rgba(228,217,204,.45); display:block; margin-top:.2rem; }
+  @media (max-width:760px) {
+    .ttl { display:none; }
+    .hud-r { display:none; }
+    .wcard { box-shadow:0 18px 50px rgba(0,0,0,.7); }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="/">BOOKI<span>|</span>STUDIO</a>
+  <div class="ttl"><b>Website Services</b><i>Six client sites · infinite</i></div>
+  <a class="back" href="/">← Back to site</a>
+</header>
+
+<div class="scene" id="scene">
+  <div class="track" id="track"></div>
+</div>
+
+<div class="hud">
+  <div class="hud-l">
+    <div class="now" id="now">—<em id="nowTag">Loading the spiral</em></div>
+  </div>
+  <div class="hud-l" style="text-align:right;">
+    <span id="counter">01</span> / <span id="total">06</span> &nbsp;<b>✦</b>&nbsp; <span id="hint">Scroll · Drag</span>
+    <div class="hud-r" style="margin-top:.4rem;">live client work — click a card to visit</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ───────────── the seven client sites (only these) ───────────── */
+  var SITES = [
+    { name:'Voltecharged',         tag:'DTC · Portable Blender',           dm:'voltecharged.com',                   url:'https://voltecharged.com/',                            img:'assets/ws-voltecharged.jpg' },
+    { name:'ShopGeComo',           tag:'Beauty E-Commerce',                dm:'shopgecomo.com',                     url:'https://shopgecomo.com/',                              img:'assets/ws-gecomo.jpg' },
+    { name:'MG Woodshop & More',   tag:'Custom Woodworking',               dm:'mgwoodshopandmore.com',              url:'https://mgwoodshopandmore.com/',                       img:'assets/ws-mgwoodshop.jpg' },
+    { name:'L&M Woodworking',      tag:'Carpentry & Millwork',             dm:'lmwoodworking.pages.dev',            url:'https://lmwoodworking.pages.dev/',                     img:'assets/ws-lmwoodworking.jpg' },
+    { name:'Sunburst Truck Lines', tag:'Intermodal Freight',               dm:'sunburst-truck-lines.pages.dev',     url:'https://sunburst-truck-lines.pages.dev/',              img:'assets/ws-sunburst.jpg' },
+    { name:'JKW Contracting',      tag:'Construction & Landscaping',       dm:'jkwllc.pages.dev',                   url:'https://jkwllc.pages.dev/',                            img:'assets/ws-jkwllc.jpg' }
+  ];
+
+  /* density: how many times the loop of seven is laid around the helix */
+  var q = /[?&]rep=(\d+)/.exec(location.search);
+  var REPEAT = q ? Math.max(1, Math.min(8, parseInt(q[1], 10))) : 3;
+  var qT = /[?&]turns=([\d.]+)/.exec(location.search);
+  var qR = /[?&]rad=([\d.]+)/.exec(location.search);
+
+  var PITCH             = 110;    /* scroll units per card */
+  var INERTIA           = 0.09;
+  var WHEEL_SENSITIVITY = 1.2;
+  var DRAG_SENSITIVITY  = 1.6;
+  var TURNS             = qT ? parseFloat(qT[1]) : 3;   /* helix turns per loop */
+  var RADIUS_FACTOR     = qR ? parseFloat(qR[1]) : 0.36;
+  var MOBILE_BREAK      = 760;
+
+  var scene = document.getElementById('scene');
+  var track = document.getElementById('track');
+  var nowEl = document.getElementById('now');
+  var nowTag = document.getElementById('nowTag');
+  var counterEl = document.getElementById('counter');
+  var totalEl = document.getElementById('total');
+  var hintEl = document.getElementById('hint');
+
+  var cards = [];
+  var scrollPos = 0, targetScroll = 0;
+  var dragging = false, lastX = 0, lastY = 0, moved = 0;
+  var lastCenter = -1;
+
+  function isMobile() { return window.innerWidth <= MOBILE_BREAK; }
+  function cardSize() {
+    if (isMobile()) {
+      var w = Math.min(340, Math.round(window.innerWidth * 0.78));
+      return [w, Math.round(w * 238 / 380)];
+    }
+    return [380, 238];
+  }
+
+  /* ───────────── build ───────────── */
+  function build() {
+    track.innerHTML = '';
+    cards.length = 0;
+    nowEl.textContent = SITES[0].name;
+    nowTag.textContent = SITES[0].tag + ' · ' + SITES[0].dm;
+    var n = 0;
+    for (var r = 0; r < REPEAT; r++) {
+      SITES.forEach(function (site) {
+        var a = document.createElement('a');
+        a.className = 'wcard';
+        a.href = site.url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.setAttribute('aria-label', site.name + ' — ' + site.tag);
+        var img = document.createElement('img');
+        img.src = site.img;
+        img.alt = site.name + ' — ' + site.tag;
+        img.draggable = false;
+        img.decoding = 'async';
+        var veil = document.createElement('span');
+        veil.className = 'veil';
+        var meta = document.createElement('span');
+        meta.className = 'meta';
+        meta.innerHTML = '<span class="nm"></span><span class="tg"></span><span class="dm">' + site.dm + ' ↗</span>';
+        meta.querySelector('.nm').textContent = site.name;
+        meta.querySelector('.tg').textContent = site.tag;
+        a.appendChild(img); a.appendChild(veil); a.appendChild(meta);
+        /* a drag must not count as a click */
+        a.addEventListener('click', function (e) {
+          if (moved > 6) { e.preventDefault(); }
+        });
+        track.appendChild(a);
+        cards.push({ el: a, site: site, index: n });
+        n++;
+      });
+    }
+    totalEl.textContent = String(SITES.length).padStart(2, '0');
+    layout();
+  }
+
+  /* ───────────── spiral layout ───────────── */
+  function layout() {
+    var vw = scene.offsetWidth, vh = scene.offsetHeight;
+    var cx = vw / 2, cy = vh / 2;
+    var sz = cardSize(), CARD_W = sz[0], CARD_H = sz[1];
+    cards.forEach(function (c) {
+      c.el.style.width = CARD_W + 'px';
+      c.el.style.height = CARD_H + 'px';
+    });
+
+    var N = cards.length;
+    var loop = N * PITCH;
+    var norm = ((scrollPos % loop) + loop) % loop;
+    var mobile = isMobile();
+
+    /* FULL-SCREEN RULE: the sweep must span the viewport, top to bottom */
+    var vSpan = (vh + CARD_H) * 1.5;
+    var radius = Math.min(vw * RADIUS_FACTOR, 760);
+    /* mobile: side-to-side strip, one full loop of cards wide */
+    var gapPx = mobile ? Math.max(24, Math.round(CARD_W * 0.09)) : Math.max(46, Math.round(CARD_W * 0.18));
+    var stripSpan = N * (CARD_W + gapPx);
+
+    var best = { d: 1e9, i: -1 };
+
+    cards.forEach(function (c) {
+      var i = c.index;
+      var prog = (((i * PITCH - norm) % loop) + loop) % loop / loop;   /* 0..1, infinite wrap */
+      var angle = prog * Math.PI * TURNS;
+      var z = Math.sin(angle) * (mobile ? 70 : 300);
+      var yFade, zFade, opacity, scale, blur, x, y, tx;
+
+      if (mobile) {
+        /* ── side-to-side infinite strip: cards travel horizontally, forever ── */
+        x = cx + (prog - 0.5) * stripSpan - CARD_W / 2;
+        y = cy + Math.sin(angle) * (vh * 0.20) - CARD_H / 2;
+        var dist = Math.abs((x + CARD_W / 2) - cx) / (vw * 0.66);
+        var edgeFade = Math.max(0, 1 - dist * dist);
+        var depth = (z + 70) / 140;                     /* 0 far · 1 near */
+        opacity = Math.min(1, edgeFade * (0.72 + 0.28 * depth));
+        scale = 0.9 + depth * 0.1;
+        blur = (1 - depth) * 1.2;
+        tx = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
+      } else {
+        /* ── full-screen helix, top to bottom ── */
+        x = cx + Math.sin(angle) * radius - CARD_W / 2;
+        y = cy + Math.sin(angle) * 80 + (prog - 0.5) * vSpan - CARD_H / 2;
+        yFade = Math.max(0, 1 - Math.abs(prog - 0.5) * 1.7);          /* emerge top, vanish bottom */
+        zFade = Math.max(0.22, (z + 300) / 430);
+        opacity = Math.min(1, yFade * zFade);
+        scale = 0.4 + ((z + 300) / 600) * 0.9;
+        blur = Math.max(0, (1 - (z + 300) / 600)) * 3.2;
+        tx = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,' + z.toFixed(1) + 'px)' +
+             ' rotateX(' + (Math.sin(angle) * 6).toFixed(2) + 'deg)';
+      }
+      tx += ' scale(' + scale.toFixed(3) + ')';
+
+      c.el.style.transform = tx;             /* NOTE: never rotateY — cards must not mirror */
+      c.el.style.opacity = opacity.toFixed(3);
+      c.el.style.filter = blur > 0.05 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
+      c.el.style.zIndex = mobile ? Math.round(400 + z) : Math.round(z + 300);
+      c.el.style.pointerEvents = opacity > 0.55 ? 'auto' : 'none';
+
+      var d = mobile ? Math.abs((x + CARD_W / 2) - cx) : Math.abs(opacity - 1) + Math.abs(y + CARD_H / 2 - cy) / vh;
+      if (opacity > 0.5 && d < best.d) { best.d = d; best.i = i; }
+    });
+
+    if (best.i >= 0 && best.i !== lastCenter) {
+      lastCenter = best.i;
+      var s = cards[best.i].site;
+      nowEl.textContent = s.name;
+      nowTag.textContent = s.tag + ' · ' + s.dm;
+      counterEl.textContent = String((best.i % SITES.length) + 1).padStart(2, '0');
+    }
+  }
+
+  /* ───────────── loop ───────────── */
+  function tick() {
+    scrollPos += (targetScroll - scrollPos) * INERTIA;
+    layout();
+    requestAnimationFrame(tick);
+  }
+
+  /* ───────────── input ───────────── */
+  scene.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    targetScroll += (e.deltaY + (isMobile() ? e.deltaX : 0)) * WHEEL_SENSITIVITY;
+  }, { passive: false });
+
+  scene.addEventListener('pointerdown', function (e) {
+    dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY;
+    if (scene.setPointerCapture) { try { scene.setPointerCapture(e.pointerId); } catch (err) {} }
+    scene.style.cursor = 'grabbing';
+  });
+  window.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var dx = lastX - e.clientX, dy = lastY - e.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    if (isMobile()) { targetScroll += (dx * 1.15 + dy * 0.55) * DRAG_SENSITIVITY; }
+    else { targetScroll += dy * DRAG_SENSITIVITY; }
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  window.addEventListener('pointerup', function () { dragging = false; scene.style.cursor = 'grab'; });
+  window.addEventListener('pointercancel', function () { dragging = false; scene.style.cursor = 'grab'; });
+
+  /* touch (explicit, in case pointer events are not delivered) */
+  scene.addEventListener('touchstart', function (e) {
+    dragging = true; moved = 0; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+  }, { passive: true });
+  window.addEventListener('touchmove', function (e) {
+    if (!dragging) return;
+    var t = e.touches[0], dx = lastX - t.clientX, dy = lastY - t.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    if (isMobile()) { targetScroll += (dx * 1.15 + dy * 0.55) * DRAG_SENSITIVITY; }
+    else { targetScroll += dy * DRAG_SENSITIVITY; }
+    lastX = t.clientX; lastY = t.clientY;
+  }, { passive: true });
+  window.addEventListener('touchend', function () { dragging = false; });
+
+  window.addEventListener('keydown', function (e) {
+    var step = 140;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { targetScroll += step; }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { targetScroll -= step; }
+    if (e.key === 'Home') { targetScroll = 0; }
+  });
+
+  var rT;
+  window.addEventListener('resize', function () {
+    clearTimeout(rT);
+    rT = setTimeout(function () { build(); }, 120);
+  });
+  window.addEventListener('orientationchange', function () { setTimeout(build, 200); });
+
+  hintEl.textContent = isMobile() ? 'Swipe ⇄' : 'Scroll · Drag';
+  build();
+  tick();
+})();
+</script>
+</body>
+</html>
