@@ -462,7 +462,10 @@
       c.el.style.opacity = opacity.toFixed(3);
       c.el.style.filter = blur > 0.05 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
       c.el.style.zIndex = mobile ? Math.round(400 + z) : Math.round(z + 300);
-      c.el.style.pointerEvents = opacity > 0.55 ? 'auto' : 'none';
+      /* Mobile caps out around opacity .6 (edge fade), so the tap threshold has to be
+         lower than the desktop hover/drag threshold or the cards visible at rest are
+         not tappable at all. */
+      c.el.style.pointerEvents = opacity > (mobile ? 0.3 : 0.55) ? 'auto' : 'none';
 
       var d = mobile ? Math.abs((x + CARD_W / 2) - cx) : Math.abs(opacity - 1) + Math.abs(y + CARD_H / 2 - cy) / vh;
       if (opacity > 0.5 && d < best.d) { best.d = d; best.i = i; }
