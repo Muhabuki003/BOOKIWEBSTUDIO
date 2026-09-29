@@ -809,7 +809,7 @@
   </div>
   <div class="work-grid" style="padding:0 4rem;display:grid;grid-template-columns:repeat(2,1fr);gap:2px;">
     <a href="https://muhabuki003.github.io/virditrucking/" target="_blank" class="proj work-card work-card-wide" style="position:relative;overflow:hidden;background:#161616;grid-column:span 2;aspect-ratio:21/9;display:flex;flex-direction:column;justify-content:flex-end;">
-      <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#141414 0 12px,#0e0e0e 12px 24px);"></div>
+      <img class="project-thumb" src="assets/proj-virdi.jpg" alt="Virdi Transport website — freight and logistics" loading="lazy" decoding="async"/>
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,8,.95) 0%,rgba(8,8,8,.2) 60%,transparent 100%);"></div>
       <div style="position:absolute;top:2rem;left:2.5rem;z-index:4;font-family:'Syne',sans-serif;font-size:.65rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;background:#D63929;color:#fff;padding:.4rem 1rem;">⚡ New Build</div>
       <div style="position:relative;z-index:3;padding:2rem 2.5rem;">
@@ -819,9 +819,9 @@
       </div>
       <div style="position:absolute;top:2rem;right:2.5rem;z-index:3;width:42px;height:42px;border:1px solid rgba(228,217,204,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#E4D9CC;">↗</div>
     </a>
-    <div id="dynamic-projects-grid"></div>
+    
     <a href="https://shopgecomo.com/" target="_blank" class="work-card" style="position:relative;overflow:hidden;background:#161616;aspect-ratio:16/10;display:flex;flex-direction:column;justify-content:flex-end;">
-      <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#141414 0 12px,#0e0e0e 12px 24px);"></div>
+      <img class="project-thumb" src="assets/proj-gecomo.jpg" alt="GECOMO storefront — beauty e-commerce" loading="lazy" decoding="async"/>
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,8,.95) 0%,rgba(8,8,8,.2) 60%,transparent 100%);"></div>
       <div style="position:relative;z-index:3;padding:2rem 2.5rem;">
         <div style="font-family:'Syne',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:#D63929;margin-bottom:.5rem;">Beauty · E-Commerce</div>
@@ -831,7 +831,7 @@
       <div style="position:absolute;top:2rem;right:2.5rem;z-index:3;width:42px;height:42px;border:1px solid rgba(228,217,204,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#E4D9CC;">↗</div>
     </a>
     <a href="https://loveflix.us/" target="_blank" class="work-card work-card-wide" style="position:relative;overflow:hidden;background:#161616;grid-column:span 2;aspect-ratio:21/9;display:flex;flex-direction:column;justify-content:flex-end;">
-      <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#141414 0 12px,#0e0e0e 12px 24px);"></div>
+      <img class="project-thumb" src="assets/proj-loveflix.jpg" alt="LoveFlix — private streaming platform for two" loading="lazy" decoding="async"/>
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,8,.95) 0%,rgba(8,8,8,.2) 60%,transparent 100%);"></div>
       <div style="position:relative;z-index:3;padding:2rem 2.5rem;">
         <div style="font-family:'Syne',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:#D63929;margin-bottom:.5rem;">Couples · Streaming Platform</div>
@@ -840,6 +840,7 @@
       </div>
       <div style="position:absolute;top:2rem;right:2.5rem;z-index:3;width:42px;height:42px;border:1px solid rgba(228,217,204,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#E4D9CC;">↗</div>
     </a>
+    <div id="dynamic-projects-grid"></div>
   </div>
 </section>
 
@@ -1710,16 +1711,22 @@ async function deleteSite(id) {
 }
 
 // ---- SITES: PUBLIC DISPLAY (main page) ----
-async function loadPublicSites() {
+// Client work rendered when the CMS is unreachable — every image is a local asset.
+const FALLBACK_SITES = [
+  { name:'Voltecharged',        industry:'DTC · Portable Blender',  description:'A direct-to-consumer product launch built to convert.',            url:'https://voltecharged.com/',                  img:'assets/ws-voltecharged.jpg' },
+  { name:'MG Woodshop & More',  industry:'Custom Woodworking',        description:'Hand-built furniture and millwork, sold online.',                  url:'https://mgwoodshopandmore.com/',             img:'assets/ws-mgwoodshop.jpg' },
+  { name:'L&M Woodworking',     industry:'Carpentry & Millwork',      description:'A carpentry shop whose portfolio books the work.',                 url:'https://lmwoodworking.pages.dev/',           img:'assets/ws-lmwoodworking.jpg' },
+  { name:'Sunburst Truck Lines',industry:'Intermodal Freight',        description:'Freight capacity and lanes, presented clearly.',                   url:'https://sunburst-truck-lines.pages.dev/',    img:'assets/ws-sunburst.jpg' },
+  { name:'JKW Contracting',     industry:'Construction & Landscaping', description:'Contracting services with instant quote capture.',                url:'https://jkwllc.pages.dev/',                  img:'assets/ws-jkwllc.jpg' },
+  { name:'HeyCocoa',            industry:'Specialty Coffee',          description:'A specialty coffee brand with a working storefront.',             url:'https://heycocoa.pages.dev/',                img:'assets/ws-heycocoa.jpg' }
+];
+
+function renderProjectCards(list) {
   const container = document.getElementById('dynamic-projects-grid');
   if (!container) return;
-
-  const { data, error } = await sb.from('sites').select('*').eq('active', true).order('created_at', { ascending: false });
-  if (error || !data || !data.length) { container.innerHTML = ''; return; }
-
-  container.innerHTML = data.map(site => `
+  container.innerHTML = (list || []).map(site => `
     <a href="${escHtmlAttr(site.url)}" target="_blank" rel="noopener" class="project-card">
-      <img src="${escHtml(site.image_data || '')}" alt="${escHtml(site.name || '')}" class="project-thumb"/>
+      <img src="${escHtml(site.img || site.image_data || '')}" alt="${escHtml(site.name || '')}" class="project-thumb" loading="lazy"/>
       <div class="project-overlay"></div>
       <div class="project-info">
         ${site.industry ? `<div class="project-industry">${escHtml(site.industry)}</div>` : ''}
@@ -1729,6 +1736,18 @@ async function loadPublicSites() {
       <div class="project-arrow">↗</div>
     </a>
   `).join('');
+}
+
+async function loadPublicSites() {
+  // Paint the local client work first so the portfolio is never empty.
+  renderProjectCards(FALLBACK_SITES);
+
+  // If the CMS is reachable it takes over with the current published list.
+  try {
+    const { data, error } = await sb.from('sites').select('*').eq('active', true).order('created_at', { ascending: false });
+    if (error || !data || !data.length) return;
+    renderProjectCards(data);
+  } catch (e) { /* CMS unreachable — the local cards stay in place */ }
 }
 
 function escHtmlAttr(s) {
