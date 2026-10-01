@@ -216,21 +216,20 @@
 (function () {
   'use strict';
 
-  /* ───────────── the seven client sites (only these) ─────────────
+  /* ───────────── the six client sites (only these) ─────────────
      `frame:1` = the host sends no X-Frame-Options and no CSP frame-ancestors,
      verified from the live response headers (2026-09-21), so it embeds inline.
      Anything else falls back to the thumbnail + "Open site ↗" card. */
   var SITES = [
     { name:'Voltecharged',         tag:'DTC · Portable Blender',           dm:'voltecharged.com',                   url:'https://voltecharged.com/',                            img:'assets/ws-voltecharged.jpg', frame:1 },
-    { name:'ShopGeComo',           tag:'Beauty E-Commerce',                dm:'shopgecomo.com',                     url:'https://shopgecomo.com/',                              img:'assets/ws-gecomo.jpg',       frame:1 },
     { name:'MG Woodshop & More',   tag:'Custom Woodworking',               dm:'mgwoodshopandmore.com',              url:'https://mgwoodshopandmore.com/',                       img:'assets/ws-mgwoodshop.jpg',   frame:1 },
-    { name:'L&M Woodworking',      tag:'Carpentry & Millwork',             dm:'lmwoodworking.pages.dev',            url:'https://lmwoodworking.pages.dev/',                     img:'assets/ws-lmwoodworking.jpg',frame:1 },
-    { name:'Sunburst Truck Lines', tag:'Intermodal Freight',               dm:'sunburst-truck-lines.pages.dev',     url:'https://sunburst-truck-lines.pages.dev/',              img:'assets/ws-sunburst.jpg',     frame:1 },
-    { name:'JKW Contracting',      tag:'Construction & Landscaping',       dm:'jkwllc.pages.dev',                   url:'https://jkwllc.pages.dev/',                            img:'assets/ws-jkwllc.jpg',       frame:1 },
-    { name:'HeyCocoa',              tag:'Specialty Coffee',                 dm:'heycocoa.pages.dev',                 url:'https://heycocoa.pages.dev/',                          img:'assets/ws-heycocoa.jpg',     frame:1 }
+    { name:'Kovah Active',         tag:"Women's Activewear",                dm:'kovahactive.com',                    url:'https://kovahactive.com/',                             img:'assets/ws-kovahactive.jpg',  frame:1 },
+    { name:'Mawazo by Dagiova',    tag:'Linen & Tailoring',                 dm:'mawazobydagiova.com',                url:'https://mawazobydagiova.com/',                         img:'assets/ws-mawazo.jpg',       frame:1 },
+    { name:'LazusAI',              tag:'AI Receptionist',                   dm:'lazusai.com',                        url:'https://lazusai.com/',                                 img:'assets/ws-lazusai.jpg',      frame:1 },
+    { name:'GECOMO',               tag:'Beauty & Cosmetics',                dm:'shopgecomo.com',                     url:'https://shopgecomo.com/',                              img:'assets/ws-gecomo.jpg',       frame:1 }
   ];
 
-  /* density: how many times the loop of seven is laid around the helix */
+  /* density: how many times the loop of six is laid around the helix */
   var q = /[?&]rep=(\d+)/.exec(location.search);
   var REPEAT = q ? Math.max(1, Math.min(8, parseInt(q[1], 10))) : 3;
   var qT = /[?&]turns=([\d.]+)/.exec(location.search);
