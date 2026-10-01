@@ -810,8 +810,26 @@
   <div class="work-grid" style="padding:0 4rem;display:grid;grid-template-columns:repeat(2,1fr);gap:2px;">
     
     
-    
-    
+    <a href="https://shopgecomo.com/" target="_blank" class="work-card" style="position:relative;overflow:hidden;background:#161616;aspect-ratio:16/10;display:flex;flex-direction:column;justify-content:flex-end;">
+      <img class="project-thumb" src="assets/proj-gecomo.jpg" alt="GECOMO storefront — beauty e-commerce" loading="lazy" decoding="async"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,8,.95) 0%,rgba(8,8,8,.2) 60%,transparent 100%);"></div>
+      <div style="position:relative;z-index:3;padding:2rem 2.5rem;">
+        <div style="font-family:'Syne',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:#D63929;margin-bottom:.5rem;">Beauty · E-Commerce</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.04em;color:#E4D9CC;line-height:1;" class="work-card-name">GECOMO</div>
+        <div style="font-size:.85rem;color:rgba(228,217,204,.6);margin-top:.4rem;line-height:1.5;">Effortless brows for real mornings — a premium beauty storefront built to convert.</div>
+      </div>
+      <div style="position:absolute;top:2rem;right:2.5rem;z-index:3;width:42px;height:42px;border:1px solid rgba(228,217,204,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#E4D9CC;">↗</div>
+    </a>
+    <a href="https://loveflix.us/" target="_blank" class="work-card work-card-wide" style="position:relative;overflow:hidden;background:#161616;grid-column:span 2;aspect-ratio:21/9;display:flex;flex-direction:column;justify-content:flex-end;">
+      <img class="project-thumb" src="assets/proj-loveflix.jpg" alt="LoveFlix — private streaming platform for two" loading="lazy" decoding="async"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,8,.95) 0%,rgba(8,8,8,.2) 60%,transparent 100%);"></div>
+      <div style="position:relative;z-index:3;padding:2rem 2.5rem;">
+        <div style="font-family:'Syne',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:#D63929;margin-bottom:.5rem;">Couples · Streaming Platform</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:.04em;color:#E4D9CC;line-height:1;" class="work-card-name">LOVEFLIX</div>
+        <div style="font-size:.85rem;color:rgba(228,217,204,.6);margin-top:.4rem;max-width:480px;line-height:1.5;">Your private cinema, built for two — a streaming platform for videos, photos and voice notes.</div>
+      </div>
+      <div style="position:absolute;top:2rem;right:2.5rem;z-index:3;width:42px;height:42px;border:1px solid rgba(228,217,204,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#E4D9CC;">↗</div>
+    </a>
     <div id="dynamic-projects-grid"></div>
   </div>
 </section>
