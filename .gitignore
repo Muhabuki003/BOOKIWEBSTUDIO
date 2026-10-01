@@ -1,0 +1,2 @@
+# local backups must never be published by the static host
+*.bak-*
