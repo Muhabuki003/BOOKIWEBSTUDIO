@@ -9,15 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // Supabase client — anon key is safe for browser use; RLS enforces access.
-  const SUPABASE_URL      = 'https://rrunczvxquobjgeghclh.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydW5jenZ4cXVvYmpnZWdoY2xoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNjc2MzUsImV4cCI6MjA5Mjc0MzYzNX0.Il0If-fj8kN0NXo_3L_uztDBZmL17dxuNfxB1aAJecI';
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true }
-  });
-</script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -51,394 +42,8 @@
   .product-text { overflow-y: auto; scrollbar-width: thin; }
 
 
-/* ===== ADMIN LOGIN ===== */
-#admin-login {
-  display: none;
-  position: fixed; inset: 0; z-index: 999999;
-  background: #080808;
-  align-items: center; justify-content: center;
-  font-family: 'DM Sans', sans-serif;
-}
-#admin-login.open { display: flex; }
-
-.login-box {
-  width: 100%; max-width: 380px;
-  background: #111; border: 1px solid #222;
-  padding: 2.5rem;
-  position: relative;
-}
-.login-box::before {
-  content: ''; position: absolute; top: -1px; left: -1px;
-  width: 50px; height: 3px; background: #D63929;
-}
-.login-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.8rem; letter-spacing: 0.08em;
-  color: #E4D9CC; margin-bottom: 0.3rem;
-}
-.login-title span { color: #D63929; }
-.login-sub {
-  font-family: 'Syne', sans-serif; font-size: 0.65rem;
-  font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
-  color: #444; margin-bottom: 2rem;
-}
-.login-field {
-  position: relative; margin-bottom: 1rem;
-}
-.login-field input {
-  width: 100%; background: #0d0d0d; border: 1px solid #222;
-  border-bottom: 1px solid #333; color: #E4D9CC;
-  font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
-  padding: 0.9rem 3rem 0.9rem 1rem; outline: none;
-  transition: border-color 0.2s; letter-spacing: 0.1em;
-}
-.login-field input:focus { border-color: #D63929; }
-.login-toggle {
-  position: absolute; right: 0.8rem; top: 50%;
-  transform: translateY(-50%);
-  background: none; border: none; color: #444; cursor: pointer;
-  font-size: 1rem; padding: 0.2rem; transition: color 0.2s;
-}
-.login-toggle:hover { color: #888; }
-.login-btn {
-  width: 100%; background: #D63929; border: none;
-  font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 800;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  color: #fff; padding: 1rem; cursor: pointer;
-  transition: background 0.2s; margin-top: 0.5rem;
-}
-.login-btn:hover { background: #bb2e1f; }
-.login-error {
-  font-family: 'Syne', sans-serif; font-size: 0.68rem;
-  font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
-  color: #D63929; margin-top: 0.8rem; min-height: 1rem;
-  opacity: 0; transition: opacity 0.2s;
-}
-.login-error.show { opacity: 1; }
-.login-cancel {
-  display: block; text-align: center; margin-top: 1.2rem;
-  font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 600;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  color: #333; cursor: pointer; transition: color 0.2s;
-  background: none; border: none; width: 100%;
-}
-.login-cancel:hover { color: #666; }
-
-@keyframes shake {
-  0%,100%{transform:translateX(0)}
-  20%{transform:translateX(-8px)}
-  40%{transform:translateX(8px)}
-  60%{transform:translateX(-6px)}
-  80%{transform:translateX(4px)}
-}
-
-/* ===== ADMIN PANEL ===== */
-#admin-panel {
-  display: none;
-  position: fixed; inset: 0; z-index: 99999;
-  background: #0a0a0a;
-  font-family: 'DM Sans', sans-serif;
-  overflow-y: auto;
-}
-#admin-panel.open { display: block; }
-
-.admin-nav {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.2rem 2.5rem;
-  background: #111; border-bottom: 1px solid #222;
-  position: sticky; top: 0; z-index: 10;
-}
-.admin-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.4rem; letter-spacing: 0.1em; color: #E4D9CC;
-}
-.admin-logo span { color: #D63929; }
-.admin-logo sub {
-  font-family: 'Syne', sans-serif; font-size: 0.55rem;
-  font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
-  color: #666; vertical-align: middle; margin-left: 0.5rem;
-}
-.admin-close {
-  background: none; border: 1px solid #333; color: #888;
-  font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  padding: 0.5rem 1.2rem; cursor: pointer; transition: all 0.2s;
-}
-.admin-close:hover { border-color: #D63929; color: #D63929; }
-
-.admin-body { padding: 2rem 2.5rem; max-width: 1100px; margin: 0 auto; }
-
-.admin-stats-row {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
-  margin-bottom: 2.5rem;
-}
-.admin-stat {
-  background: #111; border: 1px solid #222; padding: 1.2rem 1.5rem;
-  border-radius: 4px;
-}
-.admin-stat-num {
-  font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem;
-  line-height: 1; color: #E4D9CC;
-}
-.admin-stat-label {
-  font-family: 'Syne', sans-serif; font-size: 0.62rem; font-weight: 600;
-  letter-spacing: 0.18em; text-transform: uppercase; color: #555;
-  margin-top: 0.3rem;
-}
-.admin-stat.highlight .admin-stat-num { color: #D63929; }
-
-.admin-toolbar {
-  display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center;
-  flex-wrap: wrap;
-}
-.admin-filter {
-  font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  background: #111; border: 1px solid #222; color: #888;
-  padding: 0.5rem 1.2rem; cursor: pointer; transition: all 0.2s;
-  border-radius: 2px;
-}
-.admin-filter.active, .admin-filter:hover { background: #D63929; border-color: #D63929; color: #fff; }
-.admin-search {
-  flex: 1; max-width: 320px;
-  background: #111; border: 1px solid #222; color: #E4D9CC;
-  font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
-  padding: 0.5rem 1rem; outline: none; border-radius: 2px;
-  transition: border-color 0.2s;
-}
-.admin-search:focus { border-color: #D63929; }
-.admin-search::placeholder { color: #444; }
-.admin-clear-btn {
-  margin-left: auto;
-  font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 700;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  background: none; border: 1px solid #333; color: #555;
-  padding: 0.5rem 1rem; cursor: pointer; transition: all 0.2s; border-radius: 2px;
-}
-.admin-clear-btn:hover { border-color: #D63929; color: #D63929; }
-
-/* ADMIN TABS NAV */
-.admin-tabs-nav {
-  display: flex; gap: 0; border-bottom: 1px solid #1e1e1e;
-  background: #0d0d0d; padding: 0 2.5rem;
-  position: sticky; top: 60px; z-index: 9;
-}
-.admin-tab-btn {
-  font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  background: none; border: none; border-bottom: 2px solid transparent;
-  color: #555; padding: 1rem 1.5rem; cursor: pointer;
-  transition: color 0.2s, border-color 0.2s; margin-bottom: -1px;
-}
-.admin-tab-btn:hover { color: #E4D9CC; }
-.admin-tab-btn.active { color: #D63929; border-bottom-color: #D63929; }
-
-/* SITES UPLOAD FORM */
-.sites-section-title {
-  font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem;
-  letter-spacing: 0.08em; color: #E4D9CC; margin-bottom: 1.5rem;
-}
-.sites-form-card {
-  background: #111; border: 1px solid #1e1e1e; border-radius: 4px;
-  padding: 1.8rem 2rem; margin-bottom: 2rem;
-}
-.sites-form-grid {
-  display: grid; grid-template-columns: 220px 1fr; gap: 2rem; align-items: start;
-}
-.site-image-drop {
-  border: 1px dashed #333; border-radius: 4px; aspect-ratio: 16/9;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: pointer; transition: border-color 0.2s; overflow: hidden;
-  background: #0d0d0d; position: relative;
-}
-.site-image-drop:hover { border-color: #D63929; }
-.site-image-drop img { width: 100%; height: 100%; object-fit: cover; }
-.site-image-drop .drop-hint {
-  font-family: 'Syne', sans-serif; font-size: 0.62rem; font-weight: 600;
-  letter-spacing: 0.15em; text-transform: uppercase; color: #444;
-  text-align: center; padding: 1rem; pointer-events: none;
-}
-.site-image-drop .drop-icon { font-size: 2rem; opacity: 0.3; margin-bottom: 0.5rem; }
-#siteImageInput { display: none; }
-.site-fields { display: flex; flex-direction: column; gap: 0.75rem; }
-.site-field {
-  background: #0d0d0d; border: 1px solid #222; color: #E4D9CC;
-  font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
-  padding: 0.65rem 1rem; outline: none; border-radius: 2px;
-  transition: border-color 0.2s; width: 100%;
-}
-.site-field:focus { border-color: #D63929; }
-.site-field::placeholder { color: #444; }
-.site-field.textarea { resize: vertical; min-height: 72px; }
-.site-submit-btn {
-  font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  background: #D63929; border: none; color: #fff;
-  padding: 0.75rem 1.8rem; cursor: pointer; transition: background 0.2s;
-  border-radius: 2px; align-self: flex-start;
-}
-.site-submit-btn:hover { background: #bb2e1f; }
-.site-submit-btn:disabled { background: #4a1a15; cursor: not-allowed; }
-.sites-form-status {
-  font-family: 'Syne', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em;
-  text-transform: uppercase; padding: 0.5rem 0; color: #888; display: none;
-}
-.sites-form-status.ok  { color: #4caf50; display: block; }
-.sites-form-status.err { color: #D63929; display: block; }
-
-/* SITES LIST */
-.sites-list-header {
-  font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 700;
-  letter-spacing: 0.2em; text-transform: uppercase; color: #555;
-  margin-bottom: 1rem;
-}
-.site-row {
-  background: #111; border: 1px solid #1e1e1e; border-radius: 4px;
-  display: flex; align-items: center; gap: 1.2rem;
-  padding: 0.8rem 1.2rem; margin-bottom: 0.6rem;
-  transition: border-color 0.2s;
-}
-.site-row:hover { border-color: #333; }
-.site-row-thumb {
-  width: 72px; height: 44px; object-fit: cover;
-  border-radius: 2px; flex-shrink: 0; background: #0d0d0d;
-  border: 1px solid #222;
-}
-.site-row-info { flex: 1; min-width: 0; }
-.site-row-name {
-  font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700;
-  letter-spacing: 0.08em; color: #E4D9CC; white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis;
-}
-.site-row-url {
-  font-size: 0.75rem; color: #555; white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis; margin-top: 0.2rem;
-}
-.site-row-del {
-  font-family: 'Syne', sans-serif; font-size: 0.62rem; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  background: none; border: 1px solid #2a2a2a; color: #555;
-  padding: 0.35rem 0.8rem; cursor: pointer; transition: all 0.2s;
-  border-radius: 2px; flex-shrink: 0;
-}
-.site-row-del:hover { border-color: #D63929; color: #D63929; }
-
 /* DYNAMIC PROJECTS in main site */
 #dynamic-projects-grid { display: contents; }
-
-.admin-empty {
-  text-align: center; padding: 5rem 2rem; color: #333;
-  font-family: 'Syne', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-.admin-empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
-
-.inquiry-card {
-  background: #111; border: 1px solid #1e1e1e;
-  border-radius: 4px; margin-bottom: 0.75rem;
-  transition: border-color 0.2s;
-  overflow: hidden;
-}
-.inquiry-card:hover { border-color: #333; }
-.inquiry-card.unread { border-left: 3px solid #D63929; }
-
-.inquiry-header {
-  display: flex; align-items: center; gap: 1rem;
-  padding: 1rem 1.5rem; cursor: pointer;
-}
-.inq-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: #D63929; flex-shrink: 0; transition: background 0.2s;
-}
-.inquiry-card.read .inq-dot { background: #333; }
-.inq-name {
-  font-family: 'Syne', sans-serif; font-size: 0.9rem;
-  font-weight: 700; color: #E4D9CC; min-width: 160px;
-}
-.inq-business {
-  font-size: 0.8rem; color: #666; flex: 1;
-}
-.inq-budget {
-  font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  background: #1a1a1a; border: 1px solid #2a2a2a;
-  color: #E4D9CC; padding: 0.3rem 0.8rem; border-radius: 2px;
-  white-space: nowrap;
-}
-.inq-date {
-  font-size: 0.75rem; color: #444; white-space: nowrap;
-  margin-left: auto;
-}
-.inq-chevron {
-  color: #444; font-size: 0.8rem; margin-left: 0.5rem;
-  transition: transform 0.3s;
-}
-.inquiry-card.expanded .inq-chevron { transform: rotate(180deg); }
-
-.inquiry-body {
-  display: none; padding: 0 1.5rem 1.5rem;
-  border-top: 1px solid #1a1a1a;
-}
-.inquiry-card.expanded .inquiry-body { display: block; }
-
-.inq-message {
-  font-size: 0.88rem; line-height: 1.75; color: #aaa;
-  margin: 1rem 0 1.2rem; white-space: pre-wrap;
-}
-.inq-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-.inq-btn {
-  font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 700;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  padding: 0.5rem 1.1rem; cursor: pointer; border-radius: 2px;
-  transition: all 0.2s; border: 1px solid;
-}
-.inq-btn.reply { background: #D63929; border-color: #D63929; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; }
-.inq-btn.reply:hover { background: #bb2e1f; }
-.inq-btn.mark-read { background: none; border-color: #333; color: #666; }
-.inq-btn.mark-read:hover { border-color: #E4D9CC; color: #E4D9CC; }
-.inq-btn.delete { background: none; border-color: #2a1a1a; color: #4a2a2a; }
-.inq-btn.delete:hover { border-color: #D63929; color: #D63929; }
-.inq-meta {
-  display: flex; gap: 2rem; margin-bottom: 0.5rem; margin-top: 1rem;
-  flex-wrap: wrap;
-}
-.inq-meta-item { font-size: 0.78rem; color: #555; }
-.inq-meta-item strong { color: #888; margin-right: 0.4rem; }
-
-.inq-type-badge {
-  font-family: 'Syne', sans-serif; font-size: 0.6rem; font-weight: 800;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  padding: 0.25rem 0.55rem; border-radius: 2px;
-  border: 1px solid; white-space: nowrap;
-}
-.inq-type-badge.contact { color: #6da3c2; border-color: #234356; background: #0f1c25; }
-.inq-type-badge.intake  { color: #d6a829; border-color: #4a3a10; background: #1f1808; }
-
-.intake-section {
-  margin-top: 1.4rem; padding-top: 1.1rem;
-  border-top: 1px dashed #1e1e1e;
-}
-.intake-section:first-of-type { border-top: none; padding-top: 0; margin-top: 0.6rem; }
-.intake-section-title {
-  font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 800;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  color: #D63929; margin-bottom: 0.7rem;
-}
-.intake-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.4rem 1.5rem;
-}
-.intake-row {
-  font-size: 0.8rem; color: #aaa; line-height: 1.5;
-  padding: 0.2rem 0;
-}
-.intake-row strong { color: #888; margin-right: 0.4rem; font-weight: 600; }
-.intake-row.full { grid-column: 1 / -1; white-space: pre-wrap; }
-.intake-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.2rem; }
-.intake-chip {
-  font-size: 0.72rem; color: #d4cfbf; background: #181818;
-  border: 1px solid #262626; padding: 0.2rem 0.55rem; border-radius: 2px;
-}
 /* ===================================================================
    MOBILE RESPONSIVE — everything below only applies at narrow widths.
    All values use !important because the base design is written as
@@ -528,17 +133,6 @@
   .footer-bottom { flex-direction: column !important; align-items: flex-start !important; gap: 1.25rem !important; padding: 2rem 1.25rem !important; }
   .footer-links { flex-wrap: wrap !important; gap: .9rem 1.4rem !important; }
 
-  /* ---- ADMIN (login + dashboard) ---- */
-  #admin-login { padding: 1.25rem !important; }
-  .login-box { padding: 2rem 1.5rem !important; }
-  .admin-nav { padding: 1rem 1.25rem !important; }
-  .admin-body { padding: 1.5rem 1.25rem !important; }
-  .admin-tabs-nav { padding: 0 1.25rem !important; top: 0 !important; }
-  .admin-stats-row { grid-template-columns: repeat(2,1fr) !important; }
-  .sites-form-grid { grid-template-columns: 1fr !important; }
-  .inquiry-header { flex-wrap: wrap !important; row-gap: .4rem !important; }
-  .inq-name { min-width: 0 !important; width: 100% !important; }
-  .inq-date { margin-left: 0 !important; }
 }
 
 @media (max-width: 420px) {
@@ -894,7 +488,8 @@
       <div style="width:36px;height:36px;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">in</div>LinkedIn — Adrien Muhabuki
     </a>
   </div>
-  <form style="display:flex;flex-direction:column;gap:0;" id="contactForm" onsubmit="handleSubmit(event)">
+  <form style="display:flex;flex-direction:column;gap:0;" id="contactForm" data-source="contact" data-product="Main site" onsubmit="handleSubmit(event)">
+  <input type="text" id="_hp" name="_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"/>
     <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
       <div style="position:relative;margin-bottom:2px;"><input type="text" id="name" required placeholder="Your Name" style="width:100%;background:#161616;border:none;border-bottom:1px solid #2a2a2a;color:#E4D9CC;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:300;padding:1.4rem 1.2rem;outline:none;"></div>
       <div style="position:relative;margin-bottom:2px;"><input type="email" id="email" required placeholder="Email Address" style="width:100%;background:#161616;border:none;border-bottom:1px solid #2a2a2a;color:#E4D9CC;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:300;padding:1.4rem 1.2rem;outline:none;"></div>
@@ -945,744 +540,133 @@
 </div>
 
 
-<!-- ADMIN LOGIN -->
-<div id="admin-login">
-  <div class="login-box">
-    <div class="login-title">BOOKI<span>|</span>STUDIO</div>
-    <div class="login-sub">Admin Access Required</div>
-    <div class="login-field">
-      <input type="email" id="adminEmail" placeholder="Email" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('adminPassword').focus()"/>
-    </div>
-    <div class="login-field">
-      <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkLogin()"/>
-      <button class="login-toggle" onclick="togglePw()" tabindex="-1" id="pwToggle">👁</button>
-    </div>
-    <button class="login-btn" onclick="checkLogin()" id="loginBtn">Sign In →</button>
-    <div class="login-error" id="loginError">Sign in failed</div>
-    <button class="login-cancel" onclick="closeLogin()">Cancel</button>
-  </div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div id="admin-panel">
-  <div class="admin-nav">
-    <div class="admin-logo">BOOKI<span>|</span>STUDIO <sub>Admin</sub></div>
-    <div style="display:flex; gap:0.5rem;">
-      <button class="admin-close" onclick="signOutAdmin()">Sign Out</button>
-      <button class="admin-close" onclick="closeAdmin()">✕ Close</button>
-    </div>
-  </div>
-
-  <!-- Tab navigation -->
-  <div class="admin-tabs-nav">
-    <button class="admin-tab-btn active" id="tab-btn-inquiries" onclick="switchAdminTab('inquiries', this)">Inquiries</button>
-    <button class="admin-tab-btn" id="tab-btn-sites" onclick="switchAdminTab('sites', this)">Sites</button>
-  </div>
-
-  <!-- Inquiries tab -->
-  <div id="admin-tab-inquiries" class="admin-body">
-    <div class="admin-stats-row" id="adminStats"></div>
-    <div class="admin-toolbar">
-      <button class="admin-filter active" onclick="setFilter('all',this)">All</button>
-      <button class="admin-filter" onclick="setFilter('unread',this)">Unread</button>
-      <button class="admin-filter" onclick="setFilter('read',this)">Read</button>
-      <button class="admin-filter active" onclick="setTypeFilter('all',this)" data-type-filter="all" style="margin-left:auto;">All Types</button>
-      <button class="admin-filter" onclick="setTypeFilter('contact',this)" data-type-filter="contact">Contact</button>
-      <button class="admin-filter" onclick="setTypeFilter('intake',this)" data-type-filter="intake">Intake</button>
-      <input class="admin-search" type="text" placeholder="Search name, email, message..." oninput="renderInquiries()" id="adminSearch"/>
-      <button class="admin-clear-btn" onclick="clearAll()">Clear All</button>
-    </div>
-    <div id="inquiryList"></div>
-  </div>
-
-  <!-- Sites tab -->
-  <div id="admin-tab-sites" class="admin-body" style="display:none;">
-    <div class="sites-section-title">Manage Sites</div>
-
-    <!-- Add site form -->
-    <div class="sites-form-card">
-      <div class="sites-form-grid">
-        <!-- Image upload -->
-        <div>
-          <div class="site-image-drop" onclick="document.getElementById('siteImageInput').click()" id="siteImageDrop">
-            <div class="drop-icon">🖼</div>
-            <div class="drop-hint">Click to upload<br/>thumbnail image</div>
-          </div>
-          <input type="file" id="siteImageInput" accept="image/*" onchange="onSiteImagePicked(this)"/>
-        </div>
-        <!-- Fields -->
-        <div class="site-fields">
-          <input type="text" id="siteName" class="site-field" placeholder="Site name  (e.g. Sunburst Trucking)"/>
-          <input type="url"  id="siteUrl"  class="site-field" placeholder="Live URL  (https://…)"/>
-          <input type="text" id="siteIndustry" class="site-field" placeholder="Industry · Location  (optional)"/>
-          <textarea id="siteDesc" class="site-field textarea" placeholder="Short description  (optional)"></textarea>
-          <button class="site-submit-btn" id="siteSubmitBtn" onclick="submitSite()">Add Site →</button>
-          <div class="sites-form-status" id="sitesFormStatus"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Existing sites list -->
-    <div class="sites-list-header">Published Sites</div>
-    <div id="adminSitesList"><div class="admin-empty"><div class="admin-empty-icon">⏳</div>Loading…</div></div>
-  </div>
-</div>
 
 
 <script>
-// ---- ADMIN LOGIC ----
-let adminFilter = 'all';
-let adminTypeFilter = 'all';
-let supabaseInquiries = []; // hydrated from Supabase after sign-in
+window.BS_API_BASE = window.BS_API_BASE || 'https://ai.bookistudios.com/api';
+/* ============================================================
+   BOOKISTUDIO — enquiry form handler (landing page + all 3 product pages).
 
-async function openAdmin() {
-  // Check Supabase session first — if signed in, skip the login screen.
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) { showAdminPanel(); return; }
-  } catch (e) { /* fall through to login UI */ }
+   ONE code path. It POSTs the enquiry to the studio's own backend
+   (window.BS_API_BASE, set in bspi-config.js) and always restores the
+   button — success, failure, timeout, whatever happens.
 
-  document.getElementById('admin-login').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => document.getElementById('adminEmail').focus(), 100);
-}
+   Replaces the old two-host double-write (hosted database + mail relay) that
+   left the button on "Sending…" whenever the relay stalled and stored nothing
+   whenever the hosted database was unreachable — it has been dead for a
+   while now, so this build talks to our own backend only.
 
-async function showAdminPanel() {
-  document.getElementById('admin-login').classList.remove('open');
-  document.getElementById('admin-panel').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  await loadInquiries();
-}
+   Source of the tags: the <form> element carries data-source / data-product,
+   e.g.
+       main page      data-source="contact"       data-product="Main site"
+       product pages  data-source="lazusai"       data-product="LazusAI"
+                      data-source="bsai"          data-product="BSAI Agents"
+                      data-source="web-software"  data-product="Web & Software"
+   Both ride to the server so the admin inbox can show which product a lead
+   came from.
+   ============================================================ */
+(function () {
+  var LABEL = 'Send Message →';
+  var TIMEOUT_MS = 12000;
 
-async function checkLogin() {
-  const email = (document.getElementById('adminEmail').value || '').trim();
-  const pw    = document.getElementById('adminPassword').value;
-  const err   = document.getElementById('loginError');
-  const btn   = document.getElementById('loginBtn');
-
-  if (!email || !pw) {
-    err.textContent = 'Email and password required';
-    err.classList.add('show');
-    return;
+  function apiBase() {
+    return (window.BS_API_BASE || 'https://ai.bookistudios.com/api').replace(/\/+$/, '');
   }
 
-  btn.disabled = true; btn.textContent = 'Signing in…';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-  btn.disabled = false; btn.textContent = 'Sign In →';
-
-  if (error) {
-    err.textContent = error.message || 'Sign in failed';
-    err.classList.add('show');
-    document.getElementById('adminPassword').value = '';
-    document.getElementById('adminPassword').focus();
-    const box = document.querySelector('.login-box');
-    box.style.animation = 'none';
-    box.offsetHeight;
-    box.style.animation = 'shake 0.4s ease';
-    return;
+  function setBusy(btn, on) {
+    if (!btn) return;
+    btn.disabled = !!on;
+    btn.style.opacity = on ? '0.7' : '1';
   }
 
-  document.getElementById('adminPassword').value = '';
-  err.classList.remove('show');
-  showAdminPanel();
-}
-
-function closeLogin() {
-  document.getElementById('admin-login').classList.remove('open');
-  document.getElementById('adminPassword').value = '';
-  document.getElementById('loginError').classList.remove('show');
-  document.body.style.overflow = '';
-}
-
-function togglePw() {
-  const input = document.getElementById('adminPassword');
-  input.type = input.type === 'password' ? 'text' : 'password';
-}
-
-function closeAdmin() {
-  document.getElementById('admin-panel').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-async function signOutAdmin() {
-  await sb.auth.signOut();
-  supabaseInquiries = [];
-  closeAdmin();
-}
-
-// Secret shortcut: Shift + Ctrl + A
-document.addEventListener('keydown', e => {
-  if (e.shiftKey && e.ctrlKey && e.key === 'A') {
-    // Don't trigger if user is typing in a field
-    const tag = document.activeElement.tagName.toLowerCase();
-    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-    openAdmin();
-  }
-});
-
-// Source of truth = Supabase (hydrated via loadInquiries).
-// localStorage is kept as an offline queue for submissions made while
-// Supabase was unreachable, plus any data from before this migration.
-function getInquiries() {
-  return supabaseInquiries;
-}
-function getLocalInquiries() {
-  try { return JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]'); }
-  catch (e) { return []; }
-}
-function setLocalInquiries(arr) {
-  localStorage.setItem('bookistudio_inquiries', JSON.stringify(arr));
-}
-
-function rowToInquiry(row) {
-  // Supabase row → unified inquiry shape used by the renderer.
-  return Object.assign({}, row.data || {}, {
-    id: row.id,
-    type: row.type,
-    date: row.created_at,
-    read: row.read,
-  });
-}
-
-async function loadInquiries() {
-  const list = document.getElementById('inquiryList');
-  list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⏳</div>Loading…</div>`;
-
-  const { data, error } = await sb
-    .from('inquiries')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⚠️</div>Failed to load: ${escHtml(error.message)}</div>`;
-    return;
+  function restore(btn, status, delay) {
+    setTimeout(function () {
+      if (!btn) return;
+      btn.textContent = LABEL;
+      btn.style.background = '';
+      if (status) { status.textContent = status.dataset.default || status.textContent; status.style.color = ''; }
+    }, delay);
   }
 
-  supabaseInquiries = (data || []).map(rowToInquiry);
-  renderInquiries();
-}
-
-async function uploadLocalCache() {
-  const local = getLocalInquiries();
-  if (!local.length) { alert('No local cache to upload.'); return; }
-  if (!confirm(`Upload ${local.length} cached submission(s) to Supabase? They'll then be visible from any device.`)) return;
-
-  const rows = local.map(inq => ({
-    type: inq.type === 'intake' ? 'intake' : 'contact',
-    name: inq.name || inq.owner_name || inq.biz_name || null,
-    email: inq.email || inq.owner_email || inq.biz_email || null,
-    business: inq.business || inq.biz_name || null,
-    budget: inq.budget_label || inq.budget || null,
-    read: !!inq.read,
-    created_at: inq.date || new Date().toISOString(),
-    data: inq,
-  }));
-
-  const { error } = await sb.from('inquiries').insert(rows);
-  if (error) { alert('Upload failed: ' + error.message); return; }
-
-  setLocalInquiries([]);
-  alert(`Uploaded ${local.length} submission(s). Local cache cleared.`);
-  await loadInquiries();
-}
-
-function setFilter(f, btn) {
-  adminFilter = f;
-  document.querySelectorAll('.admin-filter:not([data-type-filter])').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderInquiries();
-}
-
-function setTypeFilter(t, btn) {
-  adminTypeFilter = t;
-  document.querySelectorAll('.admin-filter[data-type-filter]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderInquiries();
-}
-
-function formatDate(iso) {
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) 
-    + ' · ' + d.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
-}
-
-function renderInquiries() {
-  const all = getInquiries();
-  const search = document.getElementById('adminSearch').value.toLowerCase();
-  const unread = all.filter(i => !i.read).length;
-  const contactCount = all.filter(i => (i.type || 'contact') === 'contact').length;
-  const intakeCount  = all.filter(i => i.type === 'intake').length;
-
-  // Stats
-  document.getElementById('adminStats').innerHTML = `
-    <div class="admin-stat highlight">
-      <div class="admin-stat-num">${unread}</div>
-      <div class="admin-stat-label">Unread</div>
-    </div>
-    <div class="admin-stat">
-      <div class="admin-stat-num">${all.length}</div>
-      <div class="admin-stat-label">Total</div>
-    </div>
-    <div class="admin-stat">
-      <div class="admin-stat-num">${contactCount}</div>
-      <div class="admin-stat-label">Contact</div>
-    </div>
-    <div class="admin-stat">
-      <div class="admin-stat-num">${intakeCount}</div>
-      <div class="admin-stat-label">Intake</div>
-    </div>
-  `;
-
-  let filtered = all;
-  if (adminFilter === 'unread') filtered = filtered.filter(i => !i.read);
-  if (adminFilter === 'read')   filtered = filtered.filter(i => i.read);
-  if (adminTypeFilter !== 'all') {
-    filtered = filtered.filter(i => (i.type || 'contact') === adminTypeFilter);
-  }
-  if (search) filtered = filtered.filter(i => inquiryMatchesSearch(i, search));
-
-  const list = document.getElementById('inquiryList');
-
-  const localCount = getLocalInquiries().length;
-  const banner = localCount
-    ? `<div style="background:#1f1808; border:1px solid #4a3a10; color:#d6a829; padding:0.9rem 1.2rem; margin-bottom:1rem; font-size:0.85rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
-         <span>📦 ${localCount} submission(s) cached locally on this browser. Upload them so they show on every device.</span>
-         <button class="admin-clear-btn" style="border-color:#d6a829; color:#d6a829; margin-left:auto;" onclick="uploadLocalCache()">Upload to Supabase</button>
-       </div>`
-    : '';
-
-  if (filtered.length === 0) {
-    list.innerHTML = banner + `<div class="admin-empty"><div class="admin-empty-icon">📭</div>No inquiries found</div>`;
-    return;
+  // Remember the authored status line so it can be restored after a message.
+  function primeStatus(status) {
+    if (status && !status.dataset.default) status.dataset.default = status.textContent;
   }
 
-  list.innerHTML = banner + filtered.map(inq =>
-    (inq.type === 'intake') ? renderIntakeCard(inq) : renderContactCard(inq)
-  ).join('');
-}
+  window.handleSubmit = function (e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
-function inquiryMatchesSearch(inq, q) {
-  const fields = [
-    inq.name, inq.email, inq.message, inq.business,
-    inq.owner_name, inq.owner_email, inq.biz_name, inq.biz_email,
-    inq.notes, inq.services_list, inq.reference_sites, inq.color_notes,
-    inq.domain_name, inq.domain_want
-  ];
-  return fields.some(v => v && String(v).toLowerCase().includes(q));
-}
+    var form = document.getElementById('contactForm');
+    if (!form) return;
+    var btn = document.getElementById('submitBtn');
+    var status = document.getElementById('formStatus');
+    var hp = document.getElementById('_hp');
 
-function renderContactCard(inq) {
-  return `
-    <div class="inquiry-card ${inq.read ? 'read' : 'unread'}" id="card-${inq.id}">
-      <div class="inquiry-header" onclick="toggleCard(${inq.id})">
-        <div class="inq-dot"></div>
-        <div class="inq-name">${escHtml(inq.name)}</div>
-        <div class="inq-business">${escHtml(inq.business || '—')}</div>
-        <span class="inq-type-badge contact">Contact</span>
-        <div class="inq-budget">${escHtml(inq.budget || '—')}</div>
-        <div class="inq-date">${formatDate(inq.date)}</div>
-        <div class="inq-chevron">▼</div>
-      </div>
-      <div class="inquiry-body">
-        <div class="inq-meta">
-          <div class="inq-meta-item"><strong>Email:</strong>${escHtml(inq.email)}</div>
-          <div class="inq-meta-item"><strong>Budget:</strong>${escHtml(inq.budget || '—')}</div>
-          <div class="inq-meta-item"><strong>Received:</strong>${formatDate(inq.date)}</div>
-        </div>
-        <div class="inq-message">${escHtml(inq.message)}</div>
-        <div class="inq-actions">
-          <a class="inq-btn reply" href="mailto:${escHtml(inq.email)}?subject=Re: Your BOOKISTUDIO Inquiry">✉ Reply</a>
-          <button class="inq-btn mark-read" onclick="toggleRead(${inq.id})">${inq.read ? 'Mark Unread' : 'Mark as Read'}</button>
-          <button class="inq-btn delete" onclick="deleteInq(${inq.id})">Delete</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
+    primeStatus(status);
 
-function renderIntakeCard(inq) {
-  const headerName = inq.owner_name || inq.biz_name || 'Unnamed';
-  const headerBiz  = inq.biz_name || '—';
-  const headerBudget = inq.budget_label || inq.budget || '—';
-  const replyEmail = inq.owner_email || inq.biz_email || '';
+    var payload = {
+      name: (document.getElementById('name') || {}).value || '',
+      email: (document.getElementById('email') || {}).value || '',
+      business: (document.getElementById('business') || {}).value || '',
+      budget: (document.getElementById('budget') || {}).value || '',
+      message: (document.getElementById('message') || {}).value || '',
+      source: (form.dataset.source || 'contact').trim().toLowerCase(),
+      product: (form.dataset.product || 'Main site').trim(),
+      _hp: hp ? hp.value : ''
+    };
 
-  return `
-    <div class="inquiry-card ${inq.read ? 'read' : 'unread'}" id="card-${inq.id}">
-      <div class="inquiry-header" onclick="toggleCard(${inq.id})">
-        <div class="inq-dot"></div>
-        <div class="inq-name">${escHtml(headerName)}</div>
-        <div class="inq-business">${escHtml(headerBiz)}</div>
-        <span class="inq-type-badge intake">Intake</span>
-        <div class="inq-budget">${escHtml(headerBudget)}</div>
-        <div class="inq-date">${formatDate(inq.date)}</div>
-        <div class="inq-chevron">▼</div>
-      </div>
-      <div class="inquiry-body">
-        ${renderIntakeBody(inq)}
-        <div class="inq-actions" style="margin-top:1.2rem;">
-          ${replyEmail ? `<a class="inq-btn reply" href="mailto:${escHtml(replyEmail)}?subject=Your BOOKISTUDIO Intake Form">✉ Reply</a>` : ''}
-          <button class="inq-btn mark-read" onclick="toggleRead(${inq.id})">${inq.read ? 'Mark Unread' : 'Mark as Read'}</button>
-          <button class="inq-btn delete" onclick="deleteInq(${inq.id})">Delete</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
+    setBusy(btn, true);
+    if (btn) { btn.textContent = 'SENDING…'; btn.style.background = ''; }
+    if (status) { status.textContent = ''; status.style.color = ''; }
 
-function renderIntakeBody(inq) {
-  const row = (label, value, full) => {
-    if (value === undefined || value === null || value === '' || value === '—') return '';
-    return `<div class="intake-row${full ? ' full' : ''}"><strong>${escHtml(label)}:</strong>${escHtml(value)}</div>`;
-  };
-  const chips = (label, arr) => {
-    if (!arr || !arr.length) return '';
-    return `<div class="intake-row full"><strong>${escHtml(label)}:</strong>
-      <div class="intake-chips">${arr.map(v => `<span class="intake-chip">${escHtml(v)}</span>`).join('')}</div></div>`;
-  };
-  const team = (members) => {
-    if (!members || !members.length) return '';
-    return `<div class="intake-row full"><strong>Team:</strong>
-      ${members.map(m => `<div style="margin-top:0.3rem; color:#aaa;">• ${escHtml(m.name || '—')}${m.role ? ' — ' + escHtml(m.role) : ''}${m.bio ? '<div style="color:#666; font-size:0.75rem; margin-left:0.8rem;">' + escHtml(m.bio) + '</div>' : ''}</div>`).join('')}
-    </div>`;
-  };
-  const files = (label, arr) => {
-    if (!arr || !arr.length) return '';
-    const lines = arr.map(f => `${f.name}${f.size ? ' (' + Math.round(f.size/1024) + ' KB)' : ''}`);
-    return chips(label, lines);
-  };
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, TIMEOUT_MS) : null;
 
-  return `
-    <div class="inq-meta">
-      <div class="inq-meta-item"><strong>Received:</strong>${formatDate(inq.date)}</div>
-      ${inq.owner_email ? `<div class="inq-meta-item"><strong>Owner Email:</strong>${escHtml(inq.owner_email)}</div>` : ''}
-      ${inq.biz_email ? `<div class="inq-meta-item"><strong>Business Email:</strong>${escHtml(inq.biz_email)}</div>` : ''}
-    </div>
-
-    <div class="intake-section">
-      <div class="intake-section-title">Business</div>
-      <div class="intake-grid">
-        ${row('Name', inq.biz_name)}
-        ${row('Industry', inq.biz_industry)}
-        ${row('Phone', inq.biz_phone)}
-        ${row('Email', inq.biz_email)}
-        ${row('Website', inq.biz_website)}
-        ${row('Year Established', inq.biz_year)}
-        ${row('Address', inq.biz_address, true)}
-        ${row('City', inq.biz_city)}
-        ${row('State', inq.biz_state)}
-        ${row('ZIP', inq.biz_zip)}
-        ${row('Weekday Hours', inq.hours_weekday)}
-        ${row('Weekend Hours', inq.hours_weekend)}
-        ${row('Facebook', inq.social_fb)}
-        ${row('Instagram', inq.social_ig)}
-        ${row('Google', inq.social_google)}
-        ${row('Other Social', inq.social_other)}
-      </div>
-    </div>
-
-    <div class="intake-section">
-      <div class="intake-section-title">Owner & Team</div>
-      <div class="intake-grid">
-        ${row('Owner Name', inq.owner_name)}
-        ${row('Title', inq.owner_title)}
-        ${row('Phone', inq.owner_phone)}
-        ${row('Email', inq.owner_email)}
-        ${row('Owner Bio', inq.owner_bio, true)}
-        ${row('Business Story', inq.biz_story, true)}
-      </div>
-      ${team(inq.team_members)}
-    </div>
-
-    <div class="intake-section">
-      <div class="intake-section-title">Design & Brand</div>
-      <div class="intake-grid">
-        ${row('Logo Status', inq.logo_choice)}
-        ${row('Color Palette', inq.selected_palette)}
-        ${row('Color Notes', inq.color_notes, true)}
-        ${row('Reference Sites', inq.reference_sites, true)}
-      </div>
-      ${chips('Vibe', inq.vibes)}
-    </div>
-
-    <div class="intake-section">
-      <div class="intake-section-title">Site Goals & Features</div>
-      <div class="intake-grid">
-        ${row('Primary Goal', inq.primary_goal)}
-      </div>
-      ${chips('Features', inq.features)}
-      ${row('Services / Menu', inq.services_list, true)}
-    </div>
-
-    <div class="intake-section">
-      <div class="intake-section-title">Domain</div>
-      <div class="intake-grid">
-        ${row('Domain Status', inq.domain_choice)}
-        ${row('Existing Domain', inq.domain_name)}
-        ${row('Desired Domain', inq.domain_want)}
-      </div>
-    </div>
-
-    <div class="intake-section">
-      <div class="intake-section-title">Final Details</div>
-      <div class="intake-grid">
-        ${row('Budget', inq.budget_label || inq.budget)}
-        ${row('Timeline', inq.timeline)}
-        ${row('Referral Source', inq.referral)}
-        ${row('Notes', inq.notes, true)}
-      </div>
-    </div>
-
-    ${(inq.files && (inq.files.logo?.length || inq.files.owner_photo?.length || inq.files.business_photos?.length)) ? `
-    <div class="intake-section">
-      <div class="intake-section-title">Files Mentioned (not attached)</div>
-      ${files('Logo', inq.files.logo)}
-      ${files('Owner Photo', inq.files.owner_photo)}
-      ${files('Business Photos', inq.files.business_photos)}
-    </div>` : ''}
-  `;
-}
-
-function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-async function toggleCard(id) {
-  const card = document.getElementById('card-' + id);
-  card.classList.toggle('expanded');
-  if (card.classList.contains('expanded')) {
-    const inq = supabaseInquiries.find(i => i.id === id);
-    if (inq && !inq.read) {
-      const { error } = await sb.from('inquiries').update({ read: true }).eq('id', id);
-      if (!error) { inq.read = true; renderInquiries(); }
-    }
-  }
-}
-
-async function toggleRead(id) {
-  const inq = supabaseInquiries.find(i => i.id === id);
-  if (!inq) return;
-  const newRead = !inq.read;
-  const { error } = await sb.from('inquiries').update({ read: newRead }).eq('id', id);
-  if (error) { alert('Update failed: ' + error.message); return; }
-  inq.read = newRead;
-  renderInquiries();
-}
-
-async function deleteInq(id) {
-  if (!confirm('Delete this inquiry?')) return;
-  const { error } = await sb.from('inquiries').delete().eq('id', id);
-  if (error) { alert('Delete failed: ' + error.message); return; }
-  supabaseInquiries = supabaseInquiries.filter(i => i.id !== id);
-  renderInquiries();
-}
-
-async function clearAll() {
-  if (!confirm('Delete ALL inquiries? This cannot be undone.')) return;
-  const { error } = await sb.from('inquiries').delete().gte('id', 0);
-  if (error) { alert('Delete failed: ' + error.message); return; }
-  supabaseInquiries = [];
-  renderInquiries();
-}
-
-// ---- UPDATED FORM SUBMIT ----
-async function handleSubmit(e) {
-  e.preventDefault();
-  const btn = document.getElementById('submitBtn');
-  const form = e.target;
-
-  const inquiry = {
-    id: Date.now(),
-    type: 'contact',
-    date: new Date().toISOString(),
-    name: document.getElementById('name').value,
-    email: document.getElementById('email').value,
-    business: document.getElementById('business').value || '—',
-    budget: document.getElementById('budget').value || '—',
-    message: document.getElementById('message').value,
-    read: false
-  };
-
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
-  btn.style.opacity = '0.7';
-
-  // 1. Insert into Supabase (primary store for the admin dashboard).
-  let supabaseOk = false;
-  try {
-    const { error } = await sb.from('inquiries').insert({
-      type: 'contact',
-      name: inquiry.name,
-      email: inquiry.email,
-      business: inquiry.business,
-      budget: inquiry.budget,
-      read: false,
-      data: inquiry,
-    });
-    supabaseOk = !error;
-    if (error) console.warn('Supabase insert failed:', error);
-  } catch (err) {
-    console.warn('Supabase insert threw:', err);
-  }
-
-  // 2. If Supabase is unreachable, queue to localStorage so we don't lose it.
-  if (!supabaseOk) {
-    const existing = JSON.parse(localStorage.getItem('bookistudio_inquiries') || '[]');
-    existing.unshift(inquiry);
-    localStorage.setItem('bookistudio_inquiries', JSON.stringify(existing));
-  }
-
-  // 3. Send to Formspree so it hits your inbox.
-  let emailOk = false;
-  try {
-    const res = await fetch('https://formspree.io/f/xvzwjonz', {
+    fetch(apiBase() + '/inquiries', {
       method: 'POST',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name:     inquiry.name,
-        email:    inquiry.email,
-        business: inquiry.business,
-        budget:   inquiry.budget,
-        message:  inquiry.message
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'omit',
+      signal: ctl ? ctl.signal : undefined,
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          if (!res.ok || !body || body.ok !== true) {
+            throw new Error((body && body.error) || ('server responded ' + res.status));
+          }
+          return body;
+        });
       })
-    });
-    emailOk = res.ok;
-  } catch (err) {
-    emailOk = false;
-  }
-
-  if (supabaseOk || emailOk) {
-    btn.textContent = 'Message Sent ✓';
-    btn.style.background = '#2a6a3a';
-    form.reset();
-  } else {
-    btn.textContent = 'Saved locally — will sync';
-    btn.style.background = '#8a6a10';
-  }
-
-  btn.disabled = false;
-  btn.style.opacity = '1';
-  setTimeout(() => { btn.textContent = 'Send Message →'; btn.style.background = ''; }, 3500);
-}
+      .then(function () {                                   // ---- success
+        form.reset();
+        if (btn) { btn.textContent = 'MESSAGE SENT ✓'; btn.style.background = '#2a6a3a'; }
+        if (status) {
+          status.textContent = 'Sent — we reply within one business day.';
+          status.style.color = '#3fae6a';
+        }
+        restore(btn, status, 6000);
+      })
+      .catch(function (err) {                               // ---- failure
+        var why = (err && err.name === 'AbortError')
+          ? 'the request timed out'
+          : ((err && err.message) ? err.message : 'network error');
+        if (btn) { btn.textContent = 'NOT SENT — TRY AGAIN'; btn.style.background = '#8a1010'; }
+        if (status) {
+          status.textContent = 'Could not send (' + why + '). Email us: founder@bookistudios.com';
+          status.style.color = '#e06666';
+        }
+        restore(btn, status, 7000);
+      })
+      .then(function () {                                   // ---- finally
+        setBusy(btn, false);
+      });
+  };
+})();
 </script>
 
 <script>
-// ---- ADMIN TAB SWITCHER ----
-function switchAdminTab(tab, btn) {
-  // Toggle tab buttons
-  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  // Toggle tab panes
-  document.getElementById('admin-tab-inquiries').style.display = tab === 'inquiries' ? '' : 'none';
-  document.getElementById('admin-tab-sites').style.display     = tab === 'sites'     ? '' : 'none';
-  if (tab === 'sites') loadAdminSites();
-}
-
-// ---- SITES: ADMIN MANAGEMENT ----
-let siteImageBase64 = null;
-
-function onSiteImagePicked(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    siteImageBase64 = e.target.result;
-    const drop = document.getElementById('siteImageDrop');
-    drop.innerHTML = `<img src="${siteImageBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:2px;"/>`;
-  };
-  reader.readAsDataURL(file);
-}
-
-async function submitSite() {
-  const name     = document.getElementById('siteName').value.trim();
-  const url      = document.getElementById('siteUrl').value.trim();
-  const industry = document.getElementById('siteIndustry').value.trim();
-  const desc     = document.getElementById('siteDesc').value.trim();
-  const status   = document.getElementById('sitesFormStatus');
-  const btn      = document.getElementById('siteSubmitBtn');
-
-  status.className = 'sites-form-status';
-  status.textContent = '';
-
-  if (!name) { status.textContent = 'Site name is required.'; status.className = 'sites-form-status err'; return; }
-  if (!url)  { status.textContent = 'Live URL is required.';  status.className = 'sites-form-status err'; return; }
-  if (!siteImageBase64) { status.textContent = 'Please upload a thumbnail image.'; status.className = 'sites-form-status err'; return; }
-
-  btn.disabled = true; btn.textContent = 'Publishing…';
-
-  const { error } = await sb.from('sites').insert({
-    name,
-    url,
-    industry: industry || null,
-    description: desc || null,
-    image_data: siteImageBase64,
-    active: true
-  });
-
-  btn.disabled = false; btn.textContent = 'Add Site →';
-
-  if (error) {
-    status.textContent = 'Error: ' + error.message;
-    status.className = 'sites-form-status err';
-    return;
-  }
-
-  // Reset form
-  document.getElementById('siteName').value     = '';
-  document.getElementById('siteUrl').value      = '';
-  document.getElementById('siteIndustry').value = '';
-  document.getElementById('siteDesc').value     = '';
-  siteImageBase64 = null;
-  document.getElementById('siteImageDrop').innerHTML =
-    '<div class="drop-icon">🖼</div><div class="drop-hint">Click to upload<br/>thumbnail image</div>';
-  document.getElementById('siteImageInput').value = '';
-
-  status.textContent = 'Site published successfully!';
-  status.className   = 'sites-form-status ok';
-  setTimeout(() => { status.className = 'sites-form-status'; }, 4000);
-
-  await loadAdminSites();
-  await loadPublicSites(); // refresh main page grid too
-}
-
-async function loadAdminSites() {
-  const container = document.getElementById('adminSitesList');
-  container.innerHTML = '<div class="admin-empty"><div class="admin-empty-icon">⏳</div>Loading…</div>';
-
-  const { data, error } = await sb.from('sites').select('*').order('created_at', { ascending: false });
-
-  if (error) {
-    container.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⚠️</div>Failed to load: ${escHtml(error.message)}</div>`;
-    return;
-  }
-
-  if (!data || !data.length) {
-    container.innerHTML = '<div class="admin-empty"><div class="admin-empty-icon">🌐</div>No sites published yet</div>';
-    return;
-  }
-
-  container.innerHTML = data.map(site => `
-    <div class="site-row" id="site-row-${site.id}">
-      <img class="site-row-thumb" src="${escHtml(site.image_data || '')}" alt=""/>
-      <div class="site-row-info">
-        <div class="site-row-name">${escHtml(site.name || '')}</div>
-        <div class="site-row-url">${escHtml(site.url || '')}</div>
-      </div>
-      <button class="site-row-del" onclick="deleteSite(${site.id})">Delete</button>
-    </div>
-  `).join('');
-}
-
-async function deleteSite(id) {
-  if (!confirm('Remove this site from the public portfolio?')) return;
-  const { error } = await sb.from('sites').delete().eq('id', id);
-  if (error) { alert('Delete failed: ' + error.message); return; }
-  const row = document.getElementById('site-row-' + id);
-  if (row) row.remove();
-  await loadPublicSites();
-}
-
 // ---- SITES: PUBLIC DISPLAY (main page) ----
-// Client work rendered when the CMS is unreachable — every image is a local asset.
+// Client work rendered from local assets. The portfolio is never empty.
 const FALLBACK_SITES = [
   { name:'Voltecharged',        industry:'DTC · Portable Blender',  description:'A direct-to-consumer product launch built to convert.',            url:'https://voltecharged.com/',                  img:'assets/ws-voltecharged.jpg' },
   { name:'MG Woodshop & More',  industry:'Custom Woodworking',        description:'Hand-built furniture and millwork, sold online.',                  url:'https://mgwoodshopandmore.com/',             img:'assets/ws-mgwoodshop.jpg' },
@@ -1709,23 +693,18 @@ function renderProjectCards(list) {
   `).join('');
 }
 
-async function loadPublicSites() {
-  // Paint the local client work first so the portfolio is never empty.
-  renderProjectCards(FALLBACK_SITES);
-
-  // If the CMS is reachable it takes over with the current published list.
-  try {
-    const { data, error } = await sb.from('sites').select('*').eq('active', true).order('created_at', { ascending: false });
-    if (error || !data || !data.length) return;
-    renderProjectCards(data);
-  } catch (e) { /* CMS unreachable — the local cards stay in place */ }
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function escHtmlAttr(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// Load public sites on page boot
+function loadPublicSites() {
+  renderProjectCards(FALLBACK_SITES);
+}
+
+// Load the portfolio on page boot
 loadPublicSites();
 </script>
 
