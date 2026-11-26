@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenWorks Houston — BookiStudio</title>
+<meta name="description" content="OpenAI's OpenWorks program is live in Houston. BookiStudio applied on day one to be Houston's OpenWorks partner: free, hands-on AI work for independent Houston businesses.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#080808; --card:#101010; --card2:#161616; --line:#2a2a2a;
+    --cream:#E4D9CC; --muted:#8a8378; --red:#D63929; --green:#3fae6a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink); color:var(--cream);
+    font-family:'DM Sans',sans-serif; font-weight:300; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--red);color:#fff}
+  a{color:inherit;text-decoration:none}
+  .wrap{width:min(1180px,92vw);margin:0 auto}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);
+    background:rgba(8,8,8,.82);border-bottom:1px solid var(--line)}
+  .topbar .in{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .brand{font-family:'Syne',sans-serif;font-weight:800;letter-spacing:.34em;font-size:.72rem;text-transform:uppercase}
+  .brand span{color:var(--red)}
+  .nav{display:flex;gap:26px;align-items:center}
+  .nav a{font-family:'Syne',sans-serif;font-size:.66rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+  .nav a:hover{color:var(--cream)}
+  .nav .cta{color:var(--cream);border:1px solid var(--line);padding:.6rem 1rem;transition:.2s}
+  .nav .cta:hover{border-color:var(--red);color:#fff}
+  @media(max-width:820px){
+    .nav a:not(.cta){display:none}
+    .nav{gap:0}
+    .brand{font-size:.6rem;letter-spacing:.26em}
+    .nav .cta{padding:.55rem .7rem;font-size:.56rem;letter-spacing:.1em;white-space:nowrap}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:clamp(4.5rem,10vw,8rem) 0 clamp(3rem,6vw,5rem);overflow:hidden}
+  .hero:before{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(900px 420px at 50% -10%, rgba(214,57,41,.16), transparent 70%),
+      linear-gradient(180deg,#0b0b0b,#080808);
+    pointer-events:none}
+  .hero .in{position:relative;text-align:center}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:.6rem;flex-wrap:wrap;justify-content:center}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);display:inline-block}
+  h1{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(3.1rem,10.5vw,7.6rem);line-height:.88;letter-spacing:.01em;margin:1.5rem 0 0;text-transform:uppercase}
+  h1 em{font-style:normal;color:var(--red)}
+  .lede{max-width:44ch;margin:1.7rem auto 0;font-size:clamp(.98rem,1.6vw,1.16rem);line-height:1.75;color:#c9bfb2}
+  .lede b{color:var(--cream);font-weight:500}
+  .hero-cta{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:2.2rem}
+  .btn{font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    padding:1.05rem 1.7rem;border:1px solid var(--line);transition:.22s;display:inline-block}
+  .btn.solid{background:var(--red);border-color:var(--red);color:#fff}
+  .btn.solid:hover{background:#b92e20;border-color:#b92e20;transform:translateY(-1px)}
+  .btn.ghost:hover{border-color:var(--cream)}
+  .fineprint{margin-top:1.6rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#6c665d;line-height:1.9}
+
+  @media(max-width:620px){
+    .hero-cta{flex-direction:column;align-items:stretch}
+    .hero-cta .btn{width:100%;text-align:center}
+  }
+
+  /* ---------- stat strip ---------- */
+  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#0b0b0b}
+  .stats .in{display:grid;grid-template-columns:repeat(4,1fr)}
+  .stat{padding:1.6rem 1.2rem;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:none}
+  .stat .n{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.9rem,3.4vw,2.6rem);line-height:1}
+  .stat .l{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.55rem;line-height:1.6}
+  @media(max-width:760px){.stats .in{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+
+  /* ---------- sections ---------- */
+  section{padding:clamp(3.6rem,7vw,6.4rem) 0}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--red)}
+  h2{font-family:'Bebas Neue',sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(2.2rem,5.2vw,3.6rem);line-height:.95;margin:.9rem 0 0}
+  .sub{max-width:60ch;margin-top:1.1rem;color:#a9a094;line-height:1.8;font-size:.98rem}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:2.6rem;background:var(--line)}
+  .two .col{background:var(--card);padding:2rem 1.8rem}
+  .two h3{font-family:'Syne',sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem}
+  .two ul{list-style:none;display:grid;gap:.9rem}
+  .two li{display:grid;grid-template-columns:18px 1fr;gap:.7rem;font-size:.94rem;line-height:1.7;color:#c9bfb2}
+  .two li i{font-style:normal;color:var(--red);font-family:'JetBrains Mono',monospace;font-size:.72rem;padding-top:.25rem}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;margin-top:2.6rem;background:var(--line)}
+  .card{background:var(--card);padding:2rem 1.8rem;position:relative;transition:background .25s}
+  .card:hover{background:var(--card2)}
+  .card .num{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:#6c665d}
+  .card h3{font-family:'Syne',sans-serif;font-size:1.02rem;font-weight:700;margin:.85rem 0 .7rem;letter-spacing:-.01em}
+  .card p{font-size:.92rem;line-height:1.75;color:#a9a094}
+  .card .tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-top:1.1rem;display:block}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+
+  /* timeline */
+  .steps{margin-top:2.6rem;border-top:1px solid var(--line)}
+  .step{display:grid;grid-template-columns:74px 1fr;gap:1.4rem;padding:1.7rem 0;border-bottom:1px solid var(--line);align-items:start}
+  .step .w{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;color:var(--red);padding-top:.35rem}
+  .step h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.45rem}
+  .step p{font-size:.93rem;line-height:1.75;color:#a9a094;max-width:70ch}
+  @media(max-width:560px){.step{grid-template-columns:1fr;gap:.5rem}}
+
+  /* who */
+  .who{display:grid;grid-template-columns:1.15fr .85fr;gap:2px;background:var(--line);margin-top:2.4rem}
+  .who > div{background:var(--card);padding:2rem 1.8rem}
+  .who h3{font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.1rem}
+  .chips{display:flex;flex-wrap:wrap;gap:.5rem}
+  .chip{font-family:'DM Sans',sans-serif;font-size:.8rem;padding:.5rem .85rem;border:1px solid var(--line);color:#c9bfb2}
+  .chip.no{color:#6c665d;text-decoration:line-through}
+  @media(max-width:760px){.who{grid-template-columns:1fr}}
+
+  /* proof */
+  .proof{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);margin-top:2.4rem}
+  .proof .p{background:var(--card);padding:1.8rem 1.5rem}
+  .proof .n{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1}
+  .proof .l{font-size:.82rem;color:#a9a094;margin-top:.5rem;line-height:1.6}
+  @media(max-width:700px){.proof{grid-template-columns:1fr}}
+
+  /* form */
+  .formwrap{background:var(--card);border:1px solid var(--line);margin-top:2.6rem;padding:clamp(1.6rem,4vw,3rem)}
+  .formwrap h3{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;text-transform:uppercase;letter-spacing:.02em}
+  .formwrap p.hint{font-size:.88rem;color:#8a8378;margin-top:.5rem;line-height:1.7}
+  form{display:grid;gap:2px;margin-top:1.8rem}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+  input,select,textarea{width:100%;background:var(--card2);border:none;border-bottom:1px solid var(--line);
+    color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:300;padding:1.15rem 1.1rem;outline:none;transition:border-color .2s}
+  input::placeholder,textarea::placeholder{color:#6c665d}
+  input:focus,select:focus,textarea:focus{border-bottom-color:var(--red)}
+  select{appearance:none;color:#8a8378}
+  textarea{resize:vertical;min-height:110px}
+  .submit{margin-top:2px;background:var(--red);border:none;color:#fff;font-family:'Syne',sans-serif;font-size:.74rem;
+    font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:1.15rem;cursor:pointer;transition:.2s}
+  .submit:hover{background:#b92e20}
+  .submit:disabled{opacity:.7;cursor:wait}
+  #formStatus{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;color:#6c665d;margin-top:.8rem;min-height:1em}
+  @media(max-width:620px){.row{grid-template-columns:1fr}}
+
+  /* faq */
+  details{border-bottom:1px solid var(--line);padding:1.3rem 0}
+  summary{font-family:'Syne',sans-serif;font-size:.94rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:after{content:"+";font-family:'JetBrains Mono',monospace;color:var(--red);font-size:1rem}
+  details[open] summary:after{content:"–"}
+  details p{margin-top:.9rem;font-size:.92rem;line-height:1.8;color:#a9a094;max-width:78ch}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:2.6rem 0;background:#050505}
+  .foot{display:flex;justify-content:space-between;gap:1.4rem;flex-wrap:wrap;align-items:center}
+  .foot .l{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#6c665d;line-height:2}
+  .foot a{color:#a9a094;border-bottom:1px solid var(--line)}
+  .foot a:hover{color:var(--cream)}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.on{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap in">
+    <a class="brand" href="/">Booki<span>|</span>Studio</a>
+    <nav class="nav">
+      <a href="#what">What it is</a>
+      <a href="#build">What we build</a>
+      <a href="#who">Who qualifies</a>
+      <a href="#apply" class="cta">Apply as a Houston business</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap in">
+    <div class="eyebrow"><span class="dot"></span> OpenAI OpenWorks · Houston, TX · Pilot city 14 of 20</div>
+    <h1>Houston's first<br><em>OpenWorks</em> partner.</h1>
+    <p class="lede">OpenAI is paying local AI experts to sit inside small businesses and make AI actually work — <b>free for the business</b>, three months of ChatGPT Business included. Houston is one of 20 pilot cities. I applied the day it opened.</p>
+    <div class="hero-cta">
+      <a class="btn solid" href="#apply">Book a free working session</a>
+      <a class="btn ghost" href="#what">What this actually is</a>
+    </div>
+    <p class="fineprint">Partner application submitted Nov 25, 2026 · Houston, TX<br>OpenAI reviews and matches partners — this page is BookiStudio's Houston intake, not an OpenAI site.</p>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="wrap in">
+    <div class="stat"><div class="n">$0</div><div class="l">Cost to the business</div></div>
+    <div class="stat"><div class="n">4 days</div><div class="l">Per month, in your shop</div></div>
+    <div class="stat"><div class="n">3 months</div><div class="l">ChatGPT Business, free</div></div>
+    <div class="stat"><div class="n">1</div><div class="l">Workshop a month, Houston</div></div>
+  </div>
+</div>
+
+<section id="what">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker">What this is</div>
+      <h2>The model was never the bottleneck.</h2>
+      <p class="sub">A forward-deployed engineer is someone who sits next to the customer until the software actually works. Palantir and the big banks have had them for years. OpenWorks is that idea pointed at Main Street: an AI person in the room, in person, working on the jobs you already have.</p>
+    </div>
+
+    <div class="two reveal">
+      <div class="col">
+        <h3>What the business gives</h3>
+        <ul>
+          <li><i>01</i><span>One real problem you would fix this month if you had the time.</span></li>
+          <li><i>02</i><span>A few hours with the owner or the person who actually does the work.</span></li>
+          <li><i>03</i><span>Access to the tools you already use — spreadsheets, POS, email, calendar.</span></li>
+          <li><i>04</i><span>Willingness to learn it, not just receive it.</span></li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>What the business gets</h3>
+        <ul>
+          <li><i>01</i><span>Four full days a month of hands-on work, on site or in your back office.</span></li>
+          <li><i>02</i><span>A working tool — not a slide deck — plus the training to run it without me.</span></li>
+          <li><i>03</i><span>Three months of ChatGPT Business at no cost, through the program.</span></li>
+          <li><i>04</i><span>A monthly Houston workshop for you and your staff.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="build" style="background:#0b0b0b;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker">The first month</div>
+      <h2>Four things I build most.</h2>
+      <p class="sub">Not "AI strategy." A working thing in your business by the end of the month, built on the tools you already pay for.</p>
+    </div>
+    <div class="grid reveal">
+      <div class="card">
+        <div class="num">01 / OPERATIONS</div>
+        <h3>The stock &amp; reorder board</h3>
+        <p>Your inventory export, turned into one dashboard that shows what is about to run out, what is dead money on the shelf, and what to reorder this week — the same build a Fargo gift shop priced at $50,000 to commission.</p>
+        <span class="tag">Restaurants · Retail · Shops with shelves</span>
+      </div>
+      <div class="card">
+        <div class="num">02 / DEMAND</div>
+        <h3>The missed-lead recovery</h3>
+        <p>Every call and text that lands while you are with a customer gets answered, qualified and booked — in the same thread the customer started. This is LazusAI, the receptionist I built, pointed at your number.</p>
+        <span class="tag">Service businesses · Clinics · Salons · Trades</span>
+      </div>
+      <div class="card">
+        <div class="num">03 / REACH</div>
+        <h3>The local ad + review engine</h3>
+        <p>A repeatable weekly routine: review replies in your voice, a month of local ad creative, and the customer list worked properly instead of sitting in a spreadsheet.</p>
+        <span class="tag">Any business with a customer list</span>
+      </div>
+      <div class="card">
+        <div class="num">04 / PAPERWORK</div>
+        <h3>The quote &amp; invoice cleanup</h3>
+        <p>Quotes, purchase orders, vendor bills and shipping records matched automatically, so the errors get caught before they become chargebacks.</p>
+        <span class="tag">Contractors · Suppliers · Manufacturers</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker">How the month runs</div>
+      <h2>Four days. Then it is yours.</h2>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="w">Day 1</div><div><h3>Sit and watch</h3><p>I shadow the actual work — the inbox, the counter, the phone, the spreadsheet nobody wants to open. We pick one job worth fixing, not five.</p></div></div>
+      <div class="step"><div class="w">Day 2</div><div><h3>Build the ugly version</h3><p>Working tool, same afternoon, on your real data. It goes in front of your team while it is still rough, because that is when the gaps show up.</p></div></div>
+      <div class="step"><div class="w">Day 3</div><div><h3>Make it theirs</h3><p>Rename the fields, match the language your staff already use, kill the parts they will never touch. Then they drive while I watch.</p></div></div>
+      <div class="step"><div class="w">Day 4</div><div><h3>Hand over the keys</h3><p>Written runbook, a short recording, and a standing invite to the monthly workshop. If I disappear, it keeps working.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="who" style="background:#0b0b0b;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker">Who qualifies</div>
+      <h2>Independently owned. Houston.</h2>
+      <p class="sub">The program is for owner-run businesses, not funded startups. If you are not sure, apply anyway — the intake below gets read by me, not a queue.</p>
+    </div>
+    <div class="who reveal">
+      <div>
+        <h3>Eligible</h3>
+        <div class="chips">
+          <span class="chip">Restaurants &amp; cafés</span>
+          <span class="chip">Retail &amp; boutiques</span>
+          <span class="chip">Service firms</span>
+          <span class="chip">Trades &amp; contractors</span>
+          <span class="chip">Manufacturers</span>
+          <span class="chip">Nonprofits</span>
+          <span class="chip">Clinics &amp; salons</span>
+          <span class="chip">Family-owned</span>
+        </div>
+      </div>
+      <div>
+        <h3>Not eligible</h3>
+        <div class="chips">
+          <span class="chip no">Software &amp; SaaS</span>
+          <span class="chip no">VC-backed startups</span>
+          <span class="chip no">Private-equity owned</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker">Track record</div>
+      <h2>This is not my first build.</h2>
+      <p class="sub">BookiStudio is the Houston studio behind LazusAI, BSAI Agents and a roster of client sites. Same hands, same shop, now with OpenAI funding the hours.</p>
+    </div>
+    <div class="proof reveal">
+      <div class="p"><div class="n">15</div><div class="l">Software tools shipped and running</div></div>
+      <div class="p"><div class="n">20</div><div class="l">Client projects delivered</div></div>
+      <div class="p"><div class="n">12</div><div class="l">Clients, across 4 countries</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="apply">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker">Houston intake</div>
+      <h2>Tell me what eats your week.</h2>
+      <p class="sub">One form. I read every one. If it is a fit, the next step is a free working session — no pitch, no invoice, no obligation to continue.</p>
+    </div>
+
+    <div class="formwrap reveal">
+      <h3>Free working session</h3>
+      <p class="hint">Independent Houston businesses only. If you are a funded startup or a software company, the program is not open to you — but say hello anyway and I will point you somewhere useful.</p>
+      <form id="contactForm" data-source="openworks" data-product="OpenWorks Houston" onsubmit="handleSubmit(event)">
+        <input type="text" id="_hp" name="_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <div class="row">
+          <input type="text" id="name" required placeholder="Your name">
+          <input type="email" id="email" required placeholder="Email">
+        </div>
+        <div class="row">
+          <input type="text" id="business" required placeholder="Business name">
+          <select id="budget">
+            <option value="" disabled selected>What is eating your week?</option>
+            <option>Stock, inventory or reordering</option>
+            <option>Missed calls, texts and bookings</option>
+            <option>Marketing, reviews and social</option>
+            <option>Quotes, invoices and paperwork</option>
+            <option>Something else — I will explain</option>
+          </select>
+        </div>
+        <textarea id="message" placeholder="One paragraph: what you do, and the job you would hand off first."></textarea>
+        <button class="submit" type="submit" id="submitBtn">Send it →</button>
+        <div id="formStatus">Replies within one business day · Houston, TX</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section style="background:#0b0b0b;border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker">Straight answers</div>
+      <h2>Questions owners ask.</h2>
+    </div>
+    <div class="reveal" style="margin-top:2rem">
+      <details><summary>Is this really free?</summary><p>Yes. OpenWorks funds the partner, so the business pays nothing for the hands-on help, and the three months of ChatGPT Business come from the program. I do not invoice you for program work. If you later want something outside the program — a full site, custom software — that is a normal paid project and we would scope it separately, in writing.</p></details>
+      <details><summary>Do I have to be technical?</summary><p>No. That is the whole point. You bring the business problem; I bring the build and the training. The goal is that your team runs it without me by the second month.</p></details>
+      <details><summary>Are you officially OpenAI's Houston partner?</summary><p>Not yet — I applied on Nov 25, 2026, the week the program opened, and Houston is one of the 20 pilot cities. OpenAI reviews applications and matches partners to businesses. What I can do today is the same work, on the same terms, while that review runs. If OpenAI matches us through the program, even better.</p></details>
+      <details><summary>What happens to my data?</summary><p>Your data stays in your accounts wherever possible — the point is to build on the tools you already own, not to copy your business into someone else's system. Anything touched during a session is listed in writing before we start, and nothing is used to train a model.</p></details>
+      <details><summary>How much time will this take from me?</summary><p>Plan on a half day for the first session and a couple of hours of feedback after. If your week cannot spare that, the project will not stick, and I would rather tell you now.</p></details>
+      <details><summary>I am outside Houston. Can you still help?</summary><p>The program is city-based, so the free in-person work is Houston only. Remote projects are a normal BookiStudio engagement — bookistudios.com.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div class="l">
+      BookiStudio · Houston, TX<br>
+      OpenWorks Houston intake · 2026
+    </div>
+    <div class="l" style="text-align:right">
+      <a href="/">bookistudios.com</a> · <a href="https://www.linkedin.com/in/adrien-muhabuki-aa63a9351/" target="_blank" rel="noopener">LinkedIn</a><br>
+      <a href="https://openai.com/openworks/" target="_blank" rel="noopener">About OpenWorks ↗</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* enquiry handler — same backend as the rest of the site (ai.bookistudios.com/api/inquiries) */
+window.BS_API_BASE = window.BS_API_BASE || 'https://ai.bookistudios.com/api';
+(function () {
+  var LABEL = 'Send it →';
+  var TIMEOUT_MS = 12000;
+  var apiBase = function () { return (window.BS_API_BASE || 'https://ai.bookistudios.com/api').replace(/\/+$/, ''); };
+
+  window.handleSubmit = function (e) {
+    if (e && e.preventDefault) e.preventDefault();
+    var form = document.getElementById('contactForm');
+    var btn = document.getElementById('submitBtn');
+    var status = document.getElementById('formStatus');
+    var hp = document.getElementById('_hp');
+
+    var payload = {
+      name: (document.getElementById('name') || {}).value || '',
+      email: (document.getElementById('email') || {}).value || '',
+      business: (document.getElementById('business') || {}).value || '',
+      budget: (document.getElementById('budget') || {}).value || '',
+      message: (document.getElementById('message') || {}).value || '',
+      source: (form.dataset.source || 'openworks').trim().toLowerCase(),
+      product: (form.dataset.product || 'OpenWorks Houston').trim(),
+      _hp: hp ? hp.value : ''
+    };
+
+    btn.disabled = true; btn.textContent = 'SENDING…';
+    status.textContent = ''; status.style.color = '';
+
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, TIMEOUT_MS) : null;
+
+    fetch(apiBase() + '/inquiries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'omit',
+      signal: ctl ? ctl.signal : undefined,
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          if (!res.ok || !body || body.ok !== true) throw new Error((body && body.error) || ('server responded ' + res.status));
+          return body;
+        });
+      })
+      .then(function () {
+        form.reset();
+        btn.textContent = 'SENT ✓'; btn.style.background = '#2a6a3a';
+        status.textContent = 'Got it — I reply within one business day.'; status.style.color = '#3fae6a';
+        setTimeout(function () { btn.textContent = LABEL; btn.style.background = ''; status.textContent = 'Replies within one business day · Houston, TX'; status.style.color = ''; }, 7000);
+      })
+      .catch(function (err) {
+        var why = (err && err.name === 'AbortError') ? 'the request timed out' : ((err && err.message) || 'network error');
+        btn.textContent = 'NOT SENT — TRY AGAIN'; btn.style.background = '#8a1010';
+        status.textContent = 'Could not send (' + why + '). Email founder@bookistudios.com'; status.style.color = '#e06666';
+        setTimeout(function () { btn.textContent = LABEL; btn.style.background = ''; }, 7000);
+      })
+      .then(function () { btn.disabled = false; if (timer) clearTimeout(timer); });
+  };
+})();
+
+/* reveal on scroll */
+(function () {
+  var els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('on'); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('on'); io.unobserve(en.target); } });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+  els.forEach(function (e) { io.observe(e); });
+})();
+</script>
+</body>
+</html>
